@@ -64,3 +64,6 @@ build/*
 
 #. idea 
 .idea/*
+
+# Environment
+.env

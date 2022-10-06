@@ -24,15 +24,24 @@ const char* getfield(char* line, int num)
 
 int main()
 {
+    char* datapath = getenv("DATAPATH");
+    char* csvOutputFilePath = getenv("CSVOUT");
+
+    if(datapath) {
+        printf("datapath found: %s", datapath );
+        printf("datapath found: %s", csvOutputFilePath );
+    }
+    else
+        printf("Var not found.");               
     struct swing dataLat = getStruct(0.022);
     struct swing dataLong = getStruct(0.022);
     int i = 0;
 
-    FILE* stream = fopen("C:\\Users\\power\\CLionProjects\\compressexec\\out.csv", "r");
+    FILE* stream = fopen(datapath, "r");
     char line[1024];
     FILE *fpt;
 
-    fpt = fopen("D:\\stocks\\repos\\getdata\\lines.csv", "w+");
+    fpt = fopen(csvOutputFilePath, "w+");
     fprintf(fpt,"0\n");
     while (fgets(line, 1024, stream))
     {
