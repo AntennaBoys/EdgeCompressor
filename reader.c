@@ -6,6 +6,8 @@
 #include "math.h"
 #include "swing.h"
 
+int RESET_BOTH = 0;
+double ERROR_BOUND = 0.022;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
@@ -26,16 +28,21 @@ const char* getfield(char* line, int num)
 int main()
 {
                  
-    struct swing dataLat = getStruct(0.022);
-    struct swing dataLong = getStruct(0.022);
-    int i = 0;
+    struct swing dataLat = getStruct(ERROR_BOUND);
+    struct swing dataLong = getStruct(ERROR_BOUND);
+    int index = 0;
 
     FILE* stream = fopen(dataPath, "r");
     char line[1024];
-    FILE *fpt;
+    FILE *latfpt;
+    FILE *longfpt;
 
-    fpt = fopen(outPutCsvFile, "w+");
-    fprintf(fpt,"0\n");
+    latfpt = fopen(outPutCsvFileLat, "w+");
+    longfpt = fopen(outPutCsvFileLong, "w+");
+    fprintf(latfpt,"0\n");
+    fprintf(longfpt,"0\n");
+    int latiCount = 0;
+    int longCount = 0;
     while (fgets(line, 1024, stream))
     {
         char* lat = strdup(line);
@@ -45,7 +52,6 @@ int main()
         double latVal = strtod(getfield(lat, 5), &errorPointer);
         double longVal = strtod(getfield(longs, 6), &errorPointer);
         char* timestampTemp = getfield(ts, 2);
-
 
         struct tm tmVar;
         time_t timeVar;
@@ -57,28 +63,40 @@ int main()
         }
         else
             continue;
-
+            
         int resLat = fitValues(&dataLat, (long)timeVar, latVal);
         int resLong = fitValues(&dataLong, (long)timeVar, longVal);
-        if (resLat && resLong){
-            i+=1;
-            //printf("%ld", (long)timeVar);
-        }
-        else {
+        // if ((resLat && !RESET_BOTH) || (resLat && resLong)){
+        //     //printf("%ld", (long)timeVar);
+        // }
+        if(!resLat || RESET_BOTH && !resLong){
             resetStruct(&dataLat);
-            resetStruct(&dataLong);
-            printf("%d\n",i);
-            fprintf(fpt,"%d\n", i);
-            i += 1;
+            latiCount++;
+            fprintf(latfpt,"%d\n", index);
             printf("%ld\n", (long)timeVar);
         }
+        // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
+        //     //printf("%ld", (long)timeVar);
+        // }
+        if(!resLong || RESET_BOTH && !resLat){
+            longCount++;
+            resetStruct(&dataLong);
+            fprintf(longfpt,"%d\n", index);
+            printf("%ld\n", (long)timeVar);
 
+        }
+        if(!resLat || !resLong) { 
+            printf("%d\n",index);
+        }
+        index++;
         // NOTE strtok clobbers tmp
         free(lat);
         free(longs);
         free(ts);
     }
-    fclose(fpt);
+    printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
+    fclose(latfpt);
+    fclose(longfpt);
     fclose(stream);
 }
 
@@ -106,4 +124,3 @@ struct swing getStruct(double errorBound){
     data.length = 0;
     return data;
 }
-
