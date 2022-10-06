@@ -67,3 +67,4 @@ build/*
 
 # Environment
 paths.h
+result.csv
