@@ -66,4 +66,4 @@ build/*
 .idea/*
 
 # Environment
-.env
+paths.h

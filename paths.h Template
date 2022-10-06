@@ -1,0 +1,2 @@
+char* dataPath = "data path here";
+char* outPutCsvFile = "output csv path here";

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "paths.h"
 #include "math.h"
 #include "swing.h"
 
@@ -24,24 +25,16 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-    char* datapath = getenv("DATAPATH");
-    char* csvOutputFilePath = getenv("CSVOUT");
-
-    if(datapath) {
-        printf("datapath found: %s", datapath );
-        printf("datapath found: %s", csvOutputFilePath );
-    }
-    else
-        printf("Var not found.");               
+                 
     struct swing dataLat = getStruct(0.022);
     struct swing dataLong = getStruct(0.022);
     int i = 0;
 
-    FILE* stream = fopen(datapath, "r");
+    FILE* stream = fopen(dataPath, "r");
     char line[1024];
     FILE *fpt;
 
-    fpt = fopen(csvOutputFilePath, "w+");
+    fpt = fopen(outPutCsvFile, "w+");
     fprintf(fpt,"0\n");
     while (fgets(line, 1024, stream))
     {
