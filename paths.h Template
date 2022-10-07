@@ -1,2 +1,3 @@
-char* dataPath = "data path here";
-char* outPutCsvFile = "output csv path here";
+char* dataPath = "Path to data";
+char* outPutCsvFileLat = "Path to Lat output";
+char* outPutCsvFileLong = "Path to Long output";
