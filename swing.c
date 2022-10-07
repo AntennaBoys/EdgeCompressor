@@ -61,6 +61,7 @@ int mains(){
     for(int i = 0; i<lengthOfArray; i++){
         printf("%d",fitValues(&data, ts[i], values[i]));
     }
+    
 }
 
 int fitValues(struct swing *data, long timeStamp, double value){
@@ -174,6 +175,14 @@ struct slopeAndIntercept compute_slope_and_intercept(
         sample.intercept = final_value;
         return sample;
     }
+}
+
+double getModelFirst(struct swing current_swing){
+    return current_swing.upper_bound_slope * current_swing.first_timestamp + current_swing.upper_bound_intercept;
+}
+
+double getModelLast(struct swing current_swing){
+    return current_swing.upper_bound_slope * current_swing.last_timestamp + current_swing.upper_bound_intercept;
 }
 
 int isNan(double val){

@@ -11,7 +11,7 @@ double ERROR_BOUND = 0.022;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
-
+void writeToFile(FILE *file, struct swing model, int index);
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -39,8 +39,8 @@ int main()
 
     latfpt = fopen(outPutCsvFileLat, "w+");
     longfpt = fopen(outPutCsvFileLong, "w+");
-    fprintf(latfpt,"0\n");
-    fprintf(longfpt,"0\n");
+    fprintf(latfpt,"{\n");
+    fprintf(longfpt,"{\n");
     int latiCount = 0;
     int longCount = 0;
     while (fgets(line, 1024, stream))
@@ -70,20 +70,19 @@ int main()
         //     //printf("%ld", (long)timeVar);
         // }
         if(!resLat || RESET_BOTH && !resLong){
-            resetStruct(&dataLat);
             latiCount++;
-            fprintf(latfpt,"%d\n", index);
+            writeToFile(latfpt, dataLat, index);
             printf("%ld\n", (long)timeVar);
+            resetStruct(&dataLat);
         }
         // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
         //     //printf("%ld", (long)timeVar);
         // }
         if(!resLong || RESET_BOTH && !resLat){
             longCount++;
-            resetStruct(&dataLong);
-            fprintf(longfpt,"%d\n", index);
+            writeToFile(longfpt, dataLong, index);
             printf("%ld\n", (long)timeVar);
-
+            resetStruct(&dataLong);
         }
         if(!resLat || !resLong) { 
             printf("%d\n",index);
@@ -95,6 +94,8 @@ int main()
         free(ts);
     }
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
+    fprintf(latfpt,"}\n");
+    fprintf(longfpt,"}\n");
     fclose(latfpt);
     fclose(longfpt);
     fclose(stream);
@@ -123,4 +124,18 @@ struct swing getStruct(double errorBound){
     data.lower_bound_intercept = NAN;
     data.length = 0;
     return data;
+}
+
+void writeToFile(FILE *file, struct swing model, int index){
+    double first_value = getModelFirst(model);
+    double last_value = getModelLast(model);
+
+    fprintf(file,"  {\n");
+    fprintf(file,"   end_index:%d,\n", index);
+    fprintf(file,"   min_value:%lf,\n", first_value < last_value ? first_value : last_value);
+    fprintf(file,"   max_value:%lf,\n", first_value >= last_value ? first_value : last_value);
+    fprintf(file,"   values:%d,\n", (first_value < last_value));
+    fprintf(file,"  },\n");
+
+    
 }
