@@ -45,6 +45,8 @@ int main()
     int longCount = 0;
     char* longFirst = "";
     char* latFirst = "";
+    struct tm tmVar;
+    time_t timeVar;
     while (fgets(line, 1024, stream))
     {
         char* lat = strdup(line);
@@ -55,8 +57,7 @@ int main()
         double longVal = strtod(getfield(longs, 6), &errorPointer);
         char* timestampTemp = getfield(ts, 2);
 
-        struct tm tmVar;
-        time_t timeVar;
+        
         //01/09/2022 00:00:0
         if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
             tmVar.tm_year -= 1900;
@@ -97,7 +98,17 @@ int main()
         free(longs);
         free(ts);
     }
+    latiCount++;
+    writeToFile(latfpt, dataLat, index, latFirst); //print to file
+    latFirst = ",";
+    printf("%ld\n", (long)timeVar);
+    resetStruct(&dataLat);
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
+    longCount++;
+    writeToFile(longfpt, dataLong, index, longFirst);
+    longFirst = ",";
+    printf("%ld\n", (long)timeVar);
+    resetStruct(&dataLong);
     fprintf(latfpt,"]}\n");
     fprintf(longfpt,"]}\n");
     fclose(latfpt);
