@@ -11,7 +11,7 @@ double ERROR_BOUND = 0.022;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
-void writeToFile(FILE *file, struct swing model, int index);
+void writeToFile(FILE *file, struct swing model, int index, char* start);
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -39,10 +39,12 @@ int main()
 
     latfpt = fopen(outPutCsvFileLat, "w+");
     longfpt = fopen(outPutCsvFileLong, "w+");
-    fprintf(latfpt,"{\n");
-    fprintf(longfpt,"{\n");
+    fprintf(latfpt,"{\"models\":[\n");
+    fprintf(longfpt,"{\"models\":[\n");
     int latiCount = 0;
     int longCount = 0;
+    char* longFirst = "";
+    char* latFirst = "";
     while (fgets(line, 1024, stream))
     {
         char* lat = strdup(line);
@@ -69,9 +71,10 @@ int main()
         // if ((resLat && !RESET_BOTH) || (resLat && resLong)){
         //     //printf("%ld", (long)timeVar);
         // }
-        if(!resLat || RESET_BOTH && !resLong){
+        if(!resLat || RESET_BOTH && !resLong){ // is 
             latiCount++;
-            writeToFile(latfpt, dataLat, index);
+            writeToFile(latfpt, dataLat, index, latFirst); //print to file
+            latFirst = ",";
             printf("%ld\n", (long)timeVar);
             resetStruct(&dataLat);
         }
@@ -80,7 +83,8 @@ int main()
         // }
         if(!resLong || RESET_BOTH && !resLat){
             longCount++;
-            writeToFile(longfpt, dataLong, index);
+            writeToFile(longfpt, dataLong, index, longFirst);
+            longFirst = ",";
             printf("%ld\n", (long)timeVar);
             resetStruct(&dataLong);
         }
@@ -94,8 +98,8 @@ int main()
         free(ts);
     }
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
-    fprintf(latfpt,"}\n");
-    fprintf(longfpt,"}\n");
+    fprintf(latfpt,"]}\n");
+    fprintf(longfpt,"]}\n");
     fclose(latfpt);
     fclose(longfpt);
     fclose(stream);
@@ -126,16 +130,18 @@ struct swing getStruct(double errorBound){
     return data;
 }
 
-void writeToFile(FILE *file, struct swing model, int index){
+void writeToFile(FILE *file, struct swing model, int index, char* start){
     double first_value = getModelFirst(model);
     double last_value = getModelLast(model);
 
-    fprintf(file,"  {\n");
-    fprintf(file,"   end_index:%d,\n", index);
-    fprintf(file,"   min_value:%lf,\n", first_value < last_value ? first_value : last_value);
-    fprintf(file,"   max_value:%lf,\n", first_value >= last_value ? first_value : last_value);
-    fprintf(file,"   values:%d,\n", (first_value < last_value));
-    fprintf(file,"  },\n");
+    fprintf(file,"  %s{\n", start);
+    fprintf(file,"   \"end_index\":%d,\n", index);
+    fprintf(file,"   \"min_value\":%lf,\n", first_value < last_value ? first_value : last_value);
+    fprintf(file,"   \"max_value\":%lf,\n", first_value >= last_value ? first_value : last_value);
+    fprintf(file,"   \"values\":%d,\n", (first_value < last_value));
+    fprintf(file,"   \"start_time\":%ld,\n", model.first_timestamp);
+    fprintf(file,"   \"end_time\":%ld\n", model.last_timestamp);
+    fprintf(file,"  }\n");
 
     
 }
