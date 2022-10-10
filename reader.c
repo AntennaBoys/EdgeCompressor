@@ -7,7 +7,7 @@
 #include "swing.h"
 
 int RESET_BOTH = 0;
-double ERROR_BOUND = 0.022;
+double ERROR_BOUND = 0.002;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
@@ -78,6 +78,8 @@ int main()
             latFirst = ",";
             printf("%ld\n", (long)timeVar);
             resetStruct(&dataLat);
+            if(!resLat)
+                fitValues(&dataLat, (long)timeVar, latVal);
         }
         // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
         //     //printf("%ld", (long)timeVar);
@@ -88,6 +90,8 @@ int main()
             longFirst = ",";
             printf("%ld\n", (long)timeVar);
             resetStruct(&dataLong);
+            if(!resLong)
+                fitValues(&dataLong, (long)timeVar, longVal);
         }
         if(!resLat || !resLong) { 
             printf("%d\n",index);
@@ -98,17 +102,11 @@ int main()
         free(longs);
         free(ts);
     }
-    latiCount++;
-    writeToFile(latfpt, dataLat, index, latFirst); //print to file
-    latFirst = ",";
-    printf("%ld\n", (long)timeVar);
-    resetStruct(&dataLat);
-    printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
     longCount++;
     writeToFile(longfpt, dataLong, index, longFirst);
-    longFirst = ",";
-    printf("%ld\n", (long)timeVar);
-    resetStruct(&dataLong);
+    latiCount++;
+    writeToFile(latfpt, dataLat, index, latFirst);
+    printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
     fprintf(latfpt,"]}\n");
     fprintf(longfpt,"]}\n");
     fclose(latfpt);
