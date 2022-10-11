@@ -29,3 +29,5 @@ struct swing {
     int length;
 };
 int fitValues(struct swing *data, long timeStamp, double value);
+double getModelFirst(struct swing current_swing);
+double getModelLast(struct swing current_swing);

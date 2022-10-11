@@ -1,2 +1,6 @@
-char* dataPath = "data path here";
-char* outPutCsvFile = "output csv path here";
+char* dataPath = "Path to data";
+char* outPutCsvFileLat = "Path to Lat output";
+char* outPutCsvFileLong = "Path to Long output";
+// Lav en kopi
+// Udfyld felterne 
+// Fjern " Template" fra fil navnet

@@ -1,72 +1,44 @@
+#include "gorilla.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+int main(){
+    //struct Gorilla data = init();
+    // compress_value(&data, 10032.89798);
+    // compress_value(&data, 2342.89798);
 
-struct PMCMean {
-    float error;
-    float minValue;
-    float maxValue;
-    float sumOfValues;
-    float length;
-};
+    // compress_value(&data, 3.345);
+    // compress_value(&data, 345.89798);
+    // compress_value(&data, 545.12);
+    //     compress_value(&data, 1.12);
 
-int fitValue(struct PMCMean*, float);
-int isValueWithinErrorBound(struct PMCMean*, float, float);
-int equalOrNAN(float, float);
-int isNan(float);
 
-int mains() {
-    struct PMCMean data;
-    data.error = 11;
-    data.minValue = NAN;
-    data.maxValue = NAN;
-    data.sumOfValues = 0;
-    data.length = 0;
-    printf("%f\n\n", data.error);
-    float testValues[4] = {1.2, 1.4, 1.3, 1.4};
-    int lengthOfArray = sizeof(testValues)/sizeof(float);
+    //compress_value(&data, 5453.12);
 
-    printf("Lengthofarray: %d\n\n", lengthOfArray);
-    for(int i = 0; i < lengthOfArray; i++){
-        printf("Fits: ");
-        printf("%d\n\n",fitValue(&data, testValues[i]));
+    for(float i = 0.0; i < 1; i++){
+        
+        struct Gorilla* data = malloc(sizeof(struct Gorilla));
+        *data = init();
+        compress_value(data, 10101.21321);
+        compress_value(data, 324.234);
+        compress_value(data, 234.12);
+        compress_value(data, 234.12);
+        compress_value(data, 234.12);
+        compress_value(data, 234.12);
+        compress_value(data, 234.12);
+        
+
+
+        
+        for(int i = 0; i< data->compressed_values.bytes_counter; i++){
+            printf("compressed value: %d\n", data->compressed_values.bytes[i]);
+        }
+
+        // compress_value(data, 545.12);
+
     }
 
-    return 0;
+
+
+    getchar();
+   
 }
 
-int fitValue(struct PMCMean* data, float value){
-    float nextMinValue = data->minValue < value ? data->minValue : value;
-    float nextMaxValue = data->maxValue > value ? data->maxValue : value;
-    float nextSumOfValues = data->sumOfValues + value;
-    float nextLength = data->length+1;
-    float average = (nextSumOfValues / nextLength);
-
-    if(isValueWithinErrorBound(data, nextMinValue, average) && isValueWithinErrorBound(data, nextMaxValue, average)){
-        data->minValue = nextMinValue;
-        data->maxValue = nextMaxValue;
-        data->sumOfValues = nextSumOfValues;
-        data->length = nextLength;
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxValue){
-    if(equalOrNAN(realValue, approxValue)){
-        return 1;
-    } else {
-        float difference = realValue - approxValue;
-        float result = fabsf(difference / realValue);
-        return (result * 100) <= data->error;
-    }
-}
-
-int equalOrNAN(float v1, float v2){
-    return v1==v2 || (isNan(v1) && isNan(v2));
-}
-
-int isNan(float val){
-    return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
-}

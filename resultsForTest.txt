@@ -1,0 +1,9 @@
+reset both 
+latitude = 28
+longitude = 28
+total = 56
+
+reset only on change
+latitude = 10
+longitude = 27
+total = 37
