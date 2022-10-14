@@ -172,7 +172,7 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
+            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
             data->bytes_capacity++;
 
             data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8));

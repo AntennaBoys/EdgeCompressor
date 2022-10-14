@@ -5,13 +5,14 @@
 #include "paths.h"
 #include "math.h"
 #include "swing.h"
+#include "jsonprint.h"
+#include "gorilla.h"
 
 int RESET_BOTH = 0;
 double ERROR_BOUND = 0.002;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
-void writeToFile(FILE *file, struct swing model, int index, char* start);
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -28,23 +29,19 @@ const char* getfield(char* line, int num)
 int main()
 {
                  
-    struct swing dataLat = getStruct(ERROR_BOUND);
-    struct swing dataLong = getStruct(ERROR_BOUND);
+    struct Gorilla dataLat = init();
+    struct Gorilla dataLong = init();
     int index = 0;
 
     FILE* stream = fopen(dataPath, "r");
     char line[1024];
-    FILE *latfpt;
-    FILE *longfpt;
+    FILE *latfpt = openFile(outPutCsvFileLat);
+    FILE *longfpt = openFile(outPutCsvFileLong);
 
-    latfpt = fopen(outPutCsvFileLat, "w+");
-    longfpt = fopen(outPutCsvFileLong, "w+");
-    fprintf(latfpt,"{\"models\":[\n");
-    fprintf(longfpt,"{\"models\":[\n");
     int latiCount = 0;
     int longCount = 0;
-    char* longFirst = "";
-    char* latFirst = "";
+    int longFirst = 1;
+    int latFirst = 1;
     struct tm tmVar;
     time_t timeVar;
     while (fgets(line, 1024, stream))
@@ -67,34 +64,40 @@ int main()
         else
             continue;
             
-        int resLat = fitValues(&dataLat, (long)timeVar, latVal);
-        int resLong = fitValues(&dataLong, (long)timeVar, longVal);
+        //int resLat = fitValues(&dataLat, (long)timeVar, latVal);
+        //int resLong = fitValues(&dataLong, (long)timeVar, longVal);
+        int resLong = 1;
+        int resLat = 1;
+        compress_value(&dataLat, latVal);
+        compress_value(&dataLong, longVal);
+
+
         // if ((resLat && !RESET_BOTH) || (resLat && resLong)){
         //     //printf("%ld", (long)timeVar);
         // }
         if(!resLat || RESET_BOTH && !resLong){ // is 
             latiCount++;
-            writeToFile(latfpt, dataLat, index, latFirst); //print to file
-            latFirst = ",";
-            printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLat);
-            if(!resLat)
-                fitValues(&dataLat, (long)timeVar, latVal);
+            writeGorillaToFile(latfpt, dataLat, index, latFirst); //print to file
+            latFirst = 0;
+            //printf("%ld\n", (long)timeVar);
+            //resetStruct(&dataLat);
+            //if(!resLat)
+            //    fitValues(&dataLat, (long)timeVar, latVal);
         }
         // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
         //     //printf("%ld", (long)timeVar);
         // }
         if(!resLong || RESET_BOTH && !resLat){
             longCount++;
-            writeToFile(longfpt, dataLong, index, longFirst);
-            longFirst = ",";
-            printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLong);
-            if(!resLong)
-                fitValues(&dataLong, (long)timeVar, longVal);
+            writeGorillaToFile(longfpt, dataLong, index, longFirst);
+            longFirst = 0;
+            //printf("%ld\n", (long)timeVar);
+            //resetStruct(&dataLong);
+            //if(!resLong)
+            //    fitValues(&dataLong, (long)timeVar, longVal);
         }
         if(!resLat || !resLong) { 
-            printf("%d\n",index);
+            //printf("%d\n",index);
         }
         index++;
         // NOTE strtok clobbers tmp
@@ -103,15 +106,13 @@ int main()
         free(ts);
     }
     longCount++;
-    writeToFile(longfpt, dataLong, index, longFirst);
+    writeGorillaToFile(longfpt, dataLong, index, longFirst);
     latiCount++;
-    writeToFile(latfpt, dataLat, index, latFirst);
+    writeGorillaToFile(latfpt, dataLat, index, latFirst);
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
-    fprintf(latfpt,"]}\n");
-    fprintf(longfpt,"]}\n");
-    fclose(latfpt);
-    fclose(longfpt);
-    fclose(stream);
+    closeFile(latfpt);
+    closeFile(longfpt);
+    closeFile(stream);
 }
 
 void resetStruct(struct swing *data){
@@ -124,6 +125,7 @@ void resetStruct(struct swing *data){
     data->lower_bound_intercept = NAN;
     data->length = 0;
 }
+
 
 struct swing getStruct(double errorBound){
     struct swing data;
@@ -139,18 +141,3 @@ struct swing getStruct(double errorBound){
     return data;
 }
 
-void writeToFile(FILE *file, struct swing model, int index, char* start){
-    double first_value = getModelFirst(model);
-    double last_value = getModelLast(model);
-
-    fprintf(file,"  %s{\n", start);
-    fprintf(file,"   \"end_index\":%d,\n", index);
-    fprintf(file,"   \"min_value\":%lf,\n", first_value < last_value ? first_value : last_value);
-    fprintf(file,"   \"max_value\":%lf,\n", first_value >= last_value ? first_value : last_value);
-    fprintf(file,"   \"values\":%d,\n", (first_value < last_value));
-    fprintf(file,"   \"start_time\":%ld,\n", model.first_timestamp);
-    fprintf(file,"   \"end_time\":%ld\n", model.last_timestamp);
-    fprintf(file,"  }\n");
-
-    
-}
