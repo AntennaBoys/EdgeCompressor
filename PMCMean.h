@@ -1,3 +1,6 @@
+#ifndef PMCMEAN
+#define PMCMEAN
+
 struct PMCMean {
     float error;
     float minValue;
@@ -5,3 +8,5 @@ struct PMCMean {
     float sumOfValues;
     float length;
 };
+
+#endif

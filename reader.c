@@ -7,6 +7,8 @@
 #include "swing.h"
 #include "jsonprint.h"
 #include "gorilla.h"
+#include "PMCMean.h"
+#include "mod.h"
 
 int RESET_BOTH = 0;
 double ERROR_BOUND = 0.002;

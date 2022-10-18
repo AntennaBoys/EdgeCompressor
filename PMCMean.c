@@ -6,8 +6,8 @@
 
 int fitValue(struct PMCMean*, float);
 int isValueWithinErrorBound(struct PMCMean*, float, float);
-int equalOrNAN(float, float);
-int isNan(float);
+int equalOrNAN_PMC(float, float);
+int isNan_PMC(float);
 
 int mains() {
     struct PMCMean data;
@@ -48,7 +48,7 @@ int fitValue(struct PMCMean* data, float value){
 }
 
 int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxValue){
-    if(equalOrNAN(realValue, approxValue)){
+    if(equalOrNAN_PMC(realValue, approxValue)){
         return 1;
     } else {
         float difference = realValue - approxValue;
@@ -57,10 +57,10 @@ int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxV
     }
 }
 
-int equalOrNAN(float v1, float v2){
-    return v1==v2 || (isNan(v1) && isNan(v2));
+int equalOrNAN_PMC(float v1, float v2){
+    return v1==v2 || (isNan_PMC(v1) && isNan_PMC(v2));
 }
 
-int isNan(float val){
+int isNan_PMC(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
 }

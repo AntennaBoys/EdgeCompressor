@@ -1,32 +1,7 @@
 #include <stdio.h>
 #include <math.h>
+#include "swing.h"
 
-struct swing {
-    /// Maximum relative error for the value of each data point.
-    double error_bound;
-    /// Time at which the first value represented by the current model was
-    /// collected.
-    long first_timestamp;
-    /// Time at which the last value represented by the current model was
-    /// collected.
-    long last_timestamp;
-    /// First value in the segment the current model is fitted to.
-    double first_value; // f64 instead of Value to remove casts in fit_value()
-    /// Slope for the linear function specifying the upper bound for the current
-    /// model.
-    double upper_bound_slope;
-    /// Intercept for the linear function specifying the upper bound for the
-    /// current model.
-    double upper_bound_intercept;
-    /// Slope for the linear function specifying the lower bound for the current
-    /// model.
-    double lower_bound_slope;
-    /// Intercept for the linear function specifying the lower bound for the
-    /// current model.
-    double lower_bound_intercept;
-    /// The number of data points the current model has been fitted to.
-    int length;
-};
 
 struct slopeAndIntercept {
     double slope;
@@ -40,31 +15,30 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValues(struct swing *data, long timeStamp, double value);
 
 
-int mains(){
-    struct swing data;
-    data.error_bound = 5;
-    data.first_timestamp = 0;
-    data.last_timestamp = 0;
-    data.first_value = NAN;
-    data.upper_bound_slope = NAN;
-    data.upper_bound_intercept = NAN;
-    data.lower_bound_slope = NAN;
-    data.lower_bound_intercept = NAN;
-    data.length = 0;
+// int mains(){
+//     struct swing data;
+//     data.error_bound = 5;
+//     data.first_timestamp = 0;
+//     data.last_timestamp = 0;
+//     data.first_value = NAN;
+//     data.upper_bound_slope = NAN;
+//     data.upper_bound_intercept = NAN;
+//     data.lower_bound_slope = NAN;
+//     data.lower_bound_intercept = NAN;
+//     data.length = 0;
 
-    double values[10] = {1, 2, 3, 400, 5, 6, 7, 8, 9, 100};
-    long ts[10] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-    int lengthOfArray = sizeof(values)/sizeof(double);
-    for(int i = 0; i<lengthOfArray; i++){
-        printf("%d",fitValues(&data, ts[i], values[i]));
-    }
+//     double values[10] = {1, 2, 3, 400, 5, 6, 7, 8, 9, 100};
+//     long ts[10] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+//     int lengthOfArray = sizeof(values)/sizeof(double);
+//     for(int i = 0; i<lengthOfArray; i++){
+//         printf("%d",fitValues(&data, ts[i], values[i]));
+//     }
     
-}
+// }
 
-int fitValues(struct swing *data, long timeStamp, double value){
+int fitValues_swing(struct swing *data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     if (data->length == 0) {

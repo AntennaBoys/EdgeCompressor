@@ -99,19 +99,16 @@ void compress_value(struct Gorilla* data, float value){
         data->first_iteration = 0;
     }
 
-    if(!abs(value - data->start_value) > 0.2){
+    if(!(fabsf(value - data->start_value) > 0.0001)){
         value = data->start_value;
-        printf("hej\n");
+        printf("hej :)\n");
     }
-    // printf("Start value updated!\n");
-    // printf("HELLO THERE\n");
-    // printf("BBBBB");
 
     int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
     int32_t last_value_as_integer = floatToBit(data->start_value);
     int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
     
-    if(abs(value - data->start_value) > 0.2){
+    if(fabsf(value - data->start_value) > 0.0001){
         data->start_value = value;
     }
 
