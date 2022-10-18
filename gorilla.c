@@ -84,21 +84,44 @@ struct Gorilla init(){
     //     data.compressed_values.bytes[i] = NULL;
     // }
     data.length = 0;
+
+    data.start_value = 9999999;
+    data.first_iteration = 1;
     
     return data;
 }
 
 void compress_value(struct Gorilla* data, float value){
+    // printf("value: %f\n", value);
+    // printf("last value: %f\n", data->last_value);
+    if(data->first_iteration){
+        data->start_value = value;
+        data->first_iteration = 0;
+    }
+
+    if(!abs(value - data->start_value) > 0.2){
+        value = data->start_value;
+        printf("hej\n");
+    }
+    // printf("Start value updated!\n");
+    // printf("HELLO THERE\n");
+    // printf("BBBBB");
+
     int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
-    int32_t last_value_as_integer = floatToBit(data->last_value);
+    int32_t last_value_as_integer = floatToBit(data->start_value);
     int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
     
+    if(abs(value - data->start_value) > 0.2){
+        data->start_value = value;
+    }
+
     if(data->compressed_values.bytes_counter == 0){
         // TODO: &(data->compressed_values) ?????????????????
         printf("====================\n");
         append_bits(&data->compressed_values, value_as_integer, VALUE_SIZE_IN_BITS);
 
     } else if (value_xor_last_value == 0){
+        printf("appending 0\n");
         append_a_zero_bit(&data->compressed_values);
         // printf("ZERO BIT\n");
     } else {
@@ -132,10 +155,11 @@ void compress_value(struct Gorilla* data, float value){
         // uint8 leading_zero_bits = value_xor_last_value
 
     }
-    
+
     data->last_value = value;
     data->length++;
 }
+
 
 
 
@@ -172,7 +196,7 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
+            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
             data->bytes_capacity++;
 
             data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8));

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <math.h>
 
 
 typedef unsigned char uint8;
@@ -22,6 +23,11 @@ struct Gorilla {
     uint8 last_trailing_zero_bits;
     struct BitVecBuilder compressed_values;
     size_t length;
+
+    //values used for lossy gorilla
+    float start_value;
+    int first_iteration;
+
 };
 
 void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits);
