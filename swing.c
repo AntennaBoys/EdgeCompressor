@@ -1,32 +1,10 @@
 #include <stdio.h>
 #include <math.h>
+#include <swing.h>
 
-struct swing {
-    /// Maximum relative error for the value of each data point.
-    double error_bound;
-    /// Time at which the first value represented by the current model was
-    /// collected.
-    long first_timestamp;
-    /// Time at which the last value represented by the current model was
-    /// collected.
-    long last_timestamp;
-    /// First value in the segment the current model is fitted to.
-    double first_value; // f64 instead of Value to remove casts in fit_value()
-    /// Slope for the linear function specifying the upper bound for the current
-    /// model.
-    double upper_bound_slope;
-    /// Intercept for the linear function specifying the upper bound for the
-    /// current model.
-    double upper_bound_intercept;
-    /// Slope for the linear function specifying the lower bound for the current
-    /// model.
-    double lower_bound_slope;
-    /// Intercept for the linear function specifying the lower bound for the
-    /// current model.
-    double lower_bound_intercept;
-    /// The number of data points the current model has been fitted to.
-    int length;
-};
+const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
+const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
+
 
 struct slopeAndIntercept {
     double slope;
@@ -61,10 +39,9 @@ int mains(){
     for(int i = 0; i<lengthOfArray; i++){
         printf("%d",fitValues(&data, ts[i], values[i]));
     }
-    
 }
 
-int fitValues(struct swing *data, long timeStamp, double value){
+int fitValues(struct swing* data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     if (data->length == 0) {
@@ -192,6 +169,10 @@ int isNan(double val){
 
 int equalOrNAN(double v1, double v2){
     return v1==v2 || (isNan(v1) && isNan(v2));
+}
+
+float get_bytes_per_value_swing(struct swing* data){
+    return (float) (2 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
 //
 // Created by power on 23-09-2022.

@@ -2,18 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-struct PMCMean {
-    float error;
-    float minValue;
-    float maxValue;
-    float sumOfValues;
-    float length;
-};
+#include <PMCMean.h>
 
-int fitValue(struct PMCMean*, float);
-int isValueWithinErrorBound(struct PMCMean*, float, float);
-int equalOrNAN(float, float);
-int isNan(float);
+const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
+const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
 
 int mains() {
     struct PMCMean data;
@@ -63,10 +55,22 @@ int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxV
     }
 }
 
+float get_bytes_per_value_pmc(struct PMCMean* data){
+    return (float) VALUE_SIZE_IN_BYTES / (float) data -> length;
+}
+
 int equalOrNAN(float v1, float v2){
     return v1==v2 || (isNan(v1) && isNan(v2));
 }
 
 int isNan(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
+}
+
+float get_model_pmcmean(struct PMCMean* data){
+    return (float) (data->sumOfValues / (double) data->length)
+}
+
+size_t get_length (struct PMCMean* data){
+    return data->length;
 }

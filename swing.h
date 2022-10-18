@@ -31,3 +31,4 @@ struct swing {
 int fitValues(struct swing *data, long timeStamp, double value);
 double getModelFirst(struct swing current_swing);
 double getModelLast(struct swing current_swing);
+float get_bytes_per_value_swing(struct swing* data);

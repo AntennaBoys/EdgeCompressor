@@ -15,8 +15,8 @@ int main(){
 
     for(float i = 0.0; i < 1; i++){
         
-        struct Gorilla* data = malloc(sizeof(struct Gorilla));
-        *data = init();
+        struct SelectedModel* data = init_selectedModel();
+        data.select
         compress_value(data, 10101.21321);
         compress_value(data, 324.234);
         compress_value(data, 234.12);

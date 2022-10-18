@@ -1,4 +1,6 @@
 #include "gorilla.h"
+#include "swing.h"
+#include "PMCMean.h"
 
 struct SelectedModel {
     uint8 model_type_id;
@@ -8,5 +10,11 @@ struct SelectedModel {
     int values_capacity;
     uint8* values;
 };
+
+struct bytes_per_value{
+    uint8 id;
+    float bytes;
+}
+
 
 struct SelectedModel init_selectedModel();
