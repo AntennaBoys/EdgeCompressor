@@ -64,8 +64,8 @@ int mains(){
     
 }
 
-int fitValues(struct swing *data, long timeStamp, double value){
-    double maximum_deviation = fabs(value * (data->error_bound / 100.1));
+int fitValues(struct swing *data, long timeStamp, double value, double mean){
+    double maximum_deviation = fabs(mean * (data->error_bound / 100.0));
 
     if (data->length == 0) {
         // Line 1 - 2 of Algorithm 1 in the Swing and Slide paper.

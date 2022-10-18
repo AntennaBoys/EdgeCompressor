@@ -69,7 +69,7 @@ void writePMCMeanToFile(FILE* file, struct PMCMean model, int index, int first){
     fprintf(file,"   \"end_index\":%d,\n", index);
     fprintf(file,"   \"min_value\":NaN,\n");
     fprintf(file,"   \"max_value\":NaN,\n");
-    fprintf(file,"   \"values\":[%d]", model.sumOfValues / model.length);
+    fprintf(file,"   \"values\":[%f],\n", model.sumOfValues / model.length);
     fprintf(file,"   \"start_time\":NaN,\n");
     fprintf(file,"   \"end_time\":NaN\n");
     fprintf(file,"  }\n");

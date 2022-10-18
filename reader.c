@@ -7,12 +7,16 @@
 #include "swing.h"
 #include "jsonprint.h"
 #include "gorilla.h"
+#include "error_bound_calculator.h"
+#include "PMCMean.h"
 
 int RESET_BOTH = 0;
-double ERROR_BOUND = 0.002;
+double ERROR_BOUND = 0.022;
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
+struct PMCMean getPMC(double errorBound);
+void resetPMC(struct PMCMean *pmc);
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -31,6 +35,10 @@ int main()
                  
     struct Gorilla dataLat = init();
     struct Gorilla dataLong = init();
+    // struct PMCMean dataLat = getPMC(ERROR_BOUND);
+    // struct PMCMean dataLong = getPMC(ERROR_BOUND);
+    running_mean latMean = {0,0};
+    running_mean longMean = {0,0};
     int index = 0;
 
     FILE* stream = fopen(dataPath, "r");
@@ -63,42 +71,70 @@ int main()
         }
         else
             continue;
-            
-        //int resLat = fitValues(&dataLat, (long)timeVar, latVal);
-        //int resLong = fitValues(&dataLong, (long)timeVar, longVal);
+        
+        if(latFirst != 0){
+            // do nothing
+        }else{
+            latMean.lenght = 1;
+            latMean.value = latVal;
+        }
+        if(longFirst != 0){
+            // do nothing
+        }else{
+            longMean.lenght = 1;
+            longMean.value = longVal;
+        }
+        calculate_error_bound(latMean, latVal, 1);
+        //int resLat = fitValues(&dataLat, (long)timeVar, latVal, latMean.value);
+        //int resLat = fitValues(&dataLat, (long)timeVar, latVal, latVal);
+        //int resLat = fitValue(&dataLat, latVal);
+
+        calculate_error_bound(longMean, longVal, 1);
+        //int resLong = fitValues(&dataLong, (long)timeVar, longVal, longMean.value);
+        //int resLong = fitValues(&dataLong, (long)timeVar, longVal, longVal);
+        //int resLong = fitValue(&dataLong, longVal);
+
         int resLong = 1;
         int resLat = 1;
         compress_value(&dataLat, latVal);
         compress_value(&dataLong, longVal);
 
 
-        // if ((resLat && !RESET_BOTH) || (resLat && resLong)){
-        //     //printf("%ld", (long)timeVar);
-        // }
+        if ((resLat && !RESET_BOTH) || (resLat && resLong)){
+            //printf("%ld\n", (long)timeVar);
+        }
         if(!resLat || RESET_BOTH && !resLong){ // is 
             latiCount++;
             writeGorillaToFile(latfpt, dataLat, index, latFirst); //print to file
+            //writeSwingToFile(latfpt, dataLat, index, latFirst);
+            //writePMCMeanToFile(latfpt, dataLat, index, latFirst);
             latFirst = 0;
             //printf("%ld\n", (long)timeVar);
             //resetStruct(&dataLat);
+            //resetPMC(&dataLat);
             //if(!resLat)
-            //    fitValues(&dataLat, (long)timeVar, latVal);
+               //fitValues(&dataLat, (long)timeVar, latVal, latMean.value);
+               //fitValue(&dataLat, latVal);
+
         }
-        // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
-        //     //printf("%ld", (long)timeVar);
-        // }
+        if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
+            //printf("%ld\n", (long)timeVar);
+        }
         if(!resLong || RESET_BOTH && !resLat){
             longCount++;
             writeGorillaToFile(longfpt, dataLong, index, longFirst);
+            //writeSwingToFile(longfpt, dataLong, index, longFirst);
+            //writePMCMeanToFile(longfpt, dataLong, index, longFirst);
             longFirst = 0;
             //printf("%ld\n", (long)timeVar);
             //resetStruct(&dataLong);
+            //resetPMC(&dataLong);
             //if(!resLong)
-            //    fitValues(&dataLong, (long)timeVar, longVal);
+               //fitValues(&dataLong, (long)timeVar, longVal, longMean.value);
+               //fitValue(&dataLong, longVal);
         }
-        if(!resLat || !resLong) { 
+        //if(!resLat || !resLong)  
             //printf("%d\n",index);
-        }
         index++;
         // NOTE strtok clobbers tmp
         free(lat);
@@ -107,8 +143,12 @@ int main()
     }
     longCount++;
     writeGorillaToFile(longfpt, dataLong, index, longFirst);
+    //writeSwingToFile(longfpt, dataLong, index, longFirst);
+    //writePMCMeanToFile(longfpt, dataLong, index, longFirst);
     latiCount++;
     writeGorillaToFile(latfpt, dataLat, index, latFirst);
+    //writeSwingToFile(latfpt, dataLat, index, latFirst);
+    //writePMCMeanToFile(latfpt, dataLat, index, latFirst);
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
     closeFile(latfpt);
     closeFile(longfpt);
@@ -129,7 +169,7 @@ void resetStruct(struct swing *data){
 
 struct swing getStruct(double errorBound){
     struct swing data;
-    data.error_bound = 0.022;
+    data.error_bound = errorBound;
     data.first_timestamp = 0;
     data.last_timestamp = 0;
     data.first_value = NAN;
@@ -140,4 +180,23 @@ struct swing getStruct(double errorBound){
     data.length = 0;
     return data;
 }
+
+void resetPMC(struct PMCMean *pmc){
+    pmc->minValue = NAN;
+    pmc->maxValue = NAN;
+    pmc->sumOfValues = 0;
+    pmc->length = 0;
+}
+
+struct PMCMean getPMC(double errorBound){
+    struct PMCMean data;
+    data.error = errorBound;
+    data.minValue = NAN;
+    data.maxValue = NAN;
+    data.sumOfValues = 0;
+    data.length = 0;
+    return data;
+}
+
+
 

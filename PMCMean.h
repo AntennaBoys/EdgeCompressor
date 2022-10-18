@@ -5,3 +5,4 @@ struct PMCMean {
     float sumOfValues;
     float length;
 };
+int fitValue(struct PMCMean* data, float value);

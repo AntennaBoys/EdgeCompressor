@@ -6,28 +6,28 @@
 
 int fitValue(struct PMCMean*, float);
 int isValueWithinErrorBound(struct PMCMean*, float, float);
-int equalOrNAN(float, float);
-int isNan(float);
+int equalOrNAN_pmc(float, float);
+int isNan_pmc(float);
 
-int mains() {
-    struct PMCMean data;
-    data.error = 11;
-    data.minValue = NAN;
-    data.maxValue = NAN;
-    data.sumOfValues = 0;
-    data.length = 0;
-    printf("%f\n\n", data.error);
-    float testValues[4] = {1.2, 1.4, 1.3, 1.4};
-    int lengthOfArray = sizeof(testValues)/sizeof(float);
+// int mains() {
+//     struct PMCMean data;
+//     data.error = 11;
+//     data.minValue = NAN;
+//     data.maxValue = NAN;
+//     data.sumOfValues = 0;
+//     data.length = 0;
+//     printf("%f\n\n", data.error);
+//     float testValues[4] = {1.2, 1.4, 1.3, 1.4};
+//     int lengthOfArray = sizeof(testValues)/sizeof(float);
 
-    printf("Lengthofarray: %d\n\n", lengthOfArray);
-    for(int i = 0; i < lengthOfArray; i++){
-        printf("Fits: ");
-        printf("%d\n\n",fitValue(&data, testValues[i]));
-    }
+//     printf("Lengthofarray: %d\n\n", lengthOfArray);
+//     for(int i = 0; i < lengthOfArray; i++){
+//         printf("Fits: ");
+//         printf("%d\n\n",fitValue(&data, testValues[i]));
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 int fitValue(struct PMCMean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
@@ -48,7 +48,7 @@ int fitValue(struct PMCMean* data, float value){
 }
 
 int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxValue){
-    if(equalOrNAN(realValue, approxValue)){
+    if(equalOrNAN_pmc(realValue, approxValue)){
         return 1;
     } else {
         float difference = realValue - approxValue;
@@ -57,10 +57,10 @@ int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxV
     }
 }
 
-int equalOrNAN(float v1, float v2){
-    return v1==v2 || (isNan(v1) && isNan(v2));
+int equalOrNAN_pmc(float v1, float v2){
+    return v1==v2 || (isNan_pmc(v1) && isNan_pmc(v2));
 }
 
-int isNan(float val){
+int isNan_pmc(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
 }
