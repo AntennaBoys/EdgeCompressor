@@ -1,14 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "PMCMean.h"
 
-struct PMCMean {
-    float error;
-    float minValue;
-    float maxValue;
-    float sumOfValues;
-    float length;
-};
 
 int fitValue(struct PMCMean*, float);
 int isValueWithinErrorBound(struct PMCMean*, float, float);

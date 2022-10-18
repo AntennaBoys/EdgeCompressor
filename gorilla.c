@@ -8,7 +8,7 @@
 const int debug = 0;
 
 const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
-const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
+const uint8 VALUE_SIZE_IN_BITS = (uint8) (8 * (uint8) sizeof(float));
 
 const uint8 SIZE_OF_32INT = (uint8) sizeof(int32_t) * 8;
 
