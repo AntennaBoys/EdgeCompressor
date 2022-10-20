@@ -1,6 +1,7 @@
 #include "swing.h"
 #include "gorilla.h"
 #include "PMCMean.h"
+#include "mod.h"
 #include <stdio.h>
 
 
@@ -72,5 +73,25 @@ void writePMCMeanToFile(FILE* file, struct PMCMean model, int index, int first){
     fprintf(file,"   \"values\":[%f],\n", model.sumOfValues / model.length);
     fprintf(file,"   \"start_time\":NaN,\n");
     fprintf(file,"   \"end_time\":NaN\n");
+    fprintf(file,"  }\n");
+}
+
+void writeModelToFile(FILE* file, struct SelectedModel model, int first, int startTime, int endTime){
+    if (!first){
+        fprintf(file,"  ,{\n");
+    }else{
+        fprintf(file,"{\n");
+    }
+    fprintf(file,"   \"Mid\":%d,\n", model.model_type_id);
+    fprintf(file,"   \"end_index\":%d,\n", model.end_index);
+    fprintf(file,"   \"min_value\":%f,\n", model.min_value);
+    fprintf(file,"   \"max_value\":%f,\n", model.max_value);
+    fprintf(file,"   \"values\":[");
+    for (int i = 0; i < sizeof(model.values)/sizeof(*model.values); i++){
+        fprintf(file, "%d", model.values[i]);
+    }
+    fprintf(file,"],\n");
+    fprintf(file,"   \"start_time\":%d,\n", startTime);
+    fprintf(file,"   \"end_time\":%d\n", endTime);
     fprintf(file,"  }\n");
 }

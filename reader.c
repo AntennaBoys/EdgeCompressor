@@ -158,6 +158,7 @@ int main()
                 currentLatIndex = 0;
                 latBufferCount = 1;
             }
+            startLatIndex = currentLatIndex;
             latiCount++;
             //print data here
         }
@@ -179,6 +180,7 @@ int main()
                 currentLongIndex = 0;
                 longBufferCount = 1;
             }
+            startLongIndex = currentLongIndex;
             longCount++;
             //print data here
         }
