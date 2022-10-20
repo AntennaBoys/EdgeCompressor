@@ -12,7 +12,8 @@
 #include "mod.h"
 
 #define ERROR_BOUND 0.009
-#define DATA_INTAKE_SIZE 50
+#define INITIAL_BUFFER 500
+#define GORILLA_MAX 50
 
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
@@ -58,136 +59,136 @@ int main()
     struct tm tmVar;
     time_t timeVar;
 
-    double latVals[DATA_INTAKE_SIZE];
-    int latValCount = 0;
-    double longVals[DATA_INTAKE_SIZE];
-    int longValCount = 0;
-    struct tm tmVars[DATA_INTAKE_SIZE];
-    int timeStampsCount = 0;
+    double *latBuffer = (double*) calloc(INITIAL_BUFFER, sizeof(double));
+    int latBufferCount = 0;
+    int startLatIndex = 0;
+    int currentLatIndex = 0;
+    int maxLatBufferCount = INITIAL_BUFFER;
+    int latPMCCanFitMore = 1;
+    int latSwingCanFitMore = 1;
+    int latGorillaCanFitMore = 1;
+
+    double *longBuffer = (double*) calloc(INITIAL_BUFFER, sizeof(double));
+    int longBufferCount = 0;
+    int startLongIndex = 0;
+    int currentLongIndex = 0;
+    int maxLongBufferCount = INITIAL_BUFFER;
+    int longPMCCanFitMore = 1;
+    int longSwingCanFitMore = 1;
+    int longGorillaCanFitMore = 1;
+
+    long *timeBuffer = (long*) calloc(INITIAL_BUFFER, sizeof(long));
+    int timeBufferCount = 0;
+    int maxTimeBufferCount = INITIAL_BUFFER;
+
     int resetLong = 1;
     int resetLat = 1;
-    while (fgets(line, 1024, stream))
+
+    int currentModel = 0; // start at PMCmean
+
+    int yetEmittedLat = 0;
+    int yetEmittedLong = 0;
+
+    int endOfInput = 0;
+    while(yetEmittedLat != 0 || yetEmittedLat != 0 || !endOfInput)
     {
-        if(timeStampsCount == DATA_INTAKE_SIZE){
-            int dataTracker = 0;
-            while(dataTracker < DATA_INTAKE_SIZE){
-                // Reselect models if a data point did not fit in a segment
-                //TODO: husk at flippe output fra fits
-                if(resetLat){
-                    selectModel(selectedModelLat, dataTracker, PMCLat, swingLat, gorillaLat, latVals)
-                }
-                if(resetLong){
-                    selectModel(selectedModelLong, dataTracker, PMCLong, swingLong, gorillaLong, longVals)
-                }
-                switch ((int)selectedModelLat.model_type_id)
-                {
-                case PMC_MEAN_ID:
-                    resetLat = !fitValuePMC(PMCLat, latVals[dataTracker])
-                    break;
-                case SWING_ID:
+        if(!endOfInput && (currentLatIndex == latBufferCount || currentLongIndex == longBufferCount))
+        {
+            if(fgets(line, 1024, stream)){
+                char* latStr = strdup(line);
+                char* longStr = strdup(line);
+                char* ts = strdup(line);
+                char* errorPointer;
+                char* timestampTemp = getfield(ts, 2);
 
-                    break;
-                
-                case GORILLA_ID:
+                //01/09/2022 00:00:0
+                if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
+                    tmVar.tm_year -= 1900;
+                    tmVar.tm_mon -= 1;
+                    //TODO: implement sudocode line 14-16, 18
 
-                    break;
-                default:
-                    printf("SOMETHING WENT HORRIBLY WRONG");
-                    exit(1)
-                    break;
+                    // SudoC: line  17
+                    timeBuffer[timeBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
+                    latBuffer[latBufferCount++] = strtod(getfield(longStr, 6), &errorPointer);
+                    longBuffer[longBufferCount++] = mktime(&tmVar)+3600;
+                    // ensure we have enough space in the buffers
+                    if(timeBufferCount + 1 == maxTimeBufferCount){
+                        maxTimeBufferCount += 10;
+                        timeBuffer = realloc(timeBuffer, maxTimeBufferCount);
+                        if(timeBuffer == NULL){
+                            printf("REALLOC ERROR (timeBuffer)\n");
+                        }
+                    }
+                    if(latBufferCount + 1 == maxLatBufferCount){
+                        maxLatBufferCount += 10;
+                        latBuffer = realloc(latBuffer, maxLatBufferCount);
+                        if(latBuffer == NULL){
+                            printf("REALLOC ERROR (latBuffer)\n");
+                        }
+                    }
+                    if(longBufferCount + 1 == maxLongBufferCount){
+                        maxLongBufferCount += 10;
+                        longBuffer = realloc(longBuffer, maxLongBufferCount);
+                        if(longBuffer == NULL){
+                            printf("REALLOC ERROR (longBuffer)\n");
+                        }
+                    }
                 }
-
-                dataTracker++;
+                else
+                    continue;
+            }else{
+                endOfInput = 1;
             }
-            
-            
         }
-        char* lat = strdup(line);
-        char* longs = strdup(line);
-        char* ts = strdup(line);
-        char* errorPointer;
-        latVals[latValCount] = strtod(getfield(lat, 5), &errorPointer);
-        longVals[longValCount] = strtod(getfield(longs, 6), &errorPointer);
-        char* timestampTemp = getfield(ts, 2);
-
-        
-        //01/09/2022 00:00:0
-        if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
-            tmVar.tm_year -= 1900;
-            tmVar.tm_mon -= 1;
-            tmVars[timeStampsCount++] = mktime(&tmVar)+3600;
-            latValCount++;
-            longValCount++;
-        }
-        else
-            continue;
-        
-        
-       
-        //int resLat = fitValuesSwing(&dataLat, (long)timeVar, latVal, latMean.value);
-        int resLat = fitValues(&dataLat, (long)timeVar, latVal, latVal);
-        //int resLat = fitValuePMC(&dataLat, latVal);
-
-        calculate_error_bound(longMean, longVal, 1);
-        //int resLong = fitValuesSwing(&dataLong, (long)timeVar, longVal, longMean.value);
-        int resLong = fitValues(&dataLong, (long)timeVar, longVal, longVal);
-        //int resLong = fitValuePMC(&dataLong, longVal);
-
-        // int resLong = 1;
-        // int resLat = 1;
-        // compress_value(&dataLat, latVal);
-        // compress_value(&dataLong, longVal);
+        if(latPMCCanFitMore || latSwingCanFitMore || latGorillaCanFitMore){
+            latPMCCanFitMore = latPMCCanFitMore && fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
+            latSwingCanFitMore = latSwingCanFitMore && fitValueSwing(&swingLat, timeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
+            if(latGorillaCanFitMore){
+                fitValueGorilla(&gorillaLat, latBuffer[currentLatIndex]);
+                latGorillaCanFitMore = gorillaLat.length < GORILLA_MAX;
+            }
+            currentLatIndex++;
 
 
-        if ((resLat && !RESET_BOTH) || (resLat && resLong)){
-            //printf("%ld\n", (long)timeVar);
-        }
-        if(!resLat || RESET_BOTH && !resLong){ // is 
+        }else{
+            selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
+            currentLatIndex = selectedModelLat.end_index;
+            if(currentLatIndex+1 == latBufferCount){
+                latBuffer[0] = latBuffer[currentLatIndex];
+                currentLatIndex = 0;
+                latBufferCount = 1;
+            }
             latiCount++;
-            // writeGorillaToFile(latfpt, dataLat, index, latFirst); //print to file
-            writeSwingToFile(latfpt, dataLat, index, latFirst);
-            //writePMCMeanToFile(latfpt, dataLat, index, latFirst);
-            latFirst = 0;
-            //printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLat);
-            //resetPMC(&dataLat);
-            if(!resLat)
-               fitValues(&dataLat, (long)timeVar, latVal, latVal);
-               //fitValuePMC(&dataLat, latVal);
+            //print data here
+        }
+        if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
+            longPMCCanFitMore = longPMCCanFitMore && fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
+            longSwingCanFitMore = longSwingCanFitMore && fitValueSwing(&swingLong, timeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
+            if(longGorillaCanFitMore){
+                fitValueGorilla(&gorillaLong, longBuffer[currentLongIndex]);
+                longGorillaCanFitMore = gorillaLong.length < GORILLA_MAX;
+            }
+            currentLongIndex++;
 
-        }
-        if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
-            //printf("%ld\n", (long)timeVar);
-        }
-        if(!resLong || RESET_BOTH && !resLat){
+
+        }else{
+            selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
+            currentLongIndex = selectedModelLong.end_index;
+            if(currentLongIndex+1 == longBufferCount){
+                longBuffer[0] = longBuffer[currentLongIndex];
+                currentLongIndex = 0;
+                longBufferCount = 1;
+            }
             longCount++;
-            //writeGorillaToFile(longfpt, dataLong, index, longFirst);
-            writeSwingToFile(longfpt, dataLong, index, longFirst);
-            //writePMCMeanToFile(longfpt, dataLong, index, longFirst);
-            longFirst = 0;
-            printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLong);
-            //resetPMC(&dataLong);
-            if(!resLong)
-               fitValues(&dataLong, (long)timeVar, longVal, longVal);
-               //fitValuePMC(&dataLong, longVal);
+            //print data here
         }
-        if(!resLat || !resLong) { 
-            //printf("%d\n",index);
-        }
-        index++;
-        // NOTE strtok clobbers tmp
-        free(lat);
-        free(longs);
-        free(ts);
     }
-    longCount++;
     //writeGorillaToFile(longfpt, dataLong, index, longFirst);
-    writeSwingToFile(longfpt, dataLong, index, longFirst);
+    //writeSwingToFile(longfpt, dataLong, index, longFirst);
     //writePMCMeanToFile(longfpt, dataLong, index, longFirst);
-    latiCount++;
+    
     //writeGorillaToFile(latfpt, dataLat, index, latFirst);
-    writeSwingToFile(latfpt, dataLat, index, latFirst);
+    //writeSwingToFile(latfpt, dataLat, index, latFirst);
     //writePMCMeanToFile(latfpt, dataLat, index, latFirst);
     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
     closeFile(latfpt);
@@ -246,8 +247,8 @@ void resetGorilla(struct Gorilla* gorilla){
     gorilla->compressed_values.current_byte = 0;
     gorilla->compressed_values.remaining_bits = 8;
     gorilla->compressed_values.bytes_capacity = 1;
-    gorilla->compressed_values.bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8))
-    if(data.compressed_values.bytes == NULL){
+    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(uint8));
+    if(gorilla->compressed_values.bytes == NULL){
         printf("REALLOC ERROR\n");
     }
 }
@@ -259,7 +260,7 @@ void resetSelectedModel(struct SelectedModel* model){
     model->max_value = 0;
     model->values_capacity = 1;
     model->values = realloc(model->values, model->values_capacity * sizeof(uint8));
-    if(mod.values == NULL){
+    if(model->values == NULL){
         printf("REALLOC ERROR (mod)\n");
     }
 }

@@ -5,7 +5,7 @@
 #include "swing.h"
 
 const uint8_t VALUE_SIZE_IN_BYTES = (uint8_t) sizeof(float);
-const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * VALUE_SIZE_IN_BYTES;
+const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * (uint8_t) sizeof(float);
 
 
 struct slopeAndIntercept {
@@ -20,11 +20,11 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValuesSwing(struct swing *data, long timeStamp, double value);
+int fitValueSwing(struct swing *data, long timeStamp, double value);
 
 
 
-int fitValuesSwing(struct swing* data, long timeStamp, double value){
+int fitValueSwing(struct swing* data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     if (data->length == 0) {
