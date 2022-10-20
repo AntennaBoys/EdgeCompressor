@@ -1,11 +1,17 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
+#include "PMCMean.h"
 
-#include <PMCMean.h>
+const uint8_t VALUE_SIZE_IN_BYTES = (uint8_t) sizeof(float);
+const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * (uint8_t) sizeof(float);
 
-const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
-const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
+int fitValue(struct PMCMean*, float);
+int isValueWithinErrorBound(struct PMCMean*, float, float);
+int equalOrNAN_pmc(float, float);
+int isNan_pmc(float);
+
 
 int fitValue(struct PMCMean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
@@ -26,7 +32,7 @@ int fitValue(struct PMCMean* data, float value){
 }
 
 int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxValue){
-    if(equalOrNAN(realValue, approxValue)){
+    if(equalOrNAN_pmc(realValue, approxValue)){
         return 1;
     } else {
         float difference = realValue - approxValue;
@@ -39,11 +45,12 @@ float get_bytes_per_value_pmc(struct PMCMean* data){
     return (float) VALUE_SIZE_IN_BYTES / (float) data -> length;
 }
 
-int equalOrNAN(float v1, float v2){
-    return v1==v2 || (isNan(v1) && isNan(v2));
+
+int equalOrNAN_pmc(float v1, float v2){
+    return v1==v2 || (isNan_pmc(v1) && isNan_pmc(v2));
 }
 
-int isNan(float val){
+int isNan_pmc(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
 }
 

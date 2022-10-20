@@ -8,7 +8,7 @@
 const int debug = 0;
 
 const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
-const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
+const uint8 VALUE_SIZE_IN_BITS = (uint8) (8 * (uint8) sizeof(float));
 
 const uint8 SIZE_OF_32INT = (uint8) sizeof(int32_t) * 8;
 
@@ -194,7 +194,7 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
+            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
             data->bytes_capacity++;
 
             data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8));

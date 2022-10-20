@@ -28,7 +28,7 @@ struct swing {
     /// The number of data points the current model has been fitted to.
     int length;
 };
-int fitValues(struct swing *data, long timeStamp, double value);
+int fitValues(struct swing *data, long timeStamp, double value, double mean);
 double getModelFirst(struct swing current_swing);
 double getModelLast(struct swing current_swing);
 float get_bytes_per_value_swing(struct swing* data);
