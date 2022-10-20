@@ -29,6 +29,9 @@ void append_a_zero_bit(struct BitVecBuilder* data);
 void append_a_one_bit(struct BitVecBuilder* data);
 void compress_value(struct Gorilla* data, float value);
 float get_bytes_per_value_gorilla(struct Gorilla* data);
+size_t get_length_gorilla(struct Gorilla* data);
+size_t len(struct BitVecBuilder* data);
+uint8_t* get_compressed_values(struct Gorilla* data);
 
 uint8 leading_zeros(int32_t num);
 uint8 trailing_zeros(int32_t num);

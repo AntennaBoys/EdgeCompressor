@@ -174,6 +174,19 @@ int equalOrNAN(double v1, double v2){
 float get_bytes_per_value_swing(struct swing* data){
     return (float) (2 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
+void get_model_swing(struct swing* data, float *arr){
+  double first_value = data->upper_bound_slope * (double) data->first_timestamp + data->upper_bound_intercept;
+
+  double last_value = data->upper_bound_slope * (double) data->last_timestamp + data->upper_bound_intercept;
+
+  arr[0] = (float) first_value;
+  arr[1] = (float) last_value;
+}
+
+size_t get_length_swing(struct swing* data){
+  return data->length;
+}
+
 //
 // Created by power on 23-09-2022.
 //

@@ -138,11 +138,26 @@ void compress_value(struct Gorilla* data, float value){
 }
 
 float get_bytes_per_value_gorilla(struct Gorilla* data){
-    return (float) len(data->compressed_values) / (float) data->length;
+    return (float) len(&data->compressed_values) / (float) data->length;
 }
 
 size_t len(struct BitVecBuilder* data){
-    data->bytes_counter + (size_t) (data->remaining_bits != 8);
+    return data->bytes_counter + (size_t) (data->remaining_bits != 8);
+}
+
+uint8_t* finish(struct BitVecBuilder* data){
+  if (data->remaining_bits != 8){
+    data->bytes[data->bytes_counter++] = data->current_byte;
+  }
+  return data->bytes;
+}
+
+uint8_t* get_compressed_values(struct Gorilla* data){
+  return finish(&data->compressed_values);
+}
+
+size_t get_length_gorilla(struct Gorilla* data){
+    return data->length;
 }
 
 

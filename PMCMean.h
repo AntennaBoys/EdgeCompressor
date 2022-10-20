@@ -12,3 +12,4 @@ int equalOrNAN(float, float);
 int isNan(float);
 float get_bytes_per_value_pmc(struct PMCMean* data);
 float get_model_pmcmean(struct PMCMean* data);
+size_t get_length_pmcmean (struct PMCMean* data);

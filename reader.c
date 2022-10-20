@@ -115,28 +115,46 @@ int main()
 }
 
 void resetStruct(struct swing *data){
-    data->first_timestamp = 0;
-    data->last_timestamp = 0;
-    data->first_value = NAN;
-    data->upper_bound_slope = NAN;
-    data->upper_bound_intercept = NAN;
-    data->lower_bound_slope = NAN;
-    data->lower_bound_intercept = NAN;
-    data->length = 0;
+  data->first_timestamp = 0;
+  data->last_timestamp = 0;
+  data->first_value = NAN;
+  data->upper_bound_slope = NAN;
+  data->upper_bound_intercept = NAN;
+  data->lower_bound_slope = NAN;
+  data->lower_bound_intercept = NAN;
+  data->length = 0;
 }
 
+
 struct swing getStruct(double errorBound){
-    struct swing data;
-    data.error_bound = 0.022;
-    data.first_timestamp = 0;
-    data.last_timestamp = 0;
-    data.first_value = NAN;
-    data.upper_bound_slope = NAN;
-    data.upper_bound_intercept = NAN;
-    data.lower_bound_slope = NAN;
-    data.lower_bound_intercept = NAN;
-    data.length = 0;
-    return data;
+  struct swing data;
+  data.error_bound = errorBound;
+  data.first_timestamp = 0;
+  data.last_timestamp = 0;
+  data.first_value = NAN;
+  data.upper_bound_slope = NAN;
+  data.upper_bound_intercept = NAN;
+  data.lower_bound_slope = NAN;
+  data.lower_bound_intercept = NAN;
+  data.length = 0;
+  return data;
+}
+
+void resetPMC(struct PMCMean *pmc){
+  pmc->minValue = NAN;
+  pmc->maxValue = NAN;
+  pmc->sumOfValues = 0;
+  pmc->length = 0;
+}
+
+struct PMCMean getPMC(double errorBound){
+  struct PMCMean data;
+  data.error = errorBound;
+  data.minValue = NAN;
+  data.maxValue = NAN;
+  data.sumOfValues = 0;
+  data.length = 0;
+  return data;
 }
 
 void writeToFile(FILE *file, struct swing model, int index, char* start){
