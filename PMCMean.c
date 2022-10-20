@@ -7,13 +7,13 @@
 const uint8_t VALUE_SIZE_IN_BYTES = (uint8_t) sizeof(float);
 const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * (uint8_t) sizeof(float);
 
-int fitValue(struct PMCMean*, float);
+int fitValuePMC(struct PMCMean *data, float value);
 int isValueWithinErrorBound(struct PMCMean*, float, float);
 int equalOrNAN_pmc(float, float);
 int isNan_pmc(float);
 
 
-int fitValue(struct PMCMean* data, float value){
+int fitValuePMC(struct PMCMean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
     float nextMaxValue = data->maxValue > value ? data->maxValue : value;
     float nextSumOfValues = data->sumOfValues + value;

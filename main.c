@@ -5,8 +5,6 @@
 #include <stdio.h>
 int main(){
 
-    pmcmean = ini
-
 
 
     getchar();

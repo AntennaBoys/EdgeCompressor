@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-const uint8 PMC_MEAN_ID = 0;
-const uint8 SWING_ID = 1;
-const uint8 GORILLA_ID = 2;
+
 
 struct SelectedModel init_selectedModel(){
     struct SelectedModel mod;
@@ -40,7 +38,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
         }
     }
 
-    switch(selectedModel.id){
+    switch((int) selectedModel.id){
       case PMC_MEAN_ID:
         select_pmc_mean(data, start_index, pmcmean);
         break;
@@ -56,7 +54,7 @@ void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMC
   float value = get_model_pmcmean(pmcmean);
   size_t end_index = start_index + get_length_pmcmean(pmcmean);
 
-  model->model_type_id = PMC_MEAN_ID;
+  model->model_type_id = (uint8_t) PMC_MEAN_ID;
   model->end_index = end_index;
   model->min_value = value;
   model->max_value = value;
@@ -79,7 +77,7 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
     model->max_value = start_value;
     model->min_value = end_value;
   }
-  model->model_type_id = SWING_ID;
+  model->model_type_id = (uint8_t) SWING_ID;
   model->end_index = end_index;
   model->values[0] = (uint8) (start_value < end_value);
 
@@ -108,7 +106,7 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
       }
     }
 
-    model->model_type_id = GORILLA_ID;
+    model->model_type_id = (uint8_t) GORILLA_ID;
     model->end_index = end_index;
     model->min_value = min;
     model->max_value = max;

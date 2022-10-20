@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <math.h>
-#include <swing.h>
+#include <stddef.h>
+#include <stdint.h>
+#include "swing.h"
 
-const uint8 VALUE_SIZE_IN_BYTES = (uint8) sizeof(float);
-const uint8 VALUE_SIZE_IN_BITS = (uint8) 8 * VALUE_SIZE_IN_BYTES;
+const uint8_t VALUE_SIZE_IN_BYTES = (uint8_t) sizeof(float);
+const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * VALUE_SIZE_IN_BYTES;
 
 
 struct slopeAndIntercept {
@@ -18,30 +20,11 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValues(struct swing *data, long timeStamp, double value);
+int fitValuesSwing(struct swing *data, long timeStamp, double value);
 
 
-int mains(){
-    struct swing data;
-    data.error_bound = 5;
-    data.first_timestamp = 0;
-    data.last_timestamp = 0;
-    data.first_value = NAN;
-    data.upper_bound_slope = NAN;
-    data.upper_bound_intercept = NAN;
-    data.lower_bound_slope = NAN;
-    data.lower_bound_intercept = NAN;
-    data.length = 0;
 
-    double values[10] = {1, 2, 3, 400, 5, 6, 7, 8, 9, 100};
-    long ts[10] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-    int lengthOfArray = sizeof(values)/sizeof(double);
-    for(int i = 0; i<lengthOfArray; i++){
-        printf("%d",fitValues(&data, ts[i], values[i]));
-    }
-}
-
-int fitValues(struct swing* data, long timeStamp, double value){
+int fitValuesSwing(struct swing* data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     if (data->length == 0) {

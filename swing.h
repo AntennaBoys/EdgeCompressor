@@ -1,6 +1,10 @@
+#ifndef SWING
+#define SWING
+
 //
 // Created by power on 05-10-2022.
 //
+#include <stdint.h>
 
 struct swing {
     /// Maximum relative error for the value of each data point.
@@ -28,9 +32,11 @@ struct swing {
     /// The number of data points the current model has been fitted to.
     int length;
 };
-int fitValues(struct swing *data, long timeStamp, double value, double mean);
+int fitValue(struct swing *data, long timeStamp, double value);
 double getModelFirst(struct swing current_swing);
 double getModelLast(struct swing current_swing);
 float get_bytes_per_value_swing(struct swing* data);
 void get_model_swing(struct swing* data, float arr[]);
 size_t get_length_swing(struct swing* data);
+
+#endif

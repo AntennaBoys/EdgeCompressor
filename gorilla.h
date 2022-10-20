@@ -27,7 +27,7 @@ struct Gorilla {
 void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits);
 void append_a_zero_bit(struct BitVecBuilder* data);
 void append_a_one_bit(struct BitVecBuilder* data);
-void compress_value(struct Gorilla* data, float value);
+void fitValueGorilla(struct Gorilla* data, float value);
 float get_bytes_per_value_gorilla(struct Gorilla* data);
 size_t get_length_gorilla(struct Gorilla* data);
 size_t len(struct BitVecBuilder* data);
@@ -39,7 +39,7 @@ int32_t floatToBit(float val);
 
 struct Gorilla;
 struct BitVecBuilder;
-struct Gorilla init();
+struct Gorilla init_gorilla();
 
 
 #endif

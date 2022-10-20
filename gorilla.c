@@ -62,7 +62,7 @@ int32_t floatToBit(float val){
 }
 
 
-struct Gorilla init(){
+struct Gorilla init_gorilla(){
     struct Gorilla data;
     data.last_value = 0;
     data.last_leading_zero_bits = UCHAR_MAX;
@@ -88,7 +88,7 @@ struct Gorilla init(){
     return data;
 }
 
-void compress_value(struct Gorilla* data, float value){
+void fitValueGorilla(struct Gorilla* data, float value){
     int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
     int32_t last_value_as_integer = floatToBit(data->last_value);
     int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
