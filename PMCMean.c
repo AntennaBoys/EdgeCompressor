@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "PMCMean.h"
-
-const uint8_t VALUE_SIZE_IN_BYTES = (uint8_t) sizeof(float);
-const uint8_t VALUE_SIZE_IN_BITS = (uint8_t) 8 * (uint8_t) sizeof(float);
+#include "constants.h"
 
 int fitValuePMC(struct PMCMean *data, float value);
 int isValueWithinErrorBound(struct PMCMean*, float, float);

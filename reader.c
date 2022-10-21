@@ -15,9 +15,12 @@
 #define INITIAL_BUFFER 500
 #define GORILLA_MAX 50
 
+void resetGorilla(struct Gorilla* gorilla);
+void resetSelectedModel(struct SelectedModel* model);
 void resetStruct(struct swing *data);
 struct swing getStruct(double errorBound);
 struct PMCMean getPMC(double errorBound);
+struct SelectedModel init_selectedModel();
 void resetPMC(struct PMCMean *pmc);
 const char* getfield(char* line, int num)
 {
@@ -59,7 +62,7 @@ int main()
     struct tm tmVar;
     time_t timeVar;
 
-    double *latBuffer = (double*) calloc(INITIAL_BUFFER, sizeof(double));
+    float *latBuffer = (float*) calloc(INITIAL_BUFFER, sizeof(float));
     int latBufferCount = 0;
     int startLatIndex = 0;
     int currentLatIndex = 0;
@@ -68,7 +71,7 @@ int main()
     int latSwingCanFitMore = 1;
     int latGorillaCanFitMore = 1;
 
-    double *longBuffer = (double*) calloc(INITIAL_BUFFER, sizeof(double));
+    float *longBuffer = (float*) calloc(INITIAL_BUFFER, sizeof(float));
     int longBufferCount = 0;
     int startLongIndex = 0;
     int currentLongIndex = 0;
@@ -99,7 +102,7 @@ int main()
                 char* longStr = strdup(line);
                 char* ts = strdup(line);
                 char* errorPointer;
-                char* timestampTemp = getfield(ts, 2);
+                const char* timestampTemp = getfield(ts, 2);
 
                 //01/09/2022 00:00:0
                 if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
@@ -158,9 +161,17 @@ int main()
                 currentLatIndex = 0;
                 latBufferCount = 1;
             }
-            startLatIndex = currentLatIndex;
             latiCount++;
-            //print data here
+            // Gorilla need to print all compressed values. 
+            // For other models there is only one value
+            int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
+            writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
+            latFirst = 0;
+            startLatIndex = currentLatIndex;
+            resetGorilla(&gorillaLat);
+            resetPMC(&PMCLat);
+            resetStruct(&swingLat);
+            resetSelectedModel(&selectedModelLat);
         }
         if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
             longPMCCanFitMore = longPMCCanFitMore && fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
@@ -180,9 +191,17 @@ int main()
                 currentLongIndex = 0;
                 longBufferCount = 1;
             }
-            startLongIndex = currentLongIndex;
             longCount++;
-            //print data here
+            // Gorilla need to print all compressed values. 
+            // For other models there is only one value
+            int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
+            writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
+            longFirst = 0;
+            startLongIndex = currentLongIndex;
+            resetGorilla(&gorillaLong);
+            resetPMC(&PMCLong);
+            resetStruct(&swingLong);
+            resetSelectedModel(&selectedModelLong);
         }
     }
     //writeGorillaToFile(longfpt, dataLong, index, longFirst);

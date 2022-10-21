@@ -4,19 +4,7 @@
 
 
 
-struct SelectedModel init_selectedModel(){
-    struct SelectedModel mod;
-    mod.model_type_id = 0;
-    mod.end_index = 0;
-    mod.min_value = 0;
-    mod.max_value = 0;
-    mod.values_capacity = 1;
-    mod.values = (uint8*) malloc (mod.values_capacity * sizeof(uint8));
-    if(mod.values == NULL){
-        printf("MALLOC ERROR (mod)\n");
-    }
-    return mod;
-}
+
 void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, struct swing* swing, struct Gorilla* gorilla, float *uncompressed_values){
     struct bytes_per_value bytes[3];
 
@@ -87,17 +75,16 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
 
 void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
-    int size = end_index-start_index;
-    float uncompressed_values_internal[size];
+    model->values_capacity = end_index-start_index;
 
-    memset( uncompressed_values_internal, 0, sizeof(uncompressed_values_internal));
+    model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
 
     float max = uncompressed_values[start_index];
     float min = uncompressed_values[start_index];
 
-    for(int i = 0; i<size; i++){
+    for(int i = 0; i<model->values_capacity; i++){
       float temp_val = uncompressed_values[i+start_index];
-      uncompressed_values_internal[i] = temp_val;
+      model->values[i] = temp_val;
       if (max < temp_val){
         max = temp_val;
       }

@@ -28,5 +28,4 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
 
 void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, struct swing* swing, struct Gorilla* gorilla, float *uncompressed_values);
 
-struct SelectedModel init_selectedModel();
 #endif
