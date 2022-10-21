@@ -117,7 +117,7 @@ int main()
                     // ensure we have enough space in the buffers
                     if(timeBufferCount + 1 == maxTimeBufferCount){
                         maxTimeBufferCount += 10;
-                        timeBuffer = realloc(timeBuffer, maxTimeBufferCount);
+                        timeBuffer = realloc(timeBuffer, maxTimeBufferCount * sizeof(*timeBuffer));
                         if(timeBuffer == NULL){
                             printf("REALLOC ERROR (timeBuffer)\n");
                         }
@@ -131,7 +131,7 @@ int main()
                     }
                     if(longBufferCount + 1 == maxLongBufferCount){
                         maxLongBufferCount += 10;
-                        longBuffer = realloc(longBuffer, maxLongBufferCount);
+                        longBuffer = realloc(longBuffer, maxLongBufferCount * sizeof(*longBuffer));
                         if(longBuffer == NULL){
                             printf("REALLOC ERROR (longBuffer)\n");
                         }
@@ -165,7 +165,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            //writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
+            writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
             latFirst = 0;
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
@@ -195,7 +195,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            //writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
+            writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
             longFirst = 0;
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
