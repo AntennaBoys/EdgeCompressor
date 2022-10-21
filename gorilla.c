@@ -8,14 +8,14 @@
 
 const int debug = 0;
 
-const uint8 SIZE_OF_32INT = (uint8) sizeof(int32_t) * 8;
+const uint8_t SIZE_OF_32INT = (uint8_t) sizeof(int32_t) * 8;
 
-uint8 leading_zeros(int32_t num){
+uint8_t leading_zeros(int32_t num){
     // Equivalent to
     // 10000000 00000000 00000000 00000000
     int msb = 1 << (SIZE_OF_32INT - 1);
 
-    uint8 count = 0;
+    uint8_t count = 0;
 
     /* Iterate over each bit */
     for(int i=0; i<SIZE_OF_32INT; i++)
@@ -33,9 +33,9 @@ uint8 leading_zeros(int32_t num){
     if(debug) printf("Total number of leading zeros in %d is %d", num, count);
     return count;
 }
-uint8 trailing_zeros(int32_t num){
+uint8_t trailing_zeros(int32_t num){
     
-    uint8 count = 0;
+    uint8_t count = 0;
 
     /* Iterate over each bit of the number */
     for(int i=0; i< SIZE_OF_32INT;  i++)
@@ -74,7 +74,7 @@ struct Gorilla init_gorilla(){
     
     //is this correct?
     data.compressed_values.bytes_capacity = 1;
-    data.compressed_values.bytes = (uint8*) malloc (data.compressed_values.bytes_capacity * sizeof(uint8));
+    data.compressed_values.bytes = (uint8_t*) malloc (data.compressed_values.bytes_capacity * sizeof(uint8_t));
     if(data.compressed_values.bytes == NULL){
         printf("MALLOC ERROR\n");
     }
@@ -100,15 +100,15 @@ void fitValueGorilla(struct Gorilla* data, float value){
         append_a_zero_bit(&data->compressed_values);
         // printf("ZERO BIT\n");
     } else {
-        uint8 leading_zero_bits = leading_zeros(value_xor_last_value);
-        uint8 trailing_zero_bits = trailing_zeros(value_xor_last_value);
+        uint8_t leading_zero_bits = leading_zeros(value_xor_last_value);
+        uint8_t trailing_zero_bits = trailing_zeros(value_xor_last_value);
         append_a_one_bit(&data->compressed_values); //???????????????????
 
         if(leading_zero_bits >= data->last_leading_zero_bits
             && trailing_zero_bits >= data->last_trailing_zero_bits)
         {
             append_a_zero_bit(&data->compressed_values);
-            uint8 meaningful_bits = VALUE_SIZE_IN_BITS 
+            uint8_t meaningful_bits = VALUE_SIZE_IN_BITS 
                 - data->last_leading_zero_bits 
                 - data->last_trailing_zero_bits;
             append_bits(&data->compressed_values, 
@@ -119,7 +119,7 @@ void fitValueGorilla(struct Gorilla* data, float value){
         } else {
             append_a_one_bit(&data->compressed_values);
             append_bits(&data->compressed_values, leading_zero_bits, 5);
-            uint8 meaningful_bits = VALUE_SIZE_IN_BITS - leading_zero_bits - trailing_zero_bits;
+            uint8_t meaningful_bits = VALUE_SIZE_IN_BITS - leading_zero_bits - trailing_zero_bits;
             append_bits(&data->compressed_values, meaningful_bits, 6);
             append_bits(&data->compressed_values, value_xor_last_value >> trailing_zero_bits, meaningful_bits);
 
@@ -127,7 +127,7 @@ void fitValueGorilla(struct Gorilla* data, float value){
             data->last_trailing_zero_bits = trailing_zero_bits;
 
         }
-        // uint8 leading_zero_bits = value_xor_last_value
+        // uint8_t leading_zero_bits = value_xor_last_value
 
     }
     
@@ -171,19 +171,19 @@ void append_a_one_bit(struct BitVecBuilder* data){
 }
 
 
-void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits){
-    uint8 _number_of_bits = number_of_bits;
+void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
+    uint8_t _number_of_bits = number_of_bits;
 
     while(_number_of_bits > 0){
-        uint8 bits_written;
+        uint8_t bits_written;
 
         if(_number_of_bits > data->remaining_bits){
-            uint8 shift = _number_of_bits -  data->remaining_bits;
-            data -> current_byte |= (uint8)((bits >> shift) & ((1 << data->remaining_bits) - 1));
+            uint8_t shift = _number_of_bits -  data->remaining_bits;
+            data -> current_byte |= (uint8_t)((bits >> shift) & ((1 << data->remaining_bits) - 1));
             bits_written = data->remaining_bits;
         } else {
-            uint8 shift = data->remaining_bits - _number_of_bits;
-            data -> current_byte |= (uint8)(bits << shift);
+            uint8_t shift = data->remaining_bits - _number_of_bits;
+            data -> current_byte |= (uint8_t)(bits << shift);
             bits_written = _number_of_bits;
         }
         _number_of_bits -= bits_written;
@@ -192,10 +192,10 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8 number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8));
+            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
             data->bytes_capacity++;
 
-            data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8));
+            data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8_t));
 
             if(data->bytes == NULL){
                 printf("REALLOC ERROR\n");

@@ -67,7 +67,7 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
   }
   model->model_type_id = (uint8_t) SWING_ID;
   model->end_index = end_index;
-  model->values[0] = (uint8) (start_value < end_value);
+  model->values[0] = (uint8_t) (start_value < end_value);
 
 }
 

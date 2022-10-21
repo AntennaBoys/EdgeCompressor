@@ -165,7 +165,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
+            //writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
             latFirst = 0;
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
@@ -195,7 +195,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
+            //writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
             longFirst = 0;
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
@@ -268,7 +268,7 @@ void resetGorilla(struct Gorilla* gorilla){
     gorilla->compressed_values.current_byte = 0;
     gorilla->compressed_values.remaining_bits = 8;
     gorilla->compressed_values.bytes_capacity = 1;
-    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(uint8));
+    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(uint8_t));
     if(gorilla->compressed_values.bytes == NULL){
         printf("REALLOC ERROR\n");
     }
@@ -280,7 +280,7 @@ void resetSelectedModel(struct SelectedModel* model){
     model->min_value = 0;
     model->max_value = 0;
     model->values_capacity = 1;
-    model->values = realloc(model->values, model->values_capacity * sizeof(uint8));
+    model->values = realloc(model->values, model->values_capacity * sizeof(uint8_t));
     if(model->values == NULL){
         printf("REALLOC ERROR (mod)\n");
     }
@@ -293,7 +293,7 @@ struct SelectedModel init_selectedModel(){
     mod.min_value = 0;
     mod.max_value = 0;
     mod.values_capacity = 1;
-    mod.values = (uint8*) malloc (mod.values_capacity * sizeof(uint8));
+    mod.values = (uint8_t*) malloc (mod.values_capacity * sizeof(uint8_t));
     if(mod.values == NULL){
         printf("MALLOC ERROR (mod)\n");
     }
