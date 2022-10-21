@@ -70,3 +70,4 @@ paths.h
 result.csv
 longResult.csv
 latResult.csv
+*.json

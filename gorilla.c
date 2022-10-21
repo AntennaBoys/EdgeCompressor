@@ -195,10 +195,9 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
             //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
             data->bytes_capacity++;
 
-            data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(uint8_t));
-
+            data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(*data->bytes));
             if(data->bytes == NULL){
-                printf("REALLOC ERROR\n");
+                printf("REALLOC ERROR(gorilla)\n");
             }
 
             data->bytes[data->bytes_counter] = data->current_byte;

@@ -93,7 +93,7 @@ int main()
     int yetEmittedLong = 0;
 
     int endOfInput = 0;
-    while(yetEmittedLat != 0 || yetEmittedLat != 0 || !endOfInput)
+    while((!(latBufferCount == currentLatIndex) && !(longBufferCount == currentLongIndex))|| !endOfInput)
     {
         if(!endOfInput && (currentLatIndex == latBufferCount || currentLongIndex == longBufferCount))
         {
@@ -111,9 +111,9 @@ int main()
                     //TODO: implement sudocode line 14-16, 18
 
                     // SudoC: line  17
-                    timeBuffer[timeBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
+                    timeBuffer[timeBufferCount++] = mktime(&tmVar)+3600;
                     latBuffer[latBufferCount++] = strtod(getfield(longStr, 6), &errorPointer);
-                    longBuffer[longBufferCount++] = mktime(&tmVar)+3600;
+                    longBuffer[longBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
                     // ensure we have enough space in the buffers
                     if(timeBufferCount + 1 == maxTimeBufferCount){
                         maxTimeBufferCount += 10;
@@ -144,8 +144,12 @@ int main()
             }
         }
         if(latPMCCanFitMore || latSwingCanFitMore || latGorillaCanFitMore){
-            latPMCCanFitMore = latPMCCanFitMore && fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
-            latSwingCanFitMore = latSwingCanFitMore && fitValueSwing(&swingLat, timeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
+            if (latPMCCanFitMore){
+                latPMCCanFitMore = fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
+            }
+            if (latSwingCanFitMore){
+                latSwingCanFitMore = fitValueSwing(&swingLat, timeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
+            }
             if(latGorillaCanFitMore){
                 fitValueGorilla(&gorillaLat, latBuffer[currentLatIndex]);
                 latGorillaCanFitMore = gorillaLat.length < GORILLA_MAX;
@@ -156,7 +160,7 @@ int main()
         }else{
             selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
             currentLatIndex = selectedModelLat.end_index;
-            if(currentLatIndex+1 == latBufferCount){
+            if(!endOfInput && currentLatIndex+1 == latBufferCount){
                 latBuffer[0] = latBuffer[currentLatIndex];
                 currentLatIndex = 0;
                 latBufferCount = 1;
@@ -170,12 +174,19 @@ int main()
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
             resetPMC(&PMCLat);
-          resetSwing(&swingLat);
+            resetSwing(&swingLat);
             resetSelectedModel(&selectedModelLat);
+            latPMCCanFitMore = 1;
+            latSwingCanFitMore = 1;
+            latGorillaCanFitMore = 1;
         }
         if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
-            longPMCCanFitMore = longPMCCanFitMore && fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
-            longSwingCanFitMore = longSwingCanFitMore && fitValueSwing(&swingLong, timeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
+            if (longPMCCanFitMore){
+                longPMCCanFitMore = fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
+            }
+            if (longSwingCanFitMore){
+                longSwingCanFitMore = fitValueSwing(&swingLong, timeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
+            }
             if(longGorillaCanFitMore){
                 fitValueGorilla(&gorillaLong, longBuffer[currentLongIndex]);
                 longGorillaCanFitMore = gorillaLong.length < GORILLA_MAX;
@@ -186,7 +197,7 @@ int main()
         }else{
             selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
             currentLongIndex = selectedModelLong.end_index;
-            if(currentLongIndex+1 == longBufferCount){
+            if(!endOfInput && currentLongIndex+1 == longBufferCount){
                 longBuffer[0] = longBuffer[currentLongIndex];
                 currentLongIndex = 0;
                 longBufferCount = 1;
@@ -200,8 +211,11 @@ int main()
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
             resetPMC(&PMCLong);
-          resetSwing(&swingLong);
+            resetSwing(&swingLong);
             resetSelectedModel(&selectedModelLong);
+            longPMCCanFitMore = 1;
+            longSwingCanFitMore = 1;
+            longGorillaCanFitMore = 1;
         }
     }
     //writeGorillaToFile(longfpt, dataLong, index, longFirst);
