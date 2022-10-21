@@ -4,6 +4,7 @@
 //
 // Created by power on 05-10-2022.
 //
+#include <stddef.h>
 #include <stdint.h>
 
 struct swing {

@@ -192,12 +192,12 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
+            printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
             data->bytes_capacity++;
 
             data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(*data->bytes));
             if(data->bytes == NULL){
-                printf("REALLOC ERROR(gorilla)\n");
+                printf("REALLOC ERROR(append_bits)\n");
             }
 
             data->bytes[data->bytes_counter] = data->current_byte;

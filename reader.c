@@ -1,3 +1,4 @@
+#include "mod.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,10 +10,10 @@
 #include "gorilla.h"
 #include "error_bound_calculator.h"
 #include "PMCMean.h"
-#include "mod.h"
+#include <limits.h>
 
 #define ERROR_BOUND 0.009
-#define INITIAL_BUFFER 500
+#define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 
 void resetGorilla(struct Gorilla* gorilla);
@@ -80,8 +81,8 @@ int main()
     int longSwingCanFitMore = 1;
     int longGorillaCanFitMore = 1;
 
-    long *timeBuffer = (long*) calloc(INITIAL_BUFFER, sizeof(long));
-    int timeBufferCount = 0;
+    long *latTimeBuffer = (long*) calloc(INITIAL_BUFFER, sizeof(long));
+    long *longTimeBuffer = (long*) calloc(INITIAL_BUFFER, sizeof(long));
     int maxTimeBufferCount = INITIAL_BUFFER;
 
     int resetLong = 1;
@@ -111,22 +112,21 @@ int main()
                     //TODO: implement sudocode line 14-16, 18
 
                     // SudoC: line  17
-                    timeBuffer[timeBufferCount++] = mktime(&tmVar)+3600;
+                    latTimeBuffer[latBufferCount] = mktime(&tmVar)+3600;
+                    longTimeBuffer[longBufferCount] = mktime(&tmVar)+3600;
                     latBuffer[latBufferCount++] = strtod(getfield(longStr, 6), &errorPointer);
                     longBuffer[longBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
                     // ensure we have enough space in the buffers
-                    if(timeBufferCount + 1 == maxTimeBufferCount){
-                        maxTimeBufferCount += 10;
-                        timeBuffer = realloc(timeBuffer, maxTimeBufferCount * sizeof(*timeBuffer));
-                        if(timeBuffer == NULL){
-                            printf("REALLOC ERROR (timeBuffer)\n");
-                        }
-                    }
+                    
                     if(latBufferCount + 1 == maxLatBufferCount){
                         maxLatBufferCount += 10;
                         latBuffer = realloc(latBuffer, maxLatBufferCount * sizeof(*latBuffer));
                         if(latBuffer == NULL){
                             printf("REALLOC ERROR (latBuffer)\n");
+                        }
+                        latTimeBuffer = realloc(latTimeBuffer, maxLatBufferCount * sizeof(*latTimeBuffer));
+                        if(latTimeBuffer == NULL){
+                            printf("REALLOC ERROR (timeBuffer)\n");
                         }
                     }
                     if(longBufferCount + 1 == maxLongBufferCount){
@@ -135,10 +135,18 @@ int main()
                         if(longBuffer == NULL){
                             printf("REALLOC ERROR (longBuffer)\n");
                         }
+                        longTimeBuffer = realloc(longTimeBuffer, maxLongBufferCount * sizeof(*longTimeBuffer));
+                        if(longTimeBuffer == NULL){
+                            printf("REALLOC ERROR (timeBuffer)\n");
+                        }
                     }
                 }
                 else
                     continue;
+
+                free(latStr);
+                free(longStr);
+                free(ts);
             }else{
                 endOfInput = 1;
             }
@@ -148,7 +156,7 @@ int main()
                 latPMCCanFitMore = fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
             }
             if (latSwingCanFitMore){
-                latSwingCanFitMore = fitValueSwing(&swingLat, timeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
+                latSwingCanFitMore = fitValueSwing(&swingLat, latTimeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
             }
             if(latGorillaCanFitMore){
                 fitValueGorilla(&gorillaLat, latBuffer[currentLatIndex]);
@@ -160,16 +168,18 @@ int main()
         }else{
             selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
             currentLatIndex = selectedModelLat.end_index;
-            if(!endOfInput && currentLatIndex+1 == latBufferCount){
-                latBuffer[0] = latBuffer[currentLatIndex];
-                currentLatIndex = 0;
-                latBufferCount = 1;
+            for (int i = 0; i+currentLatIndex < latBufferCount; i++){
+                latBuffer[i] = latBuffer[i+currentLatIndex];
+                latTimeBuffer[i] = latTimeBuffer[i+currentLatIndex];
             }
+            latBufferCount = latBufferCount - currentLatIndex;
+            currentLatIndex = 0;
+            
             latiCount++;
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            writeModelToFile(latfpt, selectedModelLat, latFirst, timeBuffer[startLatIndex], timeBuffer[currentLatIndex]);
+            writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
             latFirst = 0;
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
@@ -185,7 +195,7 @@ int main()
                 longPMCCanFitMore = fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
             }
             if (longSwingCanFitMore){
-                longSwingCanFitMore = fitValueSwing(&swingLong, timeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
+                longSwingCanFitMore = fitValueSwing(&swingLong, longTimeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
             }
             if(longGorillaCanFitMore){
                 fitValueGorilla(&gorillaLong, longBuffer[currentLongIndex]);
@@ -197,6 +207,14 @@ int main()
         }else{
             selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
             currentLongIndex = selectedModelLong.end_index;
+            
+            for (int i = 0; i+currentLongIndex < longBufferCount; i++){
+                longBuffer[i] = longBuffer[i+currentLongIndex];
+                longTimeBuffer[i] = longTimeBuffer[i+currentLongIndex];
+            }
+            longBufferCount = longBufferCount - currentLongIndex;
+            currentLongIndex = 0;
+
             if(!endOfInput && currentLongIndex+1 == longBufferCount){
                 longBuffer[0] = longBuffer[currentLongIndex];
                 currentLongIndex = 0;
@@ -206,7 +224,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            writeModelToFile(longfpt, selectedModelLong, longFirst, timeBuffer[startLongIndex], timeBuffer[currentLongIndex]);
+            writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
             longFirst = 0;
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
@@ -282,7 +300,7 @@ void resetGorilla(struct Gorilla* gorilla){
     gorilla->compressed_values.current_byte = 0;
     gorilla->compressed_values.remaining_bits = 8;
     gorilla->compressed_values.bytes_capacity = 1;
-    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(uint8_t));
+    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(*gorilla->compressed_values.bytes));
     if(gorilla->compressed_values.bytes == NULL){
         printf("REALLOC ERROR\n");
     }
