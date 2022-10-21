@@ -300,6 +300,7 @@ void resetGorilla(struct Gorilla* gorilla){
     gorilla->compressed_values.current_byte = 0;
     gorilla->compressed_values.remaining_bits = 8;
     gorilla->compressed_values.bytes_capacity = 1;
+    gorilla->compressed_values.bytes_counter = 0;
     gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(*gorilla->compressed_values.bytes));
     if(gorilla->compressed_values.bytes == NULL){
         printf("REALLOC ERROR\n");
