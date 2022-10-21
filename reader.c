@@ -124,7 +124,7 @@ int main()
                     }
                     if(latBufferCount + 1 == maxLatBufferCount){
                         maxLatBufferCount += 10;
-                        latBuffer = realloc(latBuffer, maxLatBufferCount);
+                        latBuffer = realloc(latBuffer, maxLatBufferCount * sizeof(*latBuffer));
                         if(latBuffer == NULL){
                             printf("REALLOC ERROR (latBuffer)\n");
                         }
