@@ -17,8 +17,8 @@
 
 void resetGorilla(struct Gorilla* gorilla);
 void resetSelectedModel(struct SelectedModel* model);
-void resetStruct(struct swing *data);
-struct swing getStruct(double errorBound);
+void resetSwing(struct swing *data);
+struct swing getSwing(double errorBound);
 struct PMCMean getPMC(double errorBound);
 struct SelectedModel init_selectedModel();
 void resetPMC(struct PMCMean *pmc);
@@ -42,8 +42,8 @@ int main()
     struct Gorilla gorillaLong = init_gorilla();
     struct PMCMean PMCLat = getPMC(ERROR_BOUND);
     struct PMCMean PMCLong = getPMC(ERROR_BOUND);
-    struct swing swingLat = getStruct(ERROR_BOUND);
-    struct swing swingLong = getStruct(ERROR_BOUND);
+    struct swing swingLat = getSwing(ERROR_BOUND);
+    struct swing swingLong = getSwing(ERROR_BOUND);
     struct SelectedModel selectedModelLat = init_selectedModel();
     struct SelectedModel selectedModelLong = init_selectedModel();
     running_mean latMean = {0,0};
@@ -170,7 +170,7 @@ int main()
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
             resetPMC(&PMCLat);
-            resetStruct(&swingLat);
+          resetSwing(&swingLat);
             resetSelectedModel(&selectedModelLat);
         }
         if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
@@ -200,7 +200,7 @@ int main()
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
             resetPMC(&PMCLong);
-            resetStruct(&swingLong);
+          resetSwing(&swingLong);
             resetSelectedModel(&selectedModelLong);
         }
     }
@@ -217,7 +217,7 @@ int main()
     closeFile(stream);
 }
 
-void resetStruct(struct swing *data){
+void resetSwing(struct swing *data){
   data->first_timestamp = 0;
   data->last_timestamp = 0;
   data->first_value = NAN;
@@ -229,7 +229,7 @@ void resetStruct(struct swing *data){
 }
 
 
-struct swing getStruct(double errorBound){
+struct swing getSwing(double errorBound){
   struct swing data;
   data.error_bound = errorBound;
   data.first_timestamp = 0;
