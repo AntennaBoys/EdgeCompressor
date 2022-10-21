@@ -168,6 +168,7 @@ int main()
         }else{
             selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
             currentLatIndex = selectedModelLat.end_index;
+            writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
             for (int i = 0; i+currentLatIndex < latBufferCount; i++){
                 latBuffer[i] = latBuffer[i+currentLatIndex];
                 latTimeBuffer[i] = latTimeBuffer[i+currentLatIndex];
@@ -179,7 +180,6 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
             latFirst = 0;
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
@@ -207,6 +207,7 @@ int main()
         }else{
             selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
             currentLongIndex = selectedModelLong.end_index;
+            writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
             
             for (int i = 0; i+currentLongIndex < longBufferCount; i++){
                 longBuffer[i] = longBuffer[i+currentLongIndex];
@@ -224,7 +225,6 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
             longFirst = 0;
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
