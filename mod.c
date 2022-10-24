@@ -40,7 +40,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
 }
 void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMCMean* pmcmean){
   float value = get_model_pmcmean(pmcmean);
-  size_t end_index = start_index + get_length_pmcmean(pmcmean);
+  size_t end_index = start_index + get_length_pmcmean(pmcmean) - 1;
 
   model->model_type_id = (uint8_t) PMC_MEAN_ID;
   model->end_index = end_index;
