@@ -93,7 +93,7 @@ void fitValueGorilla(struct Gorilla* data, float value){
     
     if(data->compressed_values.bytes_counter == 0){
         // TODO: &(data->compressed_values) ?????????????????
-        printf("====================\n");
+        //printf("====================\n");
         append_bits(&data->compressed_values, value_as_integer, VALUE_SIZE_IN_BITS);
 
     } else if (value_xor_last_value == 0){
@@ -192,7 +192,7 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
         if(data->remaining_bits == 0){
 
             //is this correct? probs
-            printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
+            //printf("%d\n", 4 * data->bytes_capacity * sizeof(uint8_t));
             data->bytes_capacity++;
 
             data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(*data->bytes));

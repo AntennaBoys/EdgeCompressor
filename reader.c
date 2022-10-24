@@ -169,6 +169,7 @@ int main()
             selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
             currentLatIndex = selectedModelLat.end_index;
             writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
+            latFirst = 0;
             for (int i = 0; i+currentLatIndex < latBufferCount; i++){
                 latBuffer[i] = latBuffer[i+currentLatIndex];
                 latTimeBuffer[i] = latTimeBuffer[i+currentLatIndex];
@@ -180,7 +181,7 @@ int main()
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            latFirst = 0;
+            
             startLatIndex = currentLatIndex;
             resetGorilla(&gorillaLat);
             resetPMC(&PMCLat);
@@ -208,7 +209,7 @@ int main()
             selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
             currentLongIndex = selectedModelLong.end_index;
             writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
-            
+            longFirst = 0;
             for (int i = 0; i+currentLongIndex < longBufferCount; i++){
                 longBuffer[i] = longBuffer[i+currentLongIndex];
                 longTimeBuffer[i] = longTimeBuffer[i+currentLongIndex];
@@ -216,16 +217,10 @@ int main()
             longBufferCount = longBufferCount - currentLongIndex;
             currentLongIndex = 0;
 
-            if(!endOfInput && currentLongIndex+1 == longBufferCount){
-                longBuffer[0] = longBuffer[currentLongIndex];
-                currentLongIndex = 0;
-                longBufferCount = 1;
-            }
             longCount++;
             // Gorilla need to print all compressed values. 
             // For other models there is only one value
             int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            longFirst = 0;
             startLongIndex = currentLongIndex;
             resetGorilla(&gorillaLong);
             resetPMC(&PMCLong);
@@ -235,6 +230,16 @@ int main()
             longSwingCanFitMore = 1;
             longGorillaCanFitMore = 1;
         }
+    }
+    if(latBufferCount > 0){
+        selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
+        currentLatIndex = selectedModelLat.end_index;
+        writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
+    }
+    if(longBufferCount > 0){
+        selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
+        currentLongIndex = selectedModelLong.end_index;
+        writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
     }
     //writeGorillaToFile(longfpt, dataLong, index, longFirst);
     //writeSwingToFile(longfpt, dataLong, index, longFirst);
