@@ -12,7 +12,7 @@
 #include "PMCMean.h"
 #include <limits.h>
 
-#define ERROR_BOUND 0.009
+#define ERROR_BOUND 0.09
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 
@@ -94,7 +94,7 @@ int main()
     int yetEmittedLong = 0;
 
     int endOfInput = 0;
-    while((!(latBufferCount == currentLatIndex) && !(longBufferCount == currentLongIndex))|| !endOfInput)
+    while((!(latBufferCount == currentLatIndex) || !(longBufferCount == currentLongIndex))|| !endOfInput)
     {
         if(!endOfInput && (currentLatIndex == latBufferCount || currentLongIndex == longBufferCount))
         {
@@ -114,8 +114,8 @@ int main()
                     // SudoC: line  17
                     latTimeBuffer[latBufferCount] = mktime(&tmVar)+3600;
                     longTimeBuffer[longBufferCount] = mktime(&tmVar)+3600;
-                    latBuffer[latBufferCount++] = strtod(getfield(longStr, 6), &errorPointer);
-                    longBuffer[longBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
+                    latBuffer[latBufferCount++] = strtod(getfield(longStr, 5), &errorPointer);
+                    longBuffer[longBufferCount++] = strtod(getfield(latStr, 6), &errorPointer);
                     // ensure we have enough space in the buffers
                     
                     if(latBufferCount + 1 == maxLatBufferCount){
@@ -150,85 +150,89 @@ int main()
             }else{
                 endOfInput = 1;
             }
-        }
-        if(latPMCCanFitMore || latSwingCanFitMore || latGorillaCanFitMore){
-            if (latPMCCanFitMore){
-                latPMCCanFitMore = fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
-            }
-            if (latSwingCanFitMore){
-                latSwingCanFitMore = fitValueSwing(&swingLat, latTimeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
-            }
-            if(latGorillaCanFitMore){
-                fitValueGorilla(&gorillaLat, latBuffer[currentLatIndex]);
-                latGorillaCanFitMore = gorillaLat.length < GORILLA_MAX;
-            }
-            currentLatIndex++;
-
-
         }else{
-            selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
-            currentLatIndex = selectedModelLat.end_index;
-            writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
-            latFirst = 0;
-            for (int i = 0; i+currentLatIndex < latBufferCount; i++){
-                latBuffer[i] = latBuffer[i+currentLatIndex];
-                latTimeBuffer[i] = latTimeBuffer[i+currentLatIndex];
-            }
-            latBufferCount = latBufferCount - currentLatIndex;
-            currentLatIndex = 0;
+
             
-            latiCount++;
-            // Gorilla need to print all compressed values. 
-            // For other models there is only one value
-            int valuesCount = selectedModelLat.model_type_id == GORILLA_ID ? gorillaLat.compressed_values.bytes_counter : 1;
-            
-            startLatIndex = currentLatIndex;
-            resetGorilla(&gorillaLat);
-            resetPMC(&PMCLat);
-            resetSwing(&swingLat);
-            resetSelectedModel(&selectedModelLat);
-            latPMCCanFitMore = 1;
-            latSwingCanFitMore = 1;
-            latGorillaCanFitMore = 1;
-        }
-        if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
-            if (longPMCCanFitMore){
-                longPMCCanFitMore = fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
-            }
-            if (longSwingCanFitMore){
-                longSwingCanFitMore = fitValueSwing(&swingLong, longTimeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
-            }
-            if(longGorillaCanFitMore){
-                fitValueGorilla(&gorillaLong, longBuffer[currentLongIndex]);
-                longGorillaCanFitMore = gorillaLong.length < GORILLA_MAX;
-            }
-            currentLongIndex++;
+            if((latPMCCanFitMore || latSwingCanFitMore || latGorillaCanFitMore) && currentLatIndex < latBufferCount){
+                if (latPMCCanFitMore){
+                    latPMCCanFitMore = fitValuePMC(&PMCLat, latBuffer[currentLatIndex]);
+                }
+                if (latSwingCanFitMore){
+                    latSwingCanFitMore = fitValueSwing(&swingLat, latTimeBuffer[currentLatIndex], latBuffer[currentLatIndex]);
+                }
+                if(latGorillaCanFitMore){
+                    fitValueGorilla(&gorillaLat, latBuffer[currentLatIndex]);
+                    latGorillaCanFitMore = gorillaLat.length < GORILLA_MAX;
+                }
+                if(latPMCCanFitMore || latSwingCanFitMore || latGorillaCanFitMore){
+                    currentLatIndex++;
+                }
 
 
-        }else{
-            selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
-            currentLongIndex = selectedModelLong.end_index;
-            writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
-            longFirst = 0;
-            for (int i = 0; i+currentLongIndex < longBufferCount; i++){
-                longBuffer[i] = longBuffer[i+currentLongIndex];
-                longTimeBuffer[i] = longTimeBuffer[i+currentLongIndex];
+            }else if(latBufferCount > 0){
+                selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
+                currentLatIndex = selectedModelLat.end_index+1;
+                writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex-1]);
+                latFirst = 0;
+                for (int i = 0; i+currentLatIndex < latBufferCount-1; i++){
+                    latBuffer[i] = latBuffer[i+currentLatIndex];
+                    latTimeBuffer[i] = latTimeBuffer[i+currentLatIndex];
+                }
+                latBufferCount = latBufferCount - currentLatIndex;
+                currentLatIndex = 0;
+                
+                latiCount++;
+                // Gorilla need to print all compressed values. 
+                // For other models there is only one value
+                startLatIndex = currentLatIndex;
+                resetGorilla(&gorillaLat);
+                resetPMC(&PMCLat);
+                resetSwing(&swingLat);
+                resetSelectedModel(&selectedModelLat);
+                latPMCCanFitMore = 1;
+                latSwingCanFitMore = 1;
+                latGorillaCanFitMore = 1;
             }
-            longBufferCount = longBufferCount - currentLongIndex;
-            currentLongIndex = 0;
+            if((longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore) && currentLongIndex < longBufferCount){
+                if (longPMCCanFitMore){
+                    longPMCCanFitMore = fitValuePMC(&PMCLong, longBuffer[currentLongIndex]);
+                }
+                if (longSwingCanFitMore){
+                    longSwingCanFitMore = fitValueSwing(&swingLong, longTimeBuffer[currentLongIndex], longBuffer[currentLongIndex]);
+                }
+                if(longGorillaCanFitMore){
+                    fitValueGorilla(&gorillaLong, longBuffer[currentLongIndex]);
+                    longGorillaCanFitMore = gorillaLong.length < GORILLA_MAX;
+                }
+                if(longPMCCanFitMore || longSwingCanFitMore || longGorillaCanFitMore){
+                    currentLongIndex++;
+                }
 
-            longCount++;
-            // Gorilla need to print all compressed values. 
-            // For other models there is only one value
-            int valuesCount = selectedModelLong.model_type_id == GORILLA_ID ? gorillaLong.compressed_values.bytes_counter : 1;
-            startLongIndex = currentLongIndex;
-            resetGorilla(&gorillaLong);
-            resetPMC(&PMCLong);
-            resetSwing(&swingLong);
-            resetSelectedModel(&selectedModelLong);
-            longPMCCanFitMore = 1;
-            longSwingCanFitMore = 1;
-            longGorillaCanFitMore = 1;
+
+            }else if(longBufferCount > 0){
+                selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
+                currentLongIndex = selectedModelLong.end_index+1;
+                writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex-1]);
+                longFirst = 0;
+                for (int i = 0; i+currentLongIndex < longBufferCount-1; i++){
+                    longBuffer[i] = longBuffer[i+currentLongIndex];
+                    longTimeBuffer[i] = longTimeBuffer[i+currentLongIndex];
+                }
+                longBufferCount = longBufferCount - currentLongIndex;
+                currentLongIndex = 0;
+
+                longCount++;
+                // Gorilla need to print all compressed values. 
+                // For other models there is only one value
+                startLongIndex = currentLongIndex;
+                resetGorilla(&gorillaLong);
+                resetPMC(&PMCLong);
+                resetSwing(&swingLong);
+                resetSelectedModel(&selectedModelLong);
+                longPMCCanFitMore = 1;
+                longSwingCanFitMore = 1;
+                longGorillaCanFitMore = 1;
+            }
         }
     }
     if(latBufferCount > 0){
