@@ -87,8 +87,14 @@ void writeModelToFile(FILE* file, struct SelectedModel model, int first, int sta
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);
     fprintf(file,"   \"values\":[");
+    int firstInArray = 1;
     for (int i = 0; i < model.values_capacity; i++){
-        fprintf(file, "%d", model.values[i]);
+        if(!firstInArray){
+            fprintf(file, ",%d", model.values[i]);
+        }else{
+            fprintf(file, "%d", model.values[i]);
+            firstInArray = 0;
+        }
     }
     fprintf(file,"],\n");
     fprintf(file,"   \"start_time\":%d,\n", startTime);

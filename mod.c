@@ -75,7 +75,7 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
 
 void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
-    model->values_capacity = end_index-start_index;
+    model->values_capacity = gorilla->compressed_values.bytes_counter;
 
     model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
 

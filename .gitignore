@@ -72,3 +72,6 @@ result.csv
 longResult.csv
 latResult.csv
 *.json
+
+.vs*
+out/build*

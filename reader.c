@@ -12,7 +12,7 @@
 #include "PMCMean.h"
 #include <limits.h>
 
-#define ERROR_BOUND 0.09
+#define ERROR_BOUND 0.009
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 
@@ -106,7 +106,7 @@ int main()
                 const char* timestampTemp = getfield(ts, 2);
 
                 //01/09/2022 00:00:0
-                if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
+                if(sscanf_s(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
                     tmVar.tm_year -= 1900;
                     tmVar.tm_mon -= 1;
                     //TODO: implement sudocode line 14-16, 18
@@ -114,8 +114,8 @@ int main()
                     // SudoC: line  17
                     latTimeBuffer[latBufferCount] = mktime(&tmVar)+3600;
                     longTimeBuffer[longBufferCount] = mktime(&tmVar)+3600;
-                    latBuffer[latBufferCount++] = strtod(getfield(longStr, 5), &errorPointer);
-                    longBuffer[longBufferCount++] = strtod(getfield(latStr, 6), &errorPointer);
+                    latBuffer[latBufferCount++] = strtod(getfield(latStr, 5), &errorPointer);
+                    longBuffer[longBufferCount++] = strtod(getfield(longStr, 6), &errorPointer);
                     // ensure we have enough space in the buffers
                     
                     if(latBufferCount + 1 == maxLatBufferCount){
@@ -142,10 +142,12 @@ int main()
                     }
                 }
                 else
+                    free(latStr);
+                    free(longStr);
+                    free(ts);
                     continue;
-
-                free(latStr);
                 free(longStr);
+                free(latStr);
                 free(ts);
             }else{
                 endOfInput = 1;
@@ -237,13 +239,13 @@ int main()
     }
     if(latBufferCount > 0){
         selectModel(&selectedModelLat, startLatIndex, &PMCLat, &swingLat, &gorillaLat, latBuffer);
-        currentLatIndex = selectedModelLat.end_index;
-        writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex]);
+        currentLatIndex = selectedModelLat.end_index+1;
+        writeModelToFile(latfpt, selectedModelLat, latFirst, latTimeBuffer[startLatIndex], latTimeBuffer[currentLatIndex-1]);
     }
     if(longBufferCount > 0){
         selectModel(&selectedModelLong, startLongIndex, &PMCLong, &swingLong, &gorillaLong, longBuffer);
-        currentLongIndex = selectedModelLong.end_index;
-        writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex]);
+        currentLongIndex = selectedModelLong.end_index+1;
+        writeModelToFile(longfpt, selectedModelLong, longFirst, longTimeBuffer[startLongIndex], longTimeBuffer[currentLongIndex-1]);
     }
     //writeGorillaToFile(longfpt, dataLong, index, longFirst);
     //writeSwingToFile(longfpt, dataLong, index, longFirst);
@@ -256,6 +258,8 @@ int main()
     closeFile(latfpt);
     closeFile(longfpt);
     closeFile(stream);
+    free(latBuffer);
+    free(longBuffer);
 }
 
 void resetSwing(struct swing *data){
