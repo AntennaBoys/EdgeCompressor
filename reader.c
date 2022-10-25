@@ -106,7 +106,7 @@ int main()
                 const char* timestampTemp = getfield(ts, 2);
 
                 //01/09/2022 00:00:0
-                if(sscanf_s(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
+                if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
                     tmVar.tm_year -= 1900;
                     tmVar.tm_mon -= 1;
                     //TODO: implement sudocode line 14-16, 18
@@ -141,11 +141,12 @@ int main()
                         }
                     }
                 }
-                else
-                    free(latStr);
-                    free(longStr);
-                    free(ts);
-                    continue;
+                else {
+                  free(latStr);
+                  free(longStr);
+                  free(ts);
+                  continue;
+                }
                 free(longStr);
                 free(latStr);
                 free(ts);

@@ -75,16 +75,12 @@ void select_swing(struct SelectedModel* model, size_t start_index, struct swing*
 
 void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
-    model->values_capacity = gorilla->compressed_values.bytes_counter;
-
-    model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
 
     float max = uncompressed_values[start_index];
     float min = uncompressed_values[start_index];
 
-    for(int i = 0; i<model->values_capacity; i++){
+    for(int i = 0; i < model->values_capacity; i++){
       float temp_val = uncompressed_values[i+start_index];
-      model->values[i] = temp_val;
       if (max < temp_val){
         max = temp_val;
       }
@@ -97,7 +93,15 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
     model->end_index = end_index;
     model->min_value = min;
     model->max_value = max;
-    model->values = get_compressed_values(gorilla);
+    get_compressed_values(gorilla);
+    model->values_capacity = gorilla->compressed_values.bytes_counter;
+
+    model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
+    if(model->values == NULL){
+        printf("REALLOC ERROR (select_gorilla)\n");
+    }
+
+    model->values = gorilla->compressed_values.bytes;
 
 }
 

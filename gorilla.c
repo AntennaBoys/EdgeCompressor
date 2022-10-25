@@ -145,6 +145,8 @@ size_t len(struct BitVecBuilder* data){
 
 uint8_t* finish(struct BitVecBuilder* data){
   if (data->remaining_bits != 8){
+    data->bytes_capacity++;
+    data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(*data->bytes));
     data->bytes[data->bytes_counter++] = data->current_byte;
   }
   return data->bytes;
