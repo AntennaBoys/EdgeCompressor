@@ -38,7 +38,7 @@ int32_t floatToBit(float val);
 
 struct Gorilla;
 struct BitVecBuilder;
-struct Gorilla init_gorilla();
-
+struct Gorilla getGorilla();
+void resetGorilla(struct Gorilla* gorilla);
 
 #endif

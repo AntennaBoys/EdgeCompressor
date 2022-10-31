@@ -17,4 +17,7 @@ float get_bytes_per_value_pmc(struct PMCMean* data);
 float get_model_pmcmean(struct PMCMean* data);
 size_t get_length_pmcmean (struct PMCMean* data);
 
+struct PMCMean getPMCMean(double errorBound);
+void resetPMCMean(struct PMCMean *pmc);
+
 #endif

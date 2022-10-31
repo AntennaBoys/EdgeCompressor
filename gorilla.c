@@ -60,32 +60,6 @@ int32_t floatToBit(float val){
 }
 
 
-struct Gorilla init_gorilla(){
-    struct Gorilla data;
-    data.last_value = 0;
-    data.last_leading_zero_bits = UCHAR_MAX;
-    data.last_trailing_zero_bits = 0;
-
-    data.compressed_values.current_byte = 0;
-    data.compressed_values.remaining_bits = 8;
-
-    //Initialise bytes array to NULL values
-    data.compressed_values.bytes_counter = 0;
-    
-    //is this correct?
-    data.compressed_values.bytes_capacity = 1;
-    data.compressed_values.bytes = (uint8_t*) malloc (data.compressed_values.bytes_capacity * sizeof(uint8_t));
-    if(data.compressed_values.bytes == NULL){
-        printf("MALLOC ERROR\n");
-    }
-    // for(int i = 0; i < sizeof(data.compressed_values.bytes)/sizeof(data.compressed_values.bytes[0]); i++){
-    //     data.compressed_values.bytes[i] = NULL;
-    // }
-    data.length = 0;
-    
-    return data;
-}
-
 void fitValueGorilla(struct Gorilla* data, float value){
     int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
     int32_t last_value_as_integer = floatToBit(data->last_value);
@@ -207,5 +181,47 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
             data->current_byte = 0;
             data->remaining_bits = 8;   
         }
+    }
+}
+
+struct Gorilla getGorilla(){
+    struct Gorilla data;
+    data.last_value = 0;
+    data.last_leading_zero_bits = UCHAR_MAX;
+    data.last_trailing_zero_bits = 0;
+
+    data.compressed_values.current_byte = 0;
+    data.compressed_values.remaining_bits = 8;
+
+    //Initialise bytes array to NULL values
+    data.compressed_values.bytes_counter = 0;
+    
+    //is this correct?
+    data.compressed_values.bytes_capacity = 1;
+    data.compressed_values.bytes = (uint8_t*) malloc (data.compressed_values.bytes_capacity * sizeof(uint8_t));
+    if(data.compressed_values.bytes == NULL){
+        printf("MALLOC ERROR\n");
+    }
+    // for(int i = 0; i < sizeof(data.compressed_values.bytes)/sizeof(data.compressed_values.bytes[0]); i++){
+    //     data.compressed_values.bytes[i] = NULL;
+    // }
+    data.length = 0;
+    
+    return data;
+}
+
+void resetGorilla(struct Gorilla* gorilla){
+    gorilla->last_leading_zero_bits = UCHAR_MAX;
+    gorilla->last_trailing_zero_bits = 0;
+    gorilla->last_value = 0;
+    gorilla->length = 0;
+    
+    gorilla->compressed_values.current_byte = 0;
+    gorilla->compressed_values.remaining_bits = 8;
+    gorilla->compressed_values.bytes_capacity = 1;
+    gorilla->compressed_values.bytes_counter = 0;
+    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(*gorilla->compressed_values.bytes));
+    if(gorilla->compressed_values.bytes == NULL){
+        printf("REALLOC ERROR\n");
     }
 }

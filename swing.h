@@ -40,4 +40,7 @@ float get_bytes_per_value_swing(struct swing* data);
 void get_model_swing(struct swing* data, float arr[]);
 size_t get_length_swing(struct swing* data);
 
+struct swing getSwing(double errorBound);
+void resetSwing(struct swing *data);
+
 #endif

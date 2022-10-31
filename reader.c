@@ -16,13 +16,11 @@
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 
-void resetGorilla(struct Gorilla* gorilla);
-void resetSelectedModel(struct SelectedModel* model);
-void resetSwing(struct swing *data);
-struct swing getSwing(double errorBound);
-struct PMCMean getPMC(double errorBound);
-struct SelectedModel init_selectedModel();
-void resetPMC(struct PMCMean *pmc);
+
+
+
+
+
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -39,14 +37,14 @@ const char* getfield(char* line, int num)
 int main()
 {
                  
-    struct Gorilla gorillaLat = init_gorilla();
-    struct Gorilla gorillaLong = init_gorilla();
-    struct PMCMean PMCLat = getPMC(ERROR_BOUND);
-    struct PMCMean PMCLong = getPMC(ERROR_BOUND);
+    struct Gorilla gorillaLat = getGorilla();
+    struct Gorilla gorillaLong = getGorilla();
+    struct PMCMean PMCLat = getPMCMean(ERROR_BOUND);
+    struct PMCMean PMCLong = getPMCMean(ERROR_BOUND);
     struct swing swingLat = getSwing(ERROR_BOUND);
     struct swing swingLong = getSwing(ERROR_BOUND);
-    struct SelectedModel selectedModelLat = init_selectedModel();
-    struct SelectedModel selectedModelLong = init_selectedModel();
+    struct SelectedModel selectedModelLat = getSelectedModel();
+    struct SelectedModel selectedModelLong = getSelectedModel();
     running_mean latMean = {0,0};
     running_mean longMean = {0,0};
     int index = 0;
@@ -263,89 +261,18 @@ int main()
     free(longBuffer);
 }
 
-void resetSwing(struct swing *data){
-  data->first_timestamp = 0;
-  data->last_timestamp = 0;
-  data->first_value = NAN;
-  data->upper_bound_slope = NAN;
-  data->upper_bound_intercept = NAN;
-  data->lower_bound_slope = NAN;
-  data->lower_bound_intercept = NAN;
-  data->length = 0;
-}
 
 
-struct swing getSwing(double errorBound){
-  struct swing data;
-  data.error_bound = errorBound;
-  data.first_timestamp = 0;
-  data.last_timestamp = 0;
-  data.first_value = NAN;
-  data.upper_bound_slope = NAN;
-  data.upper_bound_intercept = NAN;
-  data.lower_bound_slope = NAN;
-  data.lower_bound_intercept = NAN;
-  data.length = 0;
-  return data;
-}
 
-void resetPMC(struct PMCMean *pmc){
-  pmc->minValue = NAN;
-  pmc->maxValue = NAN;
-  pmc->sumOfValues = 0;
-  pmc->length = 0;
-}
 
-struct PMCMean getPMC(double errorBound){
-  struct PMCMean data;
-  data.error = errorBound;
-  data.minValue = NAN;
-  data.maxValue = NAN;
-  data.sumOfValues = 0;
-  data.length = 0;
-  return data;
-}
-void resetGorilla(struct Gorilla* gorilla){
-    gorilla->last_leading_zero_bits = UCHAR_MAX;
-    gorilla->last_trailing_zero_bits = 0;
-    gorilla->last_value = 0;
-    gorilla->length = 0;
-    
-    gorilla->compressed_values.current_byte = 0;
-    gorilla->compressed_values.remaining_bits = 8;
-    gorilla->compressed_values.bytes_capacity = 1;
-    gorilla->compressed_values.bytes_counter = 0;
-    gorilla->compressed_values.bytes = realloc(gorilla->compressed_values.bytes, 4 * gorilla->compressed_values.bytes_capacity * sizeof(*gorilla->compressed_values.bytes));
-    if(gorilla->compressed_values.bytes == NULL){
-        printf("REALLOC ERROR\n");
-    }
-}
 
-void resetSelectedModel(struct SelectedModel* model){
-    model->model_type_id = 0;
-    model->end_index = 0;
-    model->min_value = 0;
-    model->max_value = 0;
-    model->values_capacity = 1;
-    model->values = realloc(model->values, model->values_capacity * sizeof(uint8_t));
-    if(model->values == NULL){
-        printf("REALLOC ERROR (mod)\n");
-    }
-}
 
-struct SelectedModel init_selectedModel(){
-    struct SelectedModel mod;
-    mod.model_type_id = 0;
-    mod.end_index = 0;
-    mod.min_value = 0;
-    mod.max_value = 0;
-    mod.values_capacity = 1;
-    mod.values = (uint8_t*) malloc (mod.values_capacity * sizeof(uint8_t));
-    if(mod.values == NULL){
-        printf("MALLOC ERROR (mod)\n");
-    }
-    return mod;
-}
+
+
+
+
+
+
 
 
 

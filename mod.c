@@ -105,4 +105,28 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
 
 }
 
+struct SelectedModel getSelectedModel(){
+    struct SelectedModel mod;
+    mod.model_type_id = 0;
+    mod.end_index = 0;
+    mod.min_value = 0;
+    mod.max_value = 0;
+    mod.values_capacity = 1;
+    mod.values = (uint8_t*) malloc (mod.values_capacity * sizeof(uint8_t));
+    if(mod.values == NULL){
+        printf("MALLOC ERROR (mod)\n");
+    }
+    return mod;
+}
 
+void resetSelectedModel(struct SelectedModel* model){
+    model->model_type_id = 0;
+    model->end_index = 0;
+    model->min_value = 0;
+    model->max_value = 0;
+    model->values_capacity = 1;
+    model->values = realloc(model->values, model->values_capacity * sizeof(uint8_t));
+    if(model->values == NULL){
+        printf("REALLOC ERROR (mod)\n");
+    }
+}

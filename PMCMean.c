@@ -59,3 +59,20 @@ float get_model_pmcmean(struct PMCMean* data){
 size_t get_length_pmcmean (struct PMCMean* data){
     return data->length;
 }
+
+struct PMCMean getPMCMean(double errorBound){
+  struct PMCMean data;
+  data.error = errorBound;
+  data.minValue = NAN;
+  data.maxValue = NAN;
+  data.sumOfValues = 0;
+  data.length = 0;
+  return data;
+}
+
+void resetPMCMean(struct PMCMean *pmc){
+  pmc->minValue = NAN;
+  pmc->maxValue = NAN;
+  pmc->sumOfValues = 0;
+  pmc->length = 0;
+}

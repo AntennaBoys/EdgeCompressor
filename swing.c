@@ -170,4 +170,27 @@ size_t get_length_swing(struct swing* data){
 //
 // Created by power on 23-09-2022.
 //
+struct swing getSwing(double errorBound){
+  struct swing data;
+  data.error_bound = errorBound;
+  data.first_timestamp = 0;
+  data.last_timestamp = 0;
+  data.first_value = NAN;
+  data.upper_bound_slope = NAN;
+  data.upper_bound_intercept = NAN;
+  data.lower_bound_slope = NAN;
+  data.lower_bound_intercept = NAN;
+  data.length = 0;
+  return data;
+}
 
+void resetSwing(struct swing *data){
+  data->first_timestamp = 0;
+  data->last_timestamp = 0;
+  data->first_value = NAN;
+  data->upper_bound_slope = NAN;
+  data->upper_bound_intercept = NAN;
+  data->lower_bound_slope = NAN;
+  data->lower_bound_intercept = NAN;
+  data->length = 0;
+}
