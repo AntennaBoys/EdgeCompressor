@@ -5,9 +5,9 @@
 
 void deleteCompressedSegementBuilder(CompressedSegmentBuilder* builder);
 int canFitMore(CompressedSegmentBuilder builder);
-void tryToUpdateModels(CompressedSegmentBuilder* builder, int timestamp, float value);
+void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value);
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, int* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound){
+CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound){
     CompressedSegmentBuilder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
@@ -15,19 +15,13 @@ CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, int* unc
     builder.pmceman = getPMCMean(errorBound);
     builder.swing = getSwing(errorBound);
     builder.gorilla = getGorilla();
-    builder.uncompressed_timestamps = malloc(endIndex * sizeof(*builder.uncompressed_timestamps));
-    if(!builder.uncompressed_timestamps){
-        printf("MALLOC ERROR(newCompressedSegmentBuilder->uncompressedTimestamps)\n");
-    }
-    builder.uncompressed_values = malloc(endIndex * sizeof(*builder.uncompressed_values));
-    if(!builder.uncompressed_values){
-        printf("MALLOC ERROR(newCompressedSegmentBuilder->uncompressed_values)\n");
-    }
+    builder.uncompressed_timestamps = uncompressedTimestamps;
+    builder.uncompressed_values = uncompressedValues;
     
     size_t currentIndex = startIndex;
     while (canFitMore(builder) && currentIndex < endIndex)
     {
-        int timestamp = uncompressedTimestamps[currentIndex];
+        long timestamp = uncompressedTimestamps[currentIndex];
         float value = uncompressedValues[currentIndex];
         tryToUpdateModels(&builder, timestamp, value);
         currentIndex++;
@@ -55,7 +49,7 @@ int canFitMore(CompressedSegmentBuilder builder){
         || builder.gorilla.length < GORILLAMAX;
 }
 
-void tryToUpdateModels(CompressedSegmentBuilder* builder, int timestamp, float value){
+void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value){
     if(builder->pmc_mean_could_fit_all){
         builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmceman, value);
     }
@@ -67,12 +61,13 @@ void tryToUpdateModels(CompressedSegmentBuilder* builder, int timestamp, float v
     }
 }
 
-void tryCompress(UncompressedData* data, float errorBound, int first){
+void tryCompress(UncompressedData* data, float errorBound, int* first){
     size_t currentIndex = 0;
     while(currentIndex < data->currentSize){
         CompressedSegmentBuilder builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
         if(!canFitMore(builder)){
-            currentIndex = finishBatch(builder, data->output, first);
+            currentIndex = finishBatch(builder, data->output, *first);
+            *first = 0;
             for (size_t i = 0; i+currentIndex < data->currentSize-1; i++){
                 data->values[i] = data->values[i+currentIndex];
                 data->timestamps[i] = data->timestamps[i+currentIndex];
@@ -82,7 +77,6 @@ void tryCompress(UncompressedData* data, float errorBound, int first){
         }else{
             currentIndex = data->currentSize;
         }
-        deleteCompressedSegementBuilder(&builder);
     }
 }
 
@@ -97,11 +91,5 @@ void forceCompress(UncompressedData* data, float errorBound, int first){
         }
         data->currentSize = data->currentSize - currentIndex;
         resizeUncompressedData(data);
-        deleteCompressedSegementBuilder(&builder);
     }
-}
-
-void deleteCompressedSegementBuilder(CompressedSegmentBuilder* builder){
-    free(builder->uncompressed_timestamps);
-    free(builder->uncompressed_values);
 }

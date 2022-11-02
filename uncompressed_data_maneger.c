@@ -9,7 +9,7 @@ void resize(UncompressedData* data);
 
 UncompressedData createUncompressedDataManeger(char* filePath){
     UncompressedData data;
-    data.maxSize = 16;
+    data.maxSize = 1;
     data.currentSize = 0;
     data.output = openFile(filePath);
     data.timestamps = malloc(data.maxSize * sizeof(*data.timestamps));
@@ -28,7 +28,7 @@ void resize(UncompressedData* data){
     if(!data->timestamps){
         printf("REALLOC ERROR(resize->data.timestamps)\n");
     }
-    data->values = realloc(data->timestamps, data->maxSize * sizeof(*data->values));
+    data->values = realloc(data->values, data->maxSize * sizeof(*data->values));
     if(!data->values){
         printf("REALLOC ERROR(resize->data.values)\n");
     }
@@ -45,12 +45,11 @@ void resizeUncompressedData(UncompressedData* data){
     }
 }
 
-void insertData(UncompressedData* data, int timestamp, float value, int first){
+void insertData(UncompressedData* data, long timestamp, float value, int* first){
     data->currentSize++;
     resizeUncompressedData(data);
     data->timestamps[data->currentSize-1] = timestamp;
     data->values[data->currentSize-1] = value;
-
     if(data->currentSize >= BUFFER_SIZE){
         tryCompress(data, ERROR_BOUND, first);
     }

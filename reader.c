@@ -34,10 +34,8 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-
-    int index = 0;
-    UncompressedData latData = createUncompressedDataManeger(outputCsvFileLat);
-    UncompressedData longData = createUncompressedDataManeger(outputCsvFileLong);
+    UncompressedData latData = createUncompressedDataManeger(outPutCsvFileLat);
+    UncompressedData longData = createUncompressedDataManeger(outPutCsvFileLong);
 
     
 
@@ -60,10 +58,8 @@ int main()
             tmVar.tm_mon -= 1;
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
-            insertData(&latData, time, strtod(getfield(latStr, 5), &errorPointer), latFirst);
-            insertData(&longData, time, strtod(getfield(longStr, 6), &errorPointer), longFirst);
-            latFirst = 0;
-            longFirst = 0;
+            insertData(&latData, time, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            insertData(&longData, time, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
             free(longStr);
             free(latStr);
             free(ts);

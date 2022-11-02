@@ -16,12 +16,12 @@ struct CompressedSegmentBuilder{
     struct swing swing;
     int swing_could_fit_all;
     struct Gorilla gorilla;
-    int* uncompressed_timestamps;
+    long* uncompressed_timestamps;
     float* uncompressed_values;
 } typedef CompressedSegmentBuilder;
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, int* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound);
-void tryCompress(UncompressedData* data, float errorBound, int first);
+CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound);
+void tryCompress(UncompressedData* data, float errorBound, int* first);
 void forceCompress(UncompressedData* data, float errorBound, int first);
 
 #endif
