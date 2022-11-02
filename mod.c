@@ -101,7 +101,7 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
         printf("REALLOC ERROR (select_gorilla)\n");
     }
 
-    model->values = gorilla->compressed_values.bytes;
+    memcpy(model->values, gorilla->compressed_values.bytes, model->values_capacity * sizeof(*model->values));
 
 }
 

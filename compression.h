@@ -20,8 +20,8 @@ struct CompressedSegmentBuilder{
     float* uncompressed_values;
 } typedef CompressedSegmentBuilder;
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound);
-void tryCompress(UncompressedData* data, float errorBound, int* first);
-void forceCompress(UncompressedData* data, float errorBound, int first);
+CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound);
+void tryCompress(UncompressedData* data, double errorBound, int* first);
+void forceCompress(UncompressedData* data, double errorBound, int first);
 
 #endif

@@ -7,7 +7,7 @@ void deleteCompressedSegementBuilder(CompressedSegmentBuilder* builder);
 int canFitMore(CompressedSegmentBuilder builder);
 void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value);
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound){
+CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound){
     CompressedSegmentBuilder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
@@ -61,35 +61,37 @@ void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float 
     }
 }
 
-void tryCompress(UncompressedData* data, float errorBound, int* first){
+void tryCompress(UncompressedData* data, double errorBound, int* first){
     size_t currentIndex = 0;
     while(currentIndex < data->currentSize){
         CompressedSegmentBuilder builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
         if(!canFitMore(builder)){
             currentIndex = finishBatch(builder, data->output, *first);
             *first = 0;
-            for (size_t i = 0; i+currentIndex < data->currentSize-1; i++){
+            for (int i = 0; i+currentIndex < data->currentSize; i++){
                 data->values[i] = data->values[i+currentIndex];
                 data->timestamps[i] = data->timestamps[i+currentIndex];
             }
             data->currentSize = data->currentSize - currentIndex;
             resizeUncompressedData(data);
+            currentIndex = 0;
         }else{
             currentIndex = data->currentSize;
         }
     }
 }
 
-void forceCompress(UncompressedData* data, float errorBound, int first){
+void forceCompress(UncompressedData* data, double errorBound, int first){
     size_t currentIndex = 0;
     while(currentIndex < data->currentSize){
         CompressedSegmentBuilder builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
         currentIndex = finishBatch(builder, data->output, first);
-        for (size_t i = 0; i+currentIndex < data->currentSize-1; i++){
+        for (int i = 0; i+currentIndex < data->currentSize; i++){
             data->values[i] = data->values[i+currentIndex];
             data->timestamps[i] = data->timestamps[i+currentIndex];
         }
         data->currentSize = data->currentSize - currentIndex;
         resizeUncompressedData(data);
+        currentIndex = 0;
     }
 }

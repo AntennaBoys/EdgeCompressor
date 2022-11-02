@@ -70,8 +70,12 @@ int main()
             continue;
         }
     }
-    forceCompressData(&latData, latFirst);
-    forceCompressData(&longData, longFirst);
+    if(latData.currentSize > 0){
+        forceCompressData(&latData, latFirst);
+    }
+    if(longData.currentSize > 0){
+        forceCompressData(&longData, longFirst);
+    }
     deleteUncompressedDataManeger(&latData);
     deleteUncompressedDataManeger(&longData);
     closeFile(stream);
