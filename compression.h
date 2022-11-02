@@ -6,9 +6,11 @@
 #include "swing.h"
 #include "gorilla.h"
 #include "mod.h"
+#include "jsonprint.h"
+#include "uncompressed_data_maneger.h"
 
 struct CompressedSegmentBuilder{
-    int start_index;
+    size_t start_index;
     struct PMCMean pmceman;
     int pmc_mean_could_fit_all;
     struct swing swing;
@@ -18,5 +20,8 @@ struct CompressedSegmentBuilder{
     float* uncompressed_values;
 } typedef CompressedSegmentBuilder;
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(int startIndex, int* uncompressedTimestamps, float* uncompressedValues, int uncompressedValuesLength, float errorBound);
+CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, int* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float errorBound);
+void tryCompress(UncompressedData* data, float errorBound, int first);
+void forceCompress(UncompressedData* data, float errorBound, int first);
+
 #endif

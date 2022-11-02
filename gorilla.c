@@ -225,3 +225,7 @@ void resetGorilla(struct Gorilla* gorilla){
         printf("REALLOC ERROR\n");
     }
 }
+
+void deleteGorilla(struct Gorilla* gorilla){
+    free(gorilla->compressed_values.bytes);
+}

@@ -8,10 +8,10 @@
 
 struct BitVecBuilder {
     uint8_t current_byte ;
-    uint8_t remaining_bits ;
-    uint8_t* bytes;
+    uint8_t remaining_bits;
     int bytes_capacity;
     int bytes_counter;
+    uint8_t* bytes;
 };
 
 struct Gorilla {
@@ -38,7 +38,7 @@ int32_t floatToBit(float val);
 
 struct Gorilla;
 struct BitVecBuilder;
-struct Gorilla getGorilla();
+struct Gorilla getGorilla(void);
 void resetGorilla(struct Gorilla* gorilla);
-
+void deleteGorilla(struct Gorilla* gorilla);
 #endif

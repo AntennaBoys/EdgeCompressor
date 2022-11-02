@@ -130,3 +130,7 @@ void resetSelectedModel(struct SelectedModel* model){
         printf("REALLOC ERROR (mod)\n");
     }
 }
+
+void deleteSelectedModel(struct SelectedModel* model){
+  free(model->values);
+}
