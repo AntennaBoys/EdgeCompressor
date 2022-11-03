@@ -44,6 +44,7 @@ int main()
 
     int longFirst = 1;
     int latFirst = 1;
+    long timestamp = 0;
     struct tm tmVar;
     while(fgets(line, 1024, stream)){
         char* latStr = _strdup(line);
@@ -58,8 +59,12 @@ int main()
             tmVar.tm_mon -= 1;
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
-            insertData(&latData, time, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            insertData(&longData, time, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            timestamp = time == timestamp ? time + 1 : time;
+            insertData(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            insertData(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+                
+            
+
             free(longStr);
             free(latStr);
             free(ts);
