@@ -229,3 +229,10 @@ void resetGorilla(struct Gorilla* gorilla){
 void deleteGorilla(struct Gorilla* gorilla){
     free(gorilla->compressed_values.bytes);
 }
+
+double* gridGorilla(int* values, int timestampCount){
+    double* result;
+    result = malloc(timestampCount * sizeof(*result));
+    int leading_zeroes = 255;
+    int trailing_zeroes = 0;
+}

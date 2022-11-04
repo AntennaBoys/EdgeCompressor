@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "swing.h"
 #include "constants.h"
+#include "mod.h"
 
 struct slopeAndIntercept {
     double slope;
@@ -120,9 +121,14 @@ struct slopeAndIntercept compute_slope_and_intercept(
     // first_value and final_value so slope * timestamp + intercept = INFINITY
     // or slope * timestamp + intercept = NEG_INFINITY.
     if (!isNan(first_value) && !isNan(final_value)){
+        struct slopeAndIntercept sample;
+        if(first_value == final_value){
+            sample.intercept = first_value;
+            sample.slope = 0.0;
+            return sample;
+        }
         double slope = (final_value - first_value) / (final_timestamp - first_timestamp);
         double intercept = first_value - slope * first_timestamp;
-        struct slopeAndIntercept sample;
         sample.slope = slope;
         sample.intercept = intercept;
         return sample;
@@ -193,4 +199,22 @@ void resetSwing(struct swing *data){
   data->lower_bound_slope = NAN;
   data->lower_bound_intercept = NAN;
   data->length = 0;
+}
+
+struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimestamp, long lastTimestamp, double minValue, double maxValue, int value){
+    if(value == 1){
+        return compute_slope_and_intercept(firstTimestamp, minValue, lastTimestamp, maxValue);
+    }else{
+        return compute_slope_and_intercept(firstTimestamp, maxValue, lastTimestamp, minValue);
+    }
+}
+
+double* gridSwing(struct SelectedModel model, long* timestamps,int timestampCount){
+    double* result;
+    struct slopeAndIntercept slopeAndIntercept;
+    result = malloc(timestampCount * sizeof(*result));
+    for(int i = 0; i < timestampCount; i++){
+        result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;
+    }
+    return result;
 }

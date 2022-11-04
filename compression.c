@@ -36,7 +36,8 @@ int finishBatch(CompressedSegmentBuilder builder, FILE* file, int first){
     int startTime = builder.uncompressed_timestamps[builder.start_index];
     int endTime = builder.uncompressed_timestamps[model.end_index];
 
-    //TODO: Replace writeModelToFile with record batch builder from rust
+    //TODO: Error?
+    
     writeModelToFile(file, model ,first, startTime, endTime);
     deleteGorilla(&builder.gorilla);
     deleteSelectedModel(&model);

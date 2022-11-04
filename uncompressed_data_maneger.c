@@ -3,7 +3,7 @@
 #include "compression.h"
 
 #define BUFFER_SIZE 1024
-#define ERROR_BOUND 0.00009
+#define ERROR_BOUND 0.002
 
 void resize(UncompressedData* data);
 
