@@ -17,8 +17,8 @@ void closeFile(FILE* file){
 }
 
 void writeSwingToFile(FILE *file, struct swing model, int index, int first){
-    double first_value = getModelFirst(model);
-    double last_value = getModelLast(model);
+    float first_value = getModelFirst(model);
+    float last_value = getModelLast(model);
 
     if (!first){
         fprintf(file,"  ,{\n");
@@ -76,7 +76,7 @@ void writePMCMeanToFile(FILE* file, struct PMCMean model, int index, int first){
     fprintf(file,"  }\n");
 }
 
-void writeModelToFile(FILE* file, struct SelectedModel model, int first, int startTime, int endTime){
+void writeModelToFile(FILE* file, struct SelectedModel model, int first, int startTime, int endTime, double error){
     if (!first){
         fprintf(file,"  ,{\n");
     }else{
@@ -86,6 +86,7 @@ void writeModelToFile(FILE* file, struct SelectedModel model, int first, int sta
     fprintf(file,"   \"end_index\":%d,\n", model.end_index);
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);
+    fprintf(file,"   \"error\":%lf,\n", error);
     fprintf(file,"   \"values\":[");
     int firstInArray = 1;
     for (int i = 0; i < model.values_capacity; i++){

@@ -19,5 +19,6 @@ size_t get_length_pmcmean (struct PMCMean* data);
 
 struct PMCMean getPMCMean(double errorBound);
 void resetPMCMean(struct PMCMean *pmc);
+float* gridPMCMean(struct SelectedModel model, int timestampCount);
 
 #endif

@@ -8,5 +8,6 @@ struct BitReader{
 }typedef BitReader;
 
 BitReader tryNewBitreader(uint8_t* bytes, int byteCount);
-uint32_t read_bits(BitReader* bitReader, int number_of_bits);
+uint32_t read_bits(BitReader* bitReader, uint8_t numberOfBits);
+uint32_t read_bit(BitReader* bitReader);
 #endif

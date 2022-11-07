@@ -1,10 +1,9 @@
-
-
+#include "bitreader.h"
+#include "gorilla.h"
+#include "constants.h"
 #include <stdio.h>
 #include <limits.h>
 
-#include "gorilla.h"
-#include "constants.h"
 
 const int debug = 0;
 
@@ -230,9 +229,35 @@ void deleteGorilla(struct Gorilla* gorilla){
     free(gorilla->compressed_values.bytes);
 }
 
-double* gridGorilla(int* values, int timestampCount){
-    double* result;
-    result = malloc(timestampCount * sizeof(*result));
-    int leading_zeroes = 255;
-    int trailing_zeroes = 0;
+float intToFloat(int value){
+    return *(float*) (&value);
 }
+
+float* gridGorilla(int* values, int valuesCount, int timestampCount){
+    float* result;
+    result = malloc(timestampCount * sizeof(*result));
+    int resultIndex = 0;
+    BitReader bitReader = tryNewBitreader(values, valuesCount);
+    int leadingZeros = 255;
+    int trailingZeros = 0;
+    uint32_t lastValue = read_bits(&bitReader, VALUE_SIZE_IN_BITS);
+    result[resultIndex++] = intToFloat(lastValue);
+    for(int i = 0; i < timestampCount-1; i++){
+        if(read_bit(&bitReader)){
+            if(read_bit(&bitReader)){
+                leadingZeros = read_bits(&bitReader, 5);
+                uint8_t meaningfulBits = read_bits(&bitReader, 6);
+                trailingZeros = VALUE_SIZE_IN_BITS - meaningfulBits - leadingZeros;
+            }
+
+            uint8_t meaningfulBits = VALUE_SIZE_IN_BITS - leadingZeros - trailingZeros;
+            uint32_t value = read_bits(&bitReader, meaningfulBits);
+            value <<= trailingZeros;
+            value ^= lastValue;
+            lastValue = value;
+        }
+        result[resultIndex++] = intToFloat(lastValue);
+    }
+    return result;
+}
+

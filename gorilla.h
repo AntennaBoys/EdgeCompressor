@@ -41,4 +41,5 @@ struct BitVecBuilder;
 struct Gorilla getGorilla(void);
 void resetGorilla(struct Gorilla* gorilla);
 void deleteGorilla(struct Gorilla* gorilla);
+float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount);
 #endif

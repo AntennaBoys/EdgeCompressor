@@ -18,8 +18,9 @@ int remaining_bits(BitReader* bitReader){
 }
 
 uint32_t read_bits(BitReader* bitReader, uint8_t numberOfBits){
-    if(numberOfBits >= 32){
-        printf("ERROR: read_bits cannot read more than 32 bits");
+    if(numberOfBits > 32){
+        printf("ERROR: read_bits cannot read more than 32 bits\n");
+        printf("attempted to read %d bits\n", numberOfBits);
         exit(1);
     }
     uint64_t value = 0;
@@ -33,4 +34,8 @@ uint32_t read_bits(BitReader* bitReader, uint8_t numberOfBits){
     }
     bitReader->nextBit = endBit;
     return value;
+}
+
+uint32_t read_bit(BitReader* bitReader){
+    return read_bits(bitReader, 1);
 }

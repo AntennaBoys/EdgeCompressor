@@ -1,4 +1,5 @@
 #include "compression.h"
+#include <math.h>
 #include <stdio.h>
 
 #define GORILLAMAX 50
@@ -6,6 +7,8 @@
 void deleteCompressedSegementBuilder(CompressedSegmentBuilder* builder);
 int canFitMore(CompressedSegmentBuilder builder);
 void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value);
+float* getReconstructedValues(struct SelectedModel model, long* timestamps);
+double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount);
 
 CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound){
     CompressedSegmentBuilder builder;
@@ -36,9 +39,11 @@ int finishBatch(CompressedSegmentBuilder builder, FILE* file, int first){
     int startTime = builder.uncompressed_timestamps[builder.start_index];
     int endTime = builder.uncompressed_timestamps[model.end_index];
 
-    //TODO: Error?
+    float* reconstructedValues = getReconstructedValues(model, builder.uncompressed_timestamps);
+    double error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
     
-    writeModelToFile(file, model ,first, startTime, endTime);
+    
+    writeModelToFile(file, model ,first, startTime, endTime, error);
     deleteGorilla(&builder.gorilla);
     deleteSelectedModel(&model);
     return model.end_index + 1;
@@ -95,4 +100,32 @@ void forceCompress(UncompressedData* data, double errorBound, int first){
         resizeUncompressedData(data);
         currentIndex = 0;
     }
+}
+
+float* getReconstructedValues(struct SelectedModel model, long* timestamps){
+    switch (model.model_type_id)
+    {
+    case PMC_MEAN_ID:
+        return gridPMCMean(model, model.end_index+1);
+    case SWING_ID:
+        return gridSwing(model, timestamps, model.end_index+1);
+    case GORILLA_ID:
+        return gridGorilla(model.values, model.values_capacity, model.end_index+1);
+    default:
+        printf("Invalid ID in getReconstructedValues");
+        break;
+    }
+    
+}
+
+double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount){
+    double error = 0;
+    float baseValue = 0;
+    float reconstructedValue = 0;
+    for(int i = 0; i < valuesCount; i++){
+        baseValue = baseValues[i];
+        reconstructedValue = reconstructedValues[i];
+        error += (baseValue - reconstructedValue) * (baseValue - reconstructedValue);
+    }
+    return sqrt(error/valuesCount);
 }

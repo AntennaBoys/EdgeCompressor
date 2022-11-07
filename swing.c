@@ -209,9 +209,9 @@ struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimest
     }
 }
 
-double* gridSwing(struct SelectedModel model, long* timestamps,int timestampCount){
-    double* result;
-    struct slopeAndIntercept slopeAndIntercept;
+float* gridSwing(struct SelectedModel model, long* timestamps,int timestampCount){
+    float* result;
+    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestampCount], model.min_value, model.max_value, model.values[0]);
     result = malloc(timestampCount * sizeof(*result));
     for(int i = 0; i < timestampCount; i++){
         result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;

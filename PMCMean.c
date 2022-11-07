@@ -78,8 +78,8 @@ void resetPMCMean(struct PMCMean *pmc){
   pmc->length = 0;
 }
 
-double* gridPMCMean(struct SelectedModel model, int timestampCount){
-    double* result;
+float* gridPMCMean(struct SelectedModel model, int timestampCount){
+    float* result;
 
     result = malloc(timestampCount * sizeof(*result));
     for(int i = 0; i < timestampCount; i++){
