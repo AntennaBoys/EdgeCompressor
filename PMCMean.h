@@ -1,6 +1,11 @@
 #ifndef PMCMEAN
 #define PMCMEAN
-
+#include "constants.h"
+#include "mod.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <math.h>
 struct PMCMean {
     float error;
     float minValue;

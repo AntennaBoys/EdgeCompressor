@@ -3,10 +3,14 @@
 #include "gorilla.h"
 #include "swing.h"
 #include "PMCMean.h"
+#include "polyswing.h"
+#include <stdio.h>
+#include <string.h>
 
 #define PMC_MEAN_ID 0
 #define SWING_ID 1
 #define GORILLA_ID 2
+#define POLYSWING_ID 3
 
 struct SelectedModel {
     uint8_t model_type_id;
@@ -26,7 +30,7 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
 void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMCMean* pmcmean);
 void select_swing(struct SelectedModel* model, size_t start_index, struct swing* swing);
 
-void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, struct swing* swing, struct Gorilla* gorilla, float *uncompressed_values);
+void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, struct swing* swing, struct Gorilla* gorilla, struct polySwing* polyswing, float *uncompressed_values);
 
 struct SelectedModel getSelectedModel(void);
 void resetSelectedModel(struct SelectedModel* model);

@@ -1,10 +1,5 @@
-#include <stdio.h>
-#include <math.h>
-#include <stddef.h>
-#include <stdint.h>
 #include "swing.h"
-#include "constants.h"
-#include "mod.h"
+
 
 struct slopeAndIntercept {
     double slope;
@@ -213,6 +208,9 @@ float* gridSwing(struct SelectedModel model, long* timestamps,int timestampCount
     float* result;
     struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestampCount], model.min_value, model.max_value, model.values[0]);
     result = malloc(timestampCount * sizeof(*result));
+    if(!result){
+        printf("CALLOC ERROR (gridSwing: result)\n");
+    }
     for(int i = 0; i < timestampCount; i++){
         result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;
     }

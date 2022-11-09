@@ -6,7 +6,12 @@
 //
 #include <stddef.h>
 #include <stdint.h>
-
+#include "constants.h"
+#include "mod.h"
+#include <stdio.h>
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
 struct swing {
     /// Maximum relative error for the value of each data point.
     double error_bound;

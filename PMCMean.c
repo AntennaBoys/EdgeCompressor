@@ -1,10 +1,5 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <math.h>
 #include "PMCMean.h"
-#include "constants.h"
-#include "mod.h"
+
 
 int fitValuePMC(struct PMCMean *data, float value);
 int isValueWithinErrorBound(struct PMCMean*, float, float);
@@ -80,8 +75,10 @@ void resetPMCMean(struct PMCMean *pmc){
 
 float* gridPMCMean(struct SelectedModel model, int timestampCount){
     float* result;
-
     result = malloc(timestampCount * sizeof(*result));
+    if(!result){
+        printf("CALLOC ERROR (gridPMCMean: result)\n");
+    }
     for(int i = 0; i < timestampCount; i++){
         result[i] = (model.min_value + model.max_value)/2;
     }

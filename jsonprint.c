@@ -1,8 +1,4 @@
-#include "swing.h"
-#include "gorilla.h"
-#include "PMCMean.h"
-#include "mod.h"
-#include <stdio.h>
+#include "jsonprint.h"
 
 
 FILE* openFile(char* fileName){

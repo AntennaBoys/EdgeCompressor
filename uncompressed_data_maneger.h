@@ -1,7 +1,8 @@
 #ifndef UNCOMPRESSEDMANEGER
 #define UNCOMPRESSEDMANEGER
 #include <stdio.h>
-
+#include "jsonprint.h"
+#include "compression.h"
 
 struct UncompressedData{
     size_t maxSize;
