@@ -12,7 +12,7 @@
 
 struct CompressedSegmentBuilder{
     size_t start_index;
-    struct PMCMean pmceman;
+    struct PMCMean pmcmean;
     int pmc_mean_could_fit_all;
     struct swing swing;
     int swing_could_fit_all;
@@ -24,7 +24,7 @@ struct CompressedSegmentBuilder{
 } typedef CompressedSegmentBuilder;
 
 CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound);
-void tryCompress( UncompressedData* data, double errorBound, int* first);
-void forceCompress( UncompressedData* data, double errorBound, int first);
+void tryCompress(UncompressedData* data, double errorBound, int* first);
+void forceCompress(UncompressedData* data, double errorBound, int first);
 
 #endif

@@ -16,7 +16,7 @@ CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* un
     builder.swing_could_fit_all = 1;
     builder.polyswing_could_fit_all = 1;
     builder.start_index = startIndex;
-    builder.pmceman = getPMCMean(errorBound);
+    builder.pmcmean = getPMCMean(errorBound);
     builder.swing = getSwing(errorBound);
     builder.gorilla = getGorilla();
     builder.polyswing = getPolySwing(errorBound);
@@ -36,7 +36,7 @@ CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* un
 
 int finishBatch(CompressedSegmentBuilder builder, FILE* file, int first){
     struct SelectedModel model = getSelectedModel();
-    selectModel(&model, builder.start_index, &builder.pmceman, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
+    selectModel(&model, builder.start_index, &builder.pmcmean, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
 
     int startTime = builder.uncompressed_timestamps[builder.start_index];
     int endTime = builder.uncompressed_timestamps[model.end_index];
@@ -61,7 +61,7 @@ int canFitMore(CompressedSegmentBuilder builder){
 
 void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value){
     if(builder->pmc_mean_could_fit_all){
-        builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmceman, value);
+        builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmcmean, value);
     }
     if(builder->swing_could_fit_all){
         builder->swing_could_fit_all = fitValueSwing(&builder->swing, timestamp, value);
