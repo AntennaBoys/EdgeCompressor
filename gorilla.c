@@ -227,7 +227,7 @@ void deleteGorilla(struct Gorilla* gorilla){
 }
 
 
-float* gridGorilla(int* values, int valuesCount, int timestampCount){
+float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount){
     float* result;
     result = malloc(timestampCount * sizeof(*result));
     if(!result){

@@ -48,8 +48,6 @@ struct polySwing {
 
 
 int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value);
-double getModelFirst(struct swing current_swing);
-double getModelLast(struct swing current_swing);
 struct polySwing getPolySwing(double errorBound);
 float get_bytes_per_value_polyswing(struct polySwing* data);
 void deletePolySwing(struct polySwing* polySwing);

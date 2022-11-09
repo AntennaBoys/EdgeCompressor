@@ -16,8 +16,8 @@ struct PMCMean {
 
 int fitValuePMC(struct PMCMean *data, float value);
 int isValueWithinErrorBound(struct PMCMean*, float, float);
-int equalOrNAN(float, float);
-int isNan(float);
+int equalOrNAN_pmc(float, float);
+int isNan_pmc(float);
 float get_bytes_per_value_pmc(struct PMCMean* data);
 float get_model_pmcmean(struct PMCMean* data);
 size_t get_length_pmcmean (struct PMCMean* data);

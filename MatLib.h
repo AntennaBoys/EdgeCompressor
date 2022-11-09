@@ -577,5 +577,4 @@ MatList* qr(Mat* A){
 	freemat(aj);
 	return ml;
 }
-
 #endif

@@ -1,8 +1,6 @@
 #include "polyswing.h"
 
 
-int isNan(double val);
-int equalOrNAN(double v1, double v2);
 void updateATA(Mat* ATA, long new_x);
 void updateATY(Mat* ATY, long new_x, double new_y);
 Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, struct polySwing *model);
@@ -259,17 +257,6 @@ int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value){
             return 1;
             }
     }
-}
-
-
-
-int isNan(double val){
-    return isnan(val) || isinf(val);
-    //return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
-}
-
-int equalOrNAN(double v1, double v2){
-    return v1==v2 || (isNan(v1) && isNan(v2));
 }
 
 
