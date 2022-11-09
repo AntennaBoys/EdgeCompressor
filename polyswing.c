@@ -1,4 +1,6 @@
 #include "polyswing.h"
+#include "constants.h"
+#include "bitreader.h"
 
 
 void updateATA(Mat* ATA, long new_x);

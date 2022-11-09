@@ -1,4 +1,5 @@
 #include "compression.h"
+#include "jsonprint.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -115,7 +116,7 @@ float* getReconstructedValues(struct SelectedModel model, long* timestamps){
     case PMC_MEAN_ID:
         return gridPMCMean(model, model.end_index+1);
     case SWING_ID:
-        return gridSwing(model, timestamps, model.end_index+1);
+        return gridSwing(model.min_value, model.max_value, model.values[0], timestamps, model.end_index+1);
     case GORILLA_ID:
         return gridGorilla(model.values, model.values_capacity, model.end_index+1);
     case POLYSWING_ID:

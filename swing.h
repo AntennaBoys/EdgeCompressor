@@ -4,12 +4,7 @@
 //
 // Created by power on 05-10-2022.
 //
-#include <stddef.h>
-#include <stdint.h>
-#include "constants.h"
-#include "mod.h"
-#include <stdio.h>
-#include <math.h>
+
 #include <stddef.h>
 #include <stdint.h>
 struct swing {
@@ -47,6 +42,6 @@ size_t get_length_swing(struct swing* data);
 
 struct swing getSwing(double errorBound);
 void resetSwing(struct swing *data);
-float* gridSwing(struct SelectedModel model, long* timestamps,int timestampCount);
+float* gridSwing(float min, float max, uint8_t* values, long* timestamps,int timestampCount);
 
 #endif

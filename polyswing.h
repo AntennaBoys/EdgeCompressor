@@ -1,12 +1,11 @@
 #ifndef POLYSWING
 #define POLYSWING
-#include "MatLib.h"
-#include "constants.h"
-#include "bitreader.h"
 #include <stdio.h>
-#include "math.h"
+#include <math.h>
+#include "MatLib.h"
 #include <time.h>
 #include <string.h>
+#include <stdint.h>
 //
 // Created by power on 05-10-2022.
 //

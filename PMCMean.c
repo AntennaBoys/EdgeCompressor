@@ -1,4 +1,7 @@
 #include "PMCMean.h"
+#include "constants.h"
+#include <math.h>
+#include <stdio.h>
 
 
 int fitValuePMC(struct PMCMean *data, float value);

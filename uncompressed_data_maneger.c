@@ -1,5 +1,5 @@
 #include "uncompressed_data_maneger.h"
-
+#include "compression.h"
 #define BUFFER_SIZE 1024
 #define ERROR_BOUND 0.002
 

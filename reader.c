@@ -1,6 +1,5 @@
 #include "mod.h"
 #include "uncompressed_data_maneger.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
