@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include "paths.h"
-#include "math.h"
+#include <math.h>
 #include "jsonprint.h"
 #include <limits.h>
 
