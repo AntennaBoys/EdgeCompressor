@@ -9,7 +9,7 @@
 #include <limits.h>
 
 
-#define ERROR_BOUND 0.009
+#define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 

@@ -2,13 +2,15 @@
 #define UNCOMPRESSEDMANEGER
 #include "jsonprint.h"
 #include <stdio.h>
-
+#include "compressed_segment_builder.h"
 struct UncompressedData{
     size_t maxSize;
     size_t currentSize;
     FILE* output;
     long* timestamps;
     float* values;
+    int newBuilder;
+    CompressedSegmentBuilder segmentBuilder;
 } typedef UncompressedData;
 UncompressedData createUncompressedDataManeger(char* filePath);
 void resizeUncompressedData(UncompressedData* data);

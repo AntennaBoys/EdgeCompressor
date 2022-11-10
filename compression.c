@@ -71,35 +71,31 @@ void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float 
         fitValueGorilla(&builder->gorilla, value);
     }
     if(builder->polyswing_could_fit_all){
-        builder->polyswing_could_fit_all = fitValuesPolySwing(&builder->polyswing, timestamp, value);
+        builder->polyswing_could_fit_all = fitValuesPolySwing(&builder->polyswing, timestamp, value);// && builder->polyswing.length < 4;
     }
 }
 
 void tryCompress(UncompressedData* data, double errorBound, int* first){
     size_t currentIndex = 0;
-    while(currentIndex < data->currentSize){
-        CompressedSegmentBuilder builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
-        if(!canFitMore(builder)){
-            currentIndex = finishBatch(builder, data->output, *first);
-            *first = 0;
-            for (int i = 0; i+currentIndex < data->currentSize; i++){
-                data->values[i] = data->values[i+currentIndex];
-                data->timestamps[i] = data->timestamps[i+currentIndex];
-            }
-            data->currentSize = data->currentSize - currentIndex;
-            resizeUncompressedData(data);
-            currentIndex = 0;
-        }else{
-            currentIndex = data->currentSize;
-        }
+    currentIndex = finishBatch(data->segmentBuilder, data->output, *first);
+    *first = 0;
+    for (int i = 0; i+currentIndex < data->currentSize; i++){
+        data->values[i] = data->values[i+currentIndex];
+        data->timestamps[i] = data->timestamps[i+currentIndex];
     }
+    data->currentSize = data->currentSize - currentIndex;
+    resizeUncompressedData(data);
+    data->newBuilder = 1;
+    currentIndex = 0;
 }
 
 void forceCompress(UncompressedData* data, double errorBound, int first){
+    int isFirst = first;
+    CompressedSegmentBuilder builder = data->segmentBuilder;
     size_t currentIndex = 0;
     while(currentIndex < data->currentSize){
-        CompressedSegmentBuilder builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
-        currentIndex = finishBatch(builder, data->output, first);
+        currentIndex = finishBatch(builder, data->output, isFirst);
+        isFirst = 0;
         for (int i = 0; i+currentIndex < data->currentSize; i++){
             data->values[i] = data->values[i+currentIndex];
             data->timestamps[i] = data->timestamps[i+currentIndex];
@@ -107,7 +103,11 @@ void forceCompress(UncompressedData* data, double errorBound, int first){
         data->currentSize = data->currentSize - currentIndex;
         resizeUncompressedData(data);
         currentIndex = 0;
+        if(currentIndex != data->currentSize){
+            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
+        }
     }
+    //finishBatch(data->segmentBuilder, data->output, first);
 }
 
 float* getReconstructedValues(struct SelectedModel model, long* timestamps){
