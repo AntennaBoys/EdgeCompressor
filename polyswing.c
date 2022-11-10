@@ -10,18 +10,7 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwin
 void writeToFile(FILE *file, struct polySwing model, int index, char* start, int id);
 void resetStruct(struct polySwing *data);
 
-const char* getfield(char* line, int num)
-{
-    const char* tok;
-    for (tok = strtok(line, ",");
-         tok && *tok;
-         tok = strtok(NULL, ",\n"))
-    {
-        if (!--num)
-            return tok;
-    }
-    return NULL;
-}
+
 
 // int main(){
 //     char* dataPath = "C:/Users/power/CLionProjects/EdgeCompressor/out.csv";
@@ -358,12 +347,12 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwin
         result.pow2 = get(res, 3, 1);
         result.pow1 = get(res, 2, 1);
         result.pow0 = get(res, 1, 1);
-        if (printmat && !model->terminateSegment){
-            FILE *latfpt;
-            latfpt = fopen("D:\\IncrementalPoly\\test.csv", "a");
-            fprintf(latfpt,"%.20f,%.20f,%.20f\n", result.pow2, result.pow1, result.pow0);
-            fclose(latfpt);
-        }
+        // if (printmat && !model->terminateSegment){
+        //     FILE *latfpt;
+        //     latfpt = fopen("D:\\IncrementalPoly\\test.csv", "a");
+        //     fprintf(latfpt,"%.20f,%.20f,%.20f\n", result.pow2, result.pow1, result.pow0);
+        //     fclose(latfpt);
+        // }
     }
     freemat(res);
     return result;
@@ -384,6 +373,7 @@ struct polySwing getPolySwing(double errorBound){
     model.length = 0;
     model.deltaTime = 0;
     model.terminateSegment = 0;
+    return model;
 }
 
 void deletePolySwing(struct polySwing* polySwing){

@@ -1,14 +1,13 @@
 #ifndef PMCMEAN
 #define PMCMEAN
-#include "mod.h"
 #include <stdint.h>
 #include <stdlib.h>
 struct PMCMean {
-    float error;
+    double error;
     float minValue;
     float maxValue;
     float sumOfValues;
-    float length;
+    size_t length;
 };
 
 int fitValuePMC(struct PMCMean *data, float value);
@@ -21,6 +20,6 @@ size_t get_length_pmcmean (struct PMCMean* data);
 
 struct PMCMean getPMCMean(double errorBound);
 void resetPMCMean(struct PMCMean *pmc);
-float* gridPMCMean(struct SelectedModel model, int timestampCount);
+float* gridPMCMean(float value, int timestampCount);
 
 #endif

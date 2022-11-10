@@ -15,7 +15,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
     bytes[2].bytes = get_bytes_per_value_gorilla(gorilla);
     bytes[3].id = POLYSWING_ID;
     bytes[3].bytes = get_bytes_per_value_polyswing(polyswing);
-
+    printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
     struct bytes_per_value selectedModel;
 
     for(int i=0; i < MODELCOUNT; i++){
@@ -38,6 +38,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
         select_gorilla(data, start_index, gorilla, uncompressed_values);
         break;
       case POLYSWING_ID:
+        selectPolySwing(data, start_index, polyswing);
         break;
     }
 }
@@ -108,15 +109,18 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
 
 }
 
-void selectPolySwing(struct SelectedModel* model, size_t start_index, struct polySwing polySwing){
-  size_t end_index = start_index + polySwing.length - 1;
-  float pow0 = polySwing.current.pow0;
-  float pow1 = polySwing.current.pow1;
-  uint8_t pow2[4];
+void selectPolySwing(struct SelectedModel* model, size_t start_index, struct polySwing* polySwing){
+  size_t end_index = start_index + polySwing->length - 1;
+  float pow0 = polySwing->current.pow0;
+  float pow1 = polySwing->current.pow1;
   struct BitVecBuilder bitVecBuilder;
   bitVecBuilder.current_byte = 0;
   bitVecBuilder.remaining_bits = 8;
-
+  model->values_capacity = 4;
+  model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
+  if(model->values == NULL){
+      printf("REALLOC ERROR (selecPolySwing)\n");
+  }
   bitVecBuilder.bytes_counter = 0;
 
   bitVecBuilder.bytes_capacity = 4;
@@ -124,17 +128,16 @@ void selectPolySwing(struct SelectedModel* model, size_t start_index, struct pol
   if(bitVecBuilder.bytes == NULL){
       printf("MALLOC ERROR\n");
   }
-  int32_t floatAsInt = floatToBit(polySwing.current.pow2);
+  int32_t floatAsInt = floatToBit((float)polySwing->current.pow2);
   append_bits(&bitVecBuilder, floatAsInt, VALUE_SIZE_IN_BITS);
   for(int i = 0; i < 4; i++){
-    pow2[i] = bitVecBuilder.bytes[i];
+    model->values[i] = bitVecBuilder.bytes[i];
   }
   model->end_index = end_index;
   model->min_value = pow0;
   model->max_value = pow1;
   model->model_type_id = POLYSWING_ID;
   model->values_capacity = 4;
-  model->values = pow2;
 }
 
 struct SelectedModel getSelectedModel(){

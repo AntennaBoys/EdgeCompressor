@@ -114,7 +114,7 @@ float* getReconstructedValues(struct SelectedModel model, long* timestamps){
     switch (model.model_type_id)
     {
     case PMC_MEAN_ID:
-        return gridPMCMean(model, model.end_index+1);
+        return gridPMCMean(model.min_value, model.end_index+1);
     case SWING_ID:
         return gridSwing(model.min_value, model.max_value, model.values[0], timestamps, model.end_index+1);
     case GORILLA_ID:

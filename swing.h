@@ -42,6 +42,6 @@ size_t get_length_swing(struct swing* data);
 
 struct swing getSwing(double errorBound);
 void resetSwing(struct swing *data);
-float* gridSwing(float min, float max, uint8_t* values, long* timestamps,int timestampCount);
+float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount);
 
 #endif

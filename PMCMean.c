@@ -14,7 +14,7 @@ int fitValuePMC(struct PMCMean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
     float nextMaxValue = data->maxValue > value ? data->maxValue : value;
     float nextSumOfValues = data->sumOfValues + value;
-    float nextLength = data->length+1;
+    size_t nextLength = data->length+1;
     float average = (nextSumOfValues / nextLength);
 
     if(isValueWithinErrorBound(data, nextMinValue, average) && isValueWithinErrorBound(data, nextMaxValue, average)){
@@ -76,14 +76,14 @@ void resetPMCMean(struct PMCMean *pmc){
   pmc->length = 0;
 }
 
-float* gridPMCMean(struct SelectedModel model, int timestampCount){
+float* gridPMCMean(float value, int timestampCount){
     float* result;
     result = malloc(timestampCount * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridPMCMean: result)\n");
     }
     for(int i = 0; i < timestampCount; i++){
-        result[i] = (model.min_value + model.max_value)/2;
+        result[i] = value;
     }
     return result;
 }

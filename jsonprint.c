@@ -79,7 +79,7 @@ void writeModelToFile(FILE* file, struct SelectedModel model, int first, int sta
         fprintf(file,"{\n");
     }
     fprintf(file,"   \"Mid\":%d,\n", model.model_type_id);
-    fprintf(file,"   \"end_index\":%d,\n", model.end_index);
+    fprintf(file,"   \"end_index\":%d,\n", (int)model.end_index);
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);
     fprintf(file,"   \"error\":%lf,\n", error);

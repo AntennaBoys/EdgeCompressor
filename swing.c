@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 struct slopeAndIntercept {
     double slope;
@@ -208,7 +209,7 @@ struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimest
     }
 }
 
-float* gridSwing(float min, float max, uint8_t* values, long* timestamps,int timestampCount){
+float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount){
     float* result;
     struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestampCount], min, max, values);
     result = malloc(timestampCount * sizeof(*result));

@@ -17,7 +17,6 @@
 
 
 
-
 const char* getfield(char* line, int num)
 {
     const char* tok;
