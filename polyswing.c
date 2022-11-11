@@ -10,153 +10,6 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwin
 void writeToFile(FILE *file, struct polySwing model, int index, char* start, int id);
 void resetStruct(struct polySwing *data);
 
-
-
-// int main(){
-//     char* dataPath = "C:/Users/power/CLionProjects/EdgeCompressor/out.csv";
-//     struct polySwing dataLat;
-//     double error = 0.001;
-//     dataLat.length = 0;
-//     dataLat.error_bound = error;
-//     dataLat.deltaTime = 0;
-//     dataLat.terminateSegment = 0;
-//     struct polySwing dataLong;
-//     dataLong.length = 0;
-//     dataLong.error_bound = error;
-//     dataLong.deltaTime = 0;
-//     dataLong.terminateSegment = 0;
-//     int index = 0;
-
-//     int latiCount = 0;
-//     int longCount = 0;
-//     char* longFirst = "";
-//     char* latFirst = "";
-
-//     FILE *latfpt;
-//     latfpt = fopen("D:\\IncrementalPoly\\test.csv", "w+");
-//     fprintf(latfpt,"pow2, pow1, pow0\n");
-//     fclose(latfpt);
-
-//     FILE *test;
-//     test = fopen("D:\\IncrementalPoly\\lower.csv", "w+");
-//     fprintf(test,"pow2, pow1, pow0\n");
-
-
-//     FILE *test1;
-//     test1 = fopen("D:\\IncrementalPoly\\upper.csv", "w+");
-//     fprintf(test1,"pow2, pow1, pow0\n");
-
-//     FILE *test2;
-//     test2 = fopen("D:\\IncrementalPoly\\current.csv", "w+");
-//     fprintf(test2,"pow2, pow1, pow0\n");
-
-//     FILE *test3;
-//     test3 = fopen("D:\\IncrementalPoly\\break.csv", "w+");
-//     fprintf(test3,"break\n");
-
-
-//     FILE* tsFile = fopen("D:\\IncrementalPoly\\ts.csv", "w+");
-//     FILE* stream = fopen(dataPath, "r");
-//     char line[1024];
-//     fprintf(tsFile, "ts, lat\n");
-//     struct tm tmVar;
-//     time_t timeVar;
-
-//     FILE *latfptRe;
-//     FILE *longfptRe;
-//     latfptRe = fopen("D:\\stocks\\repos\\ShipMapPoints\\getdata\\polylat.json", "w+");
-//     longfptRe = fopen("D:\\stocks\\repos\\ShipMapPoints\\getdata\\polylong.json", "w+");
-//     fprintf(latfptRe,"{\"models\":[\n");
-//     fprintf(longfptRe,"{\"models\":[\n");
-
-//     while (fgets(line, 1024, stream))
-//     {
-//         char* lat = strdup(line);
-//         char* longs = strdup(line);
-//         char* ts = strdup(line);
-//         char* errorPointer;
-//         double latVal = strtod(getfield(lat, 5), &errorPointer);
-//         double longVal = strtod(getfield(longs, 6), &errorPointer);
-//         char* timestampTemp = getfield(ts, 2);
-
-//         //printf("%s\n", timestampTemp);
-//         //01/09/2022 00:00:0
-//         if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
-//             tmVar.tm_year -= 1900;
-//             tmVar.tm_mon -= 1;
-//             tmVar.tm_isdst = 1;
-//             timeVar = mktime(&tmVar)+3600;
-//         }
-//         else
-//             continue;
-//         //printf("to now %d\n", index);
-//         if (index == 0){
-//             dataLat.first_timestamp = (long)timeVar;
-//         }
-//         if ((long)timeVar == dataLat.last_timestamp){
-//             continue;
-//         }
-
-//         int resLat = fitValues_swing(&dataLat, (long)timeVar, latVal);
-//         int resLong = fitValues_swing(&dataLong, (long)timeVar, longVal);
-
-//         if(resLat && index > 2){
-//             fprintf(tsFile, "%ld, %lf\n", dataLat.deltaTime, latVal);
-//         }
-//         /*if (index == 420){
-//             break;
-//         }*/
-//         if (index > 2){
-//             fprintf(test, "%.20f,%.20f,%.20f\n", dataLat.lower.pow2, dataLat.lower.pow1, dataLat.lower.pow0);
-//             fprintf(test1, "%.20f,%.20f,%.20f\n", dataLat.upper.pow2, dataLat.upper.pow1, dataLat.upper.pow0);
-//             fprintf(test2, "%.20f,%.20f,%.20f\n", dataLat.current.pow2, dataLat.current.pow1, dataLat.current.pow0);
-//             if (!resLat){
-//                 fprintf(test3, "%d\n", index-3);
-//             }
-//         }
-
-
-//         if (!resLat){
-//             writeToFile(latfptRe, dataLat, index, latFirst, latiCount++);
-//             resetStruct(&dataLat);
-//             latFirst = ",";
-//             dataLat.terminateSegment = 0;
-//             fitValues_swing(&dataLat, (long)timeVar, latVal);
-//             //printf("can fit %d", index);
-//             //printf("Can do to: %ld", (long)timeVar);
-//             //break;
-//         }
-//         if (!resLong){
-//             writeToFile(longfptRe, dataLong, index, longFirst, longCount++);
-//             resetStruct(&dataLong);
-//             longFirst = ",";
-//             dataLong.terminateSegment = 0;
-//             fitValues_swing(&dataLong, (long)timeVar, longVal);
-//         }
-//         index++;
-//         free(lat);
-//         free(longs);
-//         free(ts);
-//     }
-
-
-//     writeToFile(latfptRe, dataLat, index, latFirst, latiCount++);
-//     writeToFile(longfptRe, dataLong, index, longFirst, longCount++);
-//     fclose(stream);
-//     fclose(tsFile);
-//     fprintf(latfptRe,"]}\n");
-//     fprintf(longfptRe,"]}\n");
-//     fclose(latfptRe);
-//     fclose(longfptRe);
-//     fclose(test);
-//     fclose(test1);
-//     fclose(test2);
-//     fclose(test3);
-//     printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
-
-//     return 0;
-// }
-
 int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
@@ -202,14 +55,6 @@ int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value){
         // Line 6 of Algorithm 1 in the Swing and Slide paper.
         double upper_bound_approximate_value = data->upper.pow2 * data->deltaTime * data->deltaTime + data->upper.pow1 * data->deltaTime + data->upper.pow0;
         double lower_bound_approximate_value = data->lower.pow2 * data->deltaTime * data->deltaTime + data->lower.pow1 * data->deltaTime + data->lower.pow0;
-
-        //printf("\n");
-        //printf("%f\n", upper_bound_approximate_value);
-        //printf("%f", lower_bound_approximate_value);
-        //printf("\n");
-        if (upper_bound_approximate_value < lower_bound_approximate_value){
-            //printf("e");
-        }
 
         if (upper_bound_approximate_value + maximum_deviation < value
             || lower_bound_approximate_value - maximum_deviation > value)
@@ -335,10 +180,6 @@ void updateATA(Mat* ATA, long new_x){
 
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwing *model){
     Mat* res = updateAll(ATA, ATY, x, y, model);
-    if(printmat){
-        //printf("%ld, %lf\n", x,y);
-        //showmat(res);
-    }
 
     terms result = {0,0,0};
     int pow = get(ATA, 1,1);
@@ -347,12 +188,6 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwin
         result.pow2 = get(res, 3, 1);
         result.pow1 = get(res, 2, 1);
         result.pow0 = get(res, 1, 1);
-        // if (printmat && !model->terminateSegment){
-        //     FILE *latfpt;
-        //     latfpt = fopen("D:\\IncrementalPoly\\test.csv", "a");
-        //     fprintf(latfpt,"%.20f,%.20f,%.20f\n", result.pow2, result.pow1, result.pow0);
-        //     fclose(latfpt);
-        // }
     }
     freemat(res);
     return result;

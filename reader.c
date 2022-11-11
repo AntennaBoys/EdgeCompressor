@@ -45,9 +45,9 @@ int main()
     long timestamp = 0;
     struct tm tmVar;
     while(fgets(line, 1024, stream)){
-        char* latStr = _strdup(line);
-        char* longStr = _strdup(line);
-        char* ts = _strdup(line);
+        char* latStr = strdup(line);
+        char* longStr = strdup(line);
+        char* ts = strdup(line);
         char* errorPointer;
         const char* timestampTemp = getfield(ts, 2);
 
