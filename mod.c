@@ -82,8 +82,8 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
 
     float max = uncompressed_values[start_index];
     float min = uncompressed_values[start_index];
-
-    for(int i = 0; i < model->values_capacity; i++){
+    get_compressed_values(gorilla);
+    for(int i = 0; i < gorilla->length; i++){
       float temp_val = uncompressed_values[i+start_index];
       if (max < temp_val){
         max = temp_val;
@@ -97,7 +97,7 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gori
     model->end_index = end_index;
     model->min_value = min;
     model->max_value = max;
-    get_compressed_values(gorilla);
+    
     model->values_capacity = gorilla->compressed_values.bytes_counter;
 
     model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
