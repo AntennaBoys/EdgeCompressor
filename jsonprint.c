@@ -56,7 +56,7 @@ void writeGorillaToFile(FILE* file, struct Gorilla model, int index, int first){
     
 }
 
-void writePMCMeanToFile(FILE* file, struct PMCMean model, int index, int first){
+void writePMCMeanToFile(FILE* file, Pmc_mean model, int index, int first){
     if (!first){
         fprintf(file,"  ,{\n");
     }else{

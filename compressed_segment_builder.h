@@ -6,7 +6,7 @@
 #include "polyswing.h"
 struct CompressedSegmentBuilder{
     size_t start_index;
-    struct PMCMean pmcmean;
+    Pmc_mean pmcmean;
     int pmc_mean_could_fit_all;
     Swing swing;
     int swing_could_fit_all;

@@ -4,13 +4,13 @@
 #include <stdio.h>
 
 
-int fitValuePMC(struct PMCMean *data, float value);
-int isValueWithinErrorBound(struct PMCMean*, float, float);
+int fitValuePMC(Pmc_mean *data, float value);
+int isValueWithinErrorBound(Pmc_mean*, float, float);
 int equalOrNAN_pmc(float, float);
 int isNan_pmc(float);
 
 
-int fitValuePMC(struct PMCMean* data, float value){
+int fitValuePMC(Pmc_mean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
     float nextMaxValue = data->maxValue > value ? data->maxValue : value;
     float nextSumOfValues = data->sumOfValues + value;
@@ -28,7 +28,7 @@ int fitValuePMC(struct PMCMean* data, float value){
     }
 }
 
-int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxValue){
+int isValueWithinErrorBound(Pmc_mean* data, float realValue, float approxValue){
     if(equalOrNAN_pmc(realValue, approxValue)){
         return 1;
     } else {
@@ -38,7 +38,7 @@ int isValueWithinErrorBound(struct PMCMean* data, float realValue, float approxV
     }
 }
 
-float get_bytes_per_value_pmc(struct PMCMean* data){
+float get_bytes_per_value_pmc(Pmc_mean* data){
     return (float) VALUE_SIZE_IN_BYTES / (float) data -> length;
 }
 
@@ -51,16 +51,16 @@ int isNan_pmc(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
 }
 
-float get_model_pmcmean(struct PMCMean* data){
+float get_model_pmcmean(Pmc_mean* data){
     return (float) (data->sumOfValues / (double) data->length);
 }
 
-size_t get_length_pmcmean (struct PMCMean* data){
+size_t get_length_pmcmean (Pmc_mean* data){
     return data->length;
 }
 
-struct PMCMean getPMCMean(double errorBound){
-  struct PMCMean data;
+Pmc_mean getPMCMean(double errorBound){
+  Pmc_mean data;
   data.error = errorBound;
   data.minValue = NAN;
   data.maxValue = NAN;
@@ -69,7 +69,7 @@ struct PMCMean getPMCMean(double errorBound){
   return data;
 }
 
-void resetPMCMean(struct PMCMean *pmc){
+void resetPMCMean(Pmc_mean *pmc){
   pmc->minValue = NAN;
   pmc->maxValue = NAN;
   pmc->sumOfValues = 0;

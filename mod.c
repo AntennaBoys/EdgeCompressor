@@ -4,7 +4,7 @@
 #define MODEL_COUNT 4
 
 
-void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, Swing* swing, struct Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
+void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, struct Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
     struct bytes_per_value bytes[MODEL_COUNT];
 
     bytes[0].id = PMC_MEAN_ID;
@@ -42,7 +42,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
         break;
     }
 }
-void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMCMean* pmcmean){
+void select_pmc_mean(struct SelectedModel* model, size_t start_index, Pmc_mean* pmcmean){
   float value = get_model_pmcmean(pmcmean);
   size_t end_index = start_index + get_length_pmcmean(pmcmean) - 1;
 

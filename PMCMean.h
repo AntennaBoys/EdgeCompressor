@@ -2,24 +2,24 @@
 #define PMCMEAN
 #include <stdint.h>
 #include <stdlib.h>
-struct PMCMean {
+struct Pmc_mean {
     double error;
     float minValue;
     float maxValue;
     float sumOfValues;
     size_t length;
-};
+} typedef Pmc_mean;
 
-int fitValuePMC(struct PMCMean *data, float value);
-int isValueWithinErrorBound(struct PMCMean*, float, float);
+int fitValuePMC(Pmc_mean *data, float value);
+int isValueWithinErrorBound(Pmc_mean*, float, float);
 int equalOrNAN_pmc(float, float);
 int isNan_pmc(float);
-float get_bytes_per_value_pmc(struct PMCMean* data);
-float get_model_pmcmean(struct PMCMean* data);
-size_t get_length_pmcmean (struct PMCMean* data);
+float get_bytes_per_value_pmc(Pmc_mean* data);
+float get_model_pmcmean(Pmc_mean* data);
+size_t get_length_pmcmean (Pmc_mean* data);
 
-struct PMCMean getPMCMean(double errorBound);
-void resetPMCMean(struct PMCMean *pmc);
+Pmc_mean getPMCMean(double errorBound);
+void resetPMCMean(Pmc_mean *pmc);
 float* gridPMCMean(float value, int timestampCount);
 
 #endif
