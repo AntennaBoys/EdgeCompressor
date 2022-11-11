@@ -49,6 +49,6 @@ struct Poly_swing {
 int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value);
 Poly_swing getPolySwing(double errorBound);
 float get_bytes_per_value_polyswing(Poly_swing* data);
-void deletePolySwing(Poly_swing* polySwing);
+void deletePolySwing(Poly_swing* poly_swing);
 float* gridPolySwing(float pow0, float pow1, uint8_t* values, long* timestamps, int timestampCount);
 #endif

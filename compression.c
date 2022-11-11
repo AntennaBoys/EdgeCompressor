@@ -5,19 +5,19 @@
 
 #define GORILLAMAX 50
 
-void deleteCompressedSegementBuilder(CompressedSegmentBuilder* builder);
-int canFitMore(CompressedSegmentBuilder builder);
-void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value);
-float* getReconstructedValues(struct SelectedModel model, long* timestamps);
+void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
+int canFitMore(Compressed_segment_builder builder);
+void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value);
+float* getReconstructedValues(Selected_model model, long* timestamps);
 double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount);
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound){
-    CompressedSegmentBuilder builder;
+Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound){
+    Compressed_segment_builder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
     builder.polyswing_could_fit_all = 1;
     builder.start_index = startIndex;
-    builder.pmcmean = getPMCMean(errorBound);
+    builder.pmc_mean = getPMCMean(errorBound);
     builder.swing = getSwing(errorBound);
     builder.gorilla = getGorilla();
     builder.polyswing = getPolySwing(errorBound);
@@ -35,9 +35,9 @@ CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* un
     return builder;
 }
 
-int finishBatch(CompressedSegmentBuilder builder, FILE* file, int first){
-    struct SelectedModel model = getSelectedModel();
-    selectModel(&model, builder.start_index, &builder.pmcmean, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
+int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
+    Selected_model model = get_selected_model();
+    select_model(&model, builder.start_index, &builder.pmc_mean, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
 
     int startTime = builder.uncompressed_timestamps[builder.start_index];
     int endTime = builder.uncompressed_timestamps[model.end_index];
@@ -49,20 +49,20 @@ int finishBatch(CompressedSegmentBuilder builder, FILE* file, int first){
     writeModelToFile(file, model ,first, startTime, endTime, error);
     deleteGorilla(&builder.gorilla);
     deletePolySwing(&builder.polyswing);
-    deleteSelectedModel(&model);
+    delete_selected_model(&model);
     return model.end_index + 1;
 }
 
-int canFitMore(CompressedSegmentBuilder builder){
+int canFitMore(Compressed_segment_builder builder){
     return builder.pmc_mean_could_fit_all 
         || builder.swing_could_fit_all 
         || builder.gorilla.length < GORILLAMAX
         || builder.polyswing_could_fit_all;
 }
 
-void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value){
+void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value){
     if(builder->pmc_mean_could_fit_all){
-        builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmcmean, value);
+        builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmc_mean, value);
     }
     if(builder->swing_could_fit_all){
         builder->swing_could_fit_all = fitValueSwing(&builder->swing, timestamp, value);
@@ -75,42 +75,42 @@ void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float 
     }
 }
 
-void tryCompress(UncompressedData* data, double errorBound, int* first){
+void tryCompress(Uncompressed_data* data, double errorBound, int* first){
     size_t currentIndex = 0;
-    currentIndex = finishBatch(data->segmentBuilder, data->output, *first);
+    currentIndex = finishBatch(data->segment_builder, data->output, *first);
     *first = 0;
-    for (int i = 0; i+currentIndex < data->currentSize; i++){
+    for (int i = 0; i+currentIndex < data->current_size; i++){
         data->values[i] = data->values[i+currentIndex];
         data->timestamps[i] = data->timestamps[i+currentIndex];
     }
-    data->currentSize = data->currentSize - currentIndex;
-    resizeUncompressedData(data);
-    data->newBuilder = 1;
+    data->current_size = data->current_size - currentIndex;
+    resize_uncompressed_data(data);
+    data->new_builder = 1;
     currentIndex = 0;
 }
 
-void forceCompress(UncompressedData* data, double errorBound, int first){
+void forceCompress(Uncompressed_data* data, double errorBound, int first){
     int isFirst = first;
-    CompressedSegmentBuilder builder = data->segmentBuilder;
+    Compressed_segment_builder builder = data->segment_builder;
     size_t currentIndex = 0;
-    while(currentIndex < data->currentSize){
+    while(currentIndex < data->current_size){
         currentIndex = finishBatch(builder, data->output, isFirst);
         isFirst = 0;
-        for (int i = 0; i+currentIndex < data->currentSize; i++){
+        for (int i = 0; i+currentIndex < data->current_size; i++){
             data->values[i] = data->values[i+currentIndex];
             data->timestamps[i] = data->timestamps[i+currentIndex];
         }
-        data->currentSize = data->currentSize - currentIndex;
-        resizeUncompressedData(data);
+        data->current_size = data->current_size - currentIndex;
+        resize_uncompressed_data(data);
         currentIndex = 0;
-        if(currentIndex != data->currentSize){
-            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->currentSize, errorBound);
+        if(currentIndex != data->current_size){
+            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->current_size, errorBound);
         }
     }
-    //finishBatch(data->segmentBuilder, data->output, first);
+    //finishBatch(data->segment_builder, data->output, first);
 }
 
-float* getReconstructedValues(struct SelectedModel model, long* timestamps){
+float* getReconstructedValues(Selected_model model, long* timestamps){
     switch (model.model_type_id)
     {
     case PMC_MEAN_ID:

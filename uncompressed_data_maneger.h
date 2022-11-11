@@ -3,19 +3,19 @@
 #include "jsonprint.h"
 #include <stdio.h>
 #include "compressed_segment_builder.h"
-struct UncompressedData{
-    size_t maxSize;
-    size_t currentSize;
+struct Uncompressed_data{
+    size_t max_size;
+    size_t current_size;
     FILE* output;
     long* timestamps;
     float* values;
-    int newBuilder;
-    CompressedSegmentBuilder segmentBuilder;
-} typedef UncompressedData;
-UncompressedData createUncompressedDataManeger(char* filePath);
-void resizeUncompressedData(UncompressedData* data);
-void insertData(UncompressedData* data, long timestamp, float value, int* first);
-void deleteUncompressedDataManeger(UncompressedData* data);
-void forceCompressData(UncompressedData* data, int first);
+    int new_builder;
+    Compressed_segment_builder segment_builder;
+} typedef Uncompressed_data;
+Uncompressed_data create_uncompressed_data_maneger(char* file_path);
+void resize_uncompressed_data(Uncompressed_data* data);
+void insert_data(Uncompressed_data* data, long timestamp, float value, int* first);
+void delete_uncompressed_data_maneger(Uncompressed_data* data);
+void force_compress_data(Uncompressed_data* data, int first);
 
 #endif

@@ -11,10 +11,10 @@
 #include "compressed_segment_builder.h"
 
 
-CompressedSegmentBuilder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound);
-void tryCompress(UncompressedData* data, double errorBound, int* first);
-void forceCompress(UncompressedData* data, double errorBound, int first);
-void tryToUpdateModels(CompressedSegmentBuilder* builder, long timestamp, float value);
-int canFitMore(CompressedSegmentBuilder builder);
+Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound);
+void tryCompress(Uncompressed_data* data, double errorBound, int* first);
+void forceCompress(Uncompressed_data* data, double errorBound, int first);
+void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value);
+int canFitMore(Compressed_segment_builder builder);
 
 #endif

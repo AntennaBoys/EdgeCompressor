@@ -32,8 +32,8 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-    UncompressedData latData = createUncompressedDataManeger(outPutCsvFileLat);
-    UncompressedData longData = createUncompressedDataManeger(outPutCsvFileLong);
+    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
+    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
 
     
 
@@ -58,8 +58,8 @@ int main()
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
             timestamp = time == timestamp ? time + 1 : time;
-            insertData(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            insertData(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
                 
             
 
@@ -73,14 +73,14 @@ int main()
             continue;
         }
     }
-    if(latData.currentSize > 0){
-        forceCompressData(&latData, latFirst);
+    if(latData.current_size > 0){
+        force_compress_data(&latData, latFirst);
     }
-    if(longData.currentSize > 0){
-        forceCompressData(&longData, longFirst);
+    if(longData.current_size > 0){
+        force_compress_data(&longData, longFirst);
     }
-    deleteUncompressedDataManeger(&latData);
-    deleteUncompressedDataManeger(&longData);
+    delete_uncompressed_data_maneger(&latData);
+    delete_uncompressed_data_maneger(&longData);
     closeFile(stream);
 }
 

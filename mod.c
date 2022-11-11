@@ -4,11 +4,11 @@
 #define MODEL_COUNT 4
 
 
-void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
+void select_model(Selected_model* data, size_t start_index, Pmc_mean* pmc_mean, Swing* swing, Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
     struct bytes_per_value bytes[MODEL_COUNT];
 
     bytes[0].id = PMC_MEAN_ID;
-    bytes[0].bytes = get_bytes_per_value_pmc(pmcmean);
+    bytes[0].bytes = get_bytes_per_value_pmc(pmc_mean);
     bytes[1].id = SWING_ID;
     bytes[1].bytes = get_bytes_per_value_swing(swing);
     bytes[2].id = GORILLA_ID;
@@ -16,20 +16,20 @@ void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcme
     bytes[3].id = POLYSWING_ID;
     bytes[3].bytes = get_bytes_per_value_polyswing(polyswing);
     printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
-    struct bytes_per_value selectedModel;
+    struct bytes_per_value selected_model;
 
     for(int i=0; i < MODEL_COUNT; i++){
         if (i==0){
-            selectedModel = bytes[i];
+            selected_model = bytes[i];
         }
-        else if(selectedModel.bytes > bytes[i].bytes){
-            selectedModel = bytes[i];
+        else if(selected_model.bytes > bytes[i].bytes){
+            selected_model = bytes[i];
         }
     }
 
-    switch((int) selectedModel.id){
+    switch((int) selected_model.id){
       case PMC_MEAN_ID:
-        select_pmc_mean(data, start_index, pmcmean);
+        select_pmc_mean(data, start_index, pmc_mean);
         break;
       case SWING_ID:
         select_swing(data,start_index,swing);
@@ -38,13 +38,13 @@ void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcme
         select_gorilla(data, start_index, gorilla, uncompressed_values);
         break;
       case POLYSWING_ID:
-        selectPolySwing(data, start_index, polyswing);
+        select_poly_swing(data, start_index, polyswing);
         break;
     }
 }
-void select_pmc_mean(struct SelectedModel* model, size_t start_index, Pmc_mean* pmcmean){
-  float value = get_model_pmcmean(pmcmean);
-  size_t end_index = start_index + get_length_pmcmean(pmcmean) - 1;
+void select_pmc_mean(Selected_model* model, size_t start_index, Pmc_mean* pmc_mean){
+  float value = get_model_pmcmean(pmc_mean);
+  size_t end_index = start_index + get_length_pmcmean(pmc_mean) - 1;
 
   model->model_type_id = (uint8_t) PMC_MEAN_ID;
   model->values[0] = 0;
@@ -53,7 +53,7 @@ void select_pmc_mean(struct SelectedModel* model, size_t start_index, Pmc_mean* 
   model->max_value = value;
 }
 
-void select_swing(struct SelectedModel* model, size_t start_index, Swing* swing){
+void select_swing(Selected_model* model, size_t start_index, Swing* swing){
   float arr[2];
 
   get_model_swing(swing, arr);
@@ -78,7 +78,7 @@ void select_swing(struct SelectedModel* model, size_t start_index, Swing* swing)
 
 
 
-void select_gorilla(struct SelectedModel* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values){
+void select_gorilla(Selected_model* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
 
     float max = uncompressed_values[start_index];
@@ -110,10 +110,10 @@ void select_gorilla(struct SelectedModel* model, size_t start_index, Gorilla* go
 
 }
 
-void selectPolySwing(struct SelectedModel* model, size_t start_index, Poly_swing* polySwing){
-  size_t end_index = start_index + polySwing->length - 1;
-  float pow0 = polySwing->current.pow0;
-  float pow1 = polySwing->current.pow1;
+void select_poly_swing(Selected_model* model, size_t start_index, Poly_swing* poly_swing){
+  size_t end_index = start_index + poly_swing->length - 1;
+  float pow0 = poly_swing->current.pow0;
+  float pow1 = poly_swing->current.pow1;
   Bit_vec_builder bitVecBuilder;
   bitVecBuilder.current_byte = 0;
   bitVecBuilder.remaining_bits = 8;
@@ -129,7 +129,7 @@ void selectPolySwing(struct SelectedModel* model, size_t start_index, Poly_swing
   if(bitVecBuilder.bytes == NULL){
       printf("MALLOC ERROR\n");
   }
-  int32_t floatAsInt = floatToBit((float)polySwing->current.pow2);
+  int32_t floatAsInt = floatToBit((float)poly_swing->current.pow2);
   append_bits(&bitVecBuilder, floatAsInt, VALUE_SIZE_IN_BITS);
   for(int i = 0; i < 4; i++){
     model->values[i] = bitVecBuilder.bytes[i];
@@ -141,8 +141,8 @@ void selectPolySwing(struct SelectedModel* model, size_t start_index, Poly_swing
   model->values_capacity = 4;
 }
 
-struct SelectedModel getSelectedModel(){
-    struct SelectedModel mod;
+Selected_model get_selected_model(){
+    Selected_model mod;
     mod.model_type_id = 0;
     mod.end_index = 0;
     mod.min_value = 0;
@@ -155,7 +155,7 @@ struct SelectedModel getSelectedModel(){
     return mod;
 }
 
-void resetSelectedModel(struct SelectedModel* model){
+void reset_selected_model(Selected_model* model){
     model->model_type_id = 0;
     model->end_index = 0;
     model->min_value = 0;
@@ -167,6 +167,6 @@ void resetSelectedModel(struct SelectedModel* model){
     }
 }
 
-void deleteSelectedModel(struct SelectedModel* model){
+void delete_selected_model(Selected_model* model){
   free(model->values);
 }

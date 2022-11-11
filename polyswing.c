@@ -211,9 +211,9 @@ Poly_swing getPolySwing(double errorBound){
     return model;
 }
 
-void deletePolySwing(Poly_swing* polySwing){
-    freemat(polySwing->ATA);
-    freemat(polySwing->ATY);
+void deletePolySwing(Poly_swing* poly_swing){
+    freemat(poly_swing->ATA);
+    freemat(poly_swing->ATY);
 }
 
 float* gridPolySwing(float c, float b, uint8_t* values, long* timestamps, int timestampCount){
