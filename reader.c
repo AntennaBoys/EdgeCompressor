@@ -1,17 +1,24 @@
+#include "mod.h"
+#include "uncompressed_data_maneger.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "paths.h"
 #include "math.h"
-#include "swing.h"
+#include "jsonprint.h"
+#include <limits.h>
 
-int RESET_BOTH = 0;
-double ERROR_BOUND = 0.002;
 
-void resetStruct(struct swing *data);
-struct swing getStruct(double errorBound);
-void writeToFile(FILE *file, struct swing model, int index, char* start);
+#define ERROR_BOUND 0.009
+#define INITIAL_BUFFER 200
+#define GORILLA_MAX 50
+
+
+
+
+
+
 const char* getfield(char* line, int num)
 {
     const char* tok;
@@ -27,130 +34,72 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-                 
-    struct swing dataLat = getStruct(ERROR_BOUND);
-    struct swing dataLong = getStruct(ERROR_BOUND);
-    int index = 0;
+    UncompressedData latData = createUncompressedDataManeger(outPutCsvFileLat);
+    UncompressedData longData = createUncompressedDataManeger(outPutCsvFileLong);
+
+    
 
     FILE* stream = fopen(dataPath, "r");
     char line[1024];
-    FILE *latfpt;
-    FILE *longfpt;
 
-    latfpt = fopen(outPutCsvFileLat, "w+");
-    longfpt = fopen(outPutCsvFileLong, "w+");
-    fprintf(latfpt,"{\"models\":[\n");
-    fprintf(longfpt,"{\"models\":[\n");
-    int latiCount = 0;
-    int longCount = 0;
-    char* longFirst = "";
-    char* latFirst = "";
+    int longFirst = 1;
+    int latFirst = 1;
+    long timestamp = 0;
     struct tm tmVar;
-    time_t timeVar;
-    while (fgets(line, 1024, stream))
-    {
-        char* lat = strdup(line);
-        char* longs = strdup(line);
-        char* ts = strdup(line);
+    while(fgets(line, 1024, stream)){
+        char* latStr = _strdup(line);
+        char* longStr = _strdup(line);
+        char* ts = _strdup(line);
         char* errorPointer;
-        double latVal = strtod(getfield(lat, 5), &errorPointer);
-        double longVal = strtod(getfield(longs, 6), &errorPointer);
-        char* timestampTemp = getfield(ts, 2);
+        const char* timestampTemp = getfield(ts, 2);
 
-        
         //01/09/2022 00:00:0
         if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
             tmVar.tm_year -= 1900;
             tmVar.tm_mon -= 1;
-            timeVar = mktime(&tmVar)+3600;
-        }
-        else
-            continue;
+            tmVar.tm_isdst = 1;
+            long time = mktime(&tmVar)+3600;
+            timestamp = time == timestamp ? time + 1 : time;
+            insertData(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            insertData(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+                
             
-        int resLat = fitValues(&dataLat, (long)timeVar, latVal);
-        int resLong = fitValues(&dataLong, (long)timeVar, longVal);
-        // if ((resLat && !RESET_BOTH) || (resLat && resLong)){
-        //     //printf("%ld", (long)timeVar);
-        // }
-        if(!resLat || RESET_BOTH && !resLong){ // is 
-            latiCount++;
-            writeToFile(latfpt, dataLat, index, latFirst); //print to file
-            latFirst = ",";
-            printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLat);
-            if(!resLat)
-                fitValues(&dataLat, (long)timeVar, latVal);
+
+            free(longStr);
+            free(latStr);
+            free(ts);
+        }else {
+            free(latStr);
+            free(longStr);
+            free(ts);
+            continue;
         }
-        // if ((resLong && !RESET_BOTH) || (resLat && resLong)){ 
-        //     //printf("%ld", (long)timeVar);
-        // }
-        if(!resLong || RESET_BOTH && !resLat){
-            longCount++;
-            writeToFile(longfpt, dataLong, index, longFirst);
-            longFirst = ",";
-            printf("%ld\n", (long)timeVar);
-            resetStruct(&dataLong);
-            if(!resLong)
-                fitValues(&dataLong, (long)timeVar, longVal);
-        }
-        if(!resLat || !resLong) { 
-            printf("%d\n",index);
-        }
-        index++;
-        // NOTE strtok clobbers tmp
-        free(lat);
-        free(longs);
-        free(ts);
     }
-    longCount++;
-    writeToFile(longfpt, dataLong, index, longFirst);
-    latiCount++;
-    writeToFile(latfpt, dataLat, index, latFirst);
-    printf("results:\nlatitude = %d\nlongitude = %d\n", latiCount, longCount);
-    fprintf(latfpt,"]}\n");
-    fprintf(longfpt,"]}\n");
-    fclose(latfpt);
-    fclose(longfpt);
-    fclose(stream);
+    if(latData.currentSize > 0){
+        forceCompressData(&latData, latFirst);
+    }
+    if(longData.currentSize > 0){
+        forceCompressData(&longData, longFirst);
+    }
+    deleteUncompressedDataManeger(&latData);
+    deleteUncompressedDataManeger(&longData);
+    closeFile(stream);
 }
 
-void resetStruct(struct swing *data){
-    data->first_timestamp = 0;
-    data->last_timestamp = 0;
-    data->first_value = NAN;
-    data->upper_bound_slope = NAN;
-    data->upper_bound_intercept = NAN;
-    data->lower_bound_slope = NAN;
-    data->lower_bound_intercept = NAN;
-    data->length = 0;
-}
 
-struct swing getStruct(double errorBound){
-    struct swing data;
-    data.error_bound = 0.022;
-    data.first_timestamp = 0;
-    data.last_timestamp = 0;
-    data.first_value = NAN;
-    data.upper_bound_slope = NAN;
-    data.upper_bound_intercept = NAN;
-    data.lower_bound_slope = NAN;
-    data.lower_bound_intercept = NAN;
-    data.length = 0;
-    return data;
-}
 
-void writeToFile(FILE *file, struct swing model, int index, char* start){
-    double first_value = getModelFirst(model);
-    double last_value = getModelLast(model);
 
-    fprintf(file,"  %s{\n", start);
-    fprintf(file,"   \"end_index\":%d,\n", index);
-    fprintf(file,"   \"min_value\":%lf,\n", first_value < last_value ? first_value : last_value);
-    fprintf(file,"   \"max_value\":%lf,\n", first_value >= last_value ? first_value : last_value);
-    fprintf(file,"   \"values\":%d,\n", (first_value < last_value));
-    fprintf(file,"   \"start_time\":%ld,\n", model.first_timestamp);
-    fprintf(file,"   \"end_time\":%ld\n", model.last_timestamp);
-    fprintf(file,"  }\n");
 
-    
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
