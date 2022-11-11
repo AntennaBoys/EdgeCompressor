@@ -1,9 +1,6 @@
 #include "uncompressed_data_maneger.h"
-#include "jsonprint.h"
 #include "compression.h"
-
-#define BUFFER_SIZE 1024
-#define ERROR_BOUND 0.002
+#define ERROR_BOUND 0.0005
 
 void resize(UncompressedData* data);
 
@@ -13,6 +10,7 @@ UncompressedData createUncompressedDataManeger(char* filePath){
     data.currentSize = 0;
     data.output = openFile(filePath);
     data.timestamps = malloc(data.maxSize * sizeof(*data.timestamps));
+    data.newBuilder = 1;
     if(!data.timestamps){
         printf("CALLOC ERROR(createUncompressedDataManeger->data.timestamps)\n");
     }
@@ -48,9 +46,19 @@ void resizeUncompressedData(UncompressedData* data){
 void insertData(UncompressedData* data, long timestamp, float value, int* first){
     data->currentSize++;
     resizeUncompressedData(data);
+    if(!data->newBuilder){
+        data->segmentBuilder.uncompressed_timestamps = data->timestamps;
+        data->segmentBuilder.uncompressed_values = data->values;
+    }
     data->timestamps[data->currentSize-1] = timestamp;
     data->values[data->currentSize-1] = value;
-    if(data->currentSize >= BUFFER_SIZE){
+    if(data->newBuilder){
+        data->segmentBuilder = newCompressedSegmentBuilder(0, data->timestamps, data->values, data->currentSize, ERROR_BOUND);
+        data->newBuilder = 0;
+    }else{
+        tryToUpdateModels(&data->segmentBuilder, timestamp, value);
+    }
+    if(!canFitMore(data->segmentBuilder)){
         tryCompress(data, ERROR_BOUND, first);
     }
 }

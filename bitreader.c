@@ -39,3 +39,7 @@ uint32_t read_bits(BitReader* bitReader, uint8_t numberOfBits){
 uint32_t read_bit(BitReader* bitReader){
     return read_bits(bitReader, 1);
 }
+
+float intToFloat(uint32_t value){
+    return *(float*) (&value);
+}

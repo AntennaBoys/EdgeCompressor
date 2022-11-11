@@ -1,19 +1,17 @@
 #include "mod.h"
 #include "uncompressed_data_maneger.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "paths.h"
-#include "math.h"
+#include <math.h>
 #include "jsonprint.h"
 #include <limits.h>
 
 
-#define ERROR_BOUND 0.009
+#define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
-
 
 
 
@@ -47,9 +45,9 @@ int main()
     long timestamp = 0;
     struct tm tmVar;
     while(fgets(line, 1024, stream)){
-        char* latStr = _strdup(line);
-        char* longStr = _strdup(line);
-        char* ts = _strdup(line);
+        char* latStr = strdup(line);
+        char* longStr = strdup(line);
+        char* ts = strdup(line);
         char* errorPointer;
         const char* timestampTemp = getfield(ts, 2);
 

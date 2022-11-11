@@ -1,8 +1,5 @@
-#include "bitreader.h"
 #include "gorilla.h"
-#include "constants.h"
-#include <stdio.h>
-#include <limits.h>
+
 
 
 const int debug = 0;
@@ -229,13 +226,13 @@ void deleteGorilla(struct Gorilla* gorilla){
     free(gorilla->compressed_values.bytes);
 }
 
-float intToFloat(int value){
-    return *(float*) (&value);
-}
 
-float* gridGorilla(int* values, int valuesCount, int timestampCount){
+float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount){
     float* result;
     result = malloc(timestampCount * sizeof(*result));
+    if(!result){
+        printf("CALLOC ERROR (gridGorilla: result)\n");
+    }
     int resultIndex = 0;
     BitReader bitReader = tryNewBitreader(values, valuesCount);
     int leadingZeros = 255;

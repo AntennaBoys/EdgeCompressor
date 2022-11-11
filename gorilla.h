@@ -3,8 +3,10 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-
-
+#include "bitreader.h"
+#include "constants.h"
+#include <stdio.h>
+#include <limits.h>
 
 struct BitVecBuilder {
     uint8_t current_byte ;
