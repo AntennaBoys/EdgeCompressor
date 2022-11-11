@@ -8,7 +8,7 @@ struct CompressedSegmentBuilder{
     size_t start_index;
     struct PMCMean pmcmean;
     int pmc_mean_could_fit_all;
-    struct swing swing;
+    Swing swing;
     int swing_could_fit_all;
     struct Gorilla gorilla;
     int polyswing_could_fit_all;

@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-struct swing {
+struct Swing {
     /// Maximum relative error for the value of each data point.
     double error_bound;
     /// Time at which the first value represented by the current model was
@@ -32,16 +32,16 @@ struct swing {
     double lower_bound_intercept;
     /// The number of data points the current model has been fitted to.
     int length;
-};
-int fitValueSwing(struct swing *data, long timeStamp, double value);
-double getModelFirst(struct swing current_swing);
-double getModelLast(struct swing current_swing);
-float get_bytes_per_value_swing(struct swing* data);
-void get_model_swing(struct swing* data, float arr[]);
-size_t get_length_swing(struct swing* data);
+} typedef Swing;
+int fitValueSwing(Swing *data, long timeStamp, double value);
+double getModelFirst(Swing current_swing);
+double getModelLast(Swing current_swing);
+float get_bytes_per_value_swing(Swing* data);
+void get_model_swing(Swing* data, float arr[]);
+size_t get_length_swing(Swing* data);
 
-struct swing getSwing(double errorBound);
-void resetSwing(struct swing *data);
+Swing getSwing(double errorBound);
+void resetSwing(Swing *data);
 float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount);
 
 #endif

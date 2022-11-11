@@ -1,11 +1,11 @@
 #include "mod.h"
 
 
-#define MODELCOUNT 4
+#define MODEL_COUNT 4
 
 
-void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, struct swing* swing, struct Gorilla* gorilla, struct polySwing* polyswing, float *uncompressed_values){
-    struct bytes_per_value bytes[MODELCOUNT];
+void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean* pmcmean, Swing* swing, struct Gorilla* gorilla, struct polySwing* polyswing, float *uncompressed_values){
+    struct bytes_per_value bytes[MODEL_COUNT];
 
     bytes[0].id = PMC_MEAN_ID;
     bytes[0].bytes = get_bytes_per_value_pmc(pmcmean);
@@ -18,7 +18,7 @@ void selectModel(struct SelectedModel* data, size_t start_index, struct PMCMean*
     printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
     struct bytes_per_value selectedModel;
 
-    for(int i=0; i < MODELCOUNT; i++){
+    for(int i=0; i < MODEL_COUNT; i++){
         if (i==0){
             selectedModel = bytes[i];
         }
@@ -53,7 +53,7 @@ void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMC
   model->max_value = value;
 }
 
-void select_swing(struct SelectedModel* model, size_t start_index, struct swing* swing){
+void select_swing(struct SelectedModel* model, size_t start_index, Swing* swing){
   float arr[2];
 
   get_model_swing(swing, arr);

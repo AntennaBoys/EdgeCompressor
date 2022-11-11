@@ -12,7 +12,7 @@ void closeFile(FILE* file){
     fclose(file);
 }
 
-void writeSwingToFile(FILE *file, struct swing model, int index, int first){
+void writeSwingToFile(FILE *file, Swing model, int index, int first){
     float first_value = getModelFirst(model);
     float last_value = getModelLast(model);
 

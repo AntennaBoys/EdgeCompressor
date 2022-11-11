@@ -18,11 +18,11 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValueSwing(struct swing *data, long timeStamp, double value);
+int fitValueSwing(Swing *data, long timeStamp, double value);
 
 
 
-int fitValueSwing(struct swing* data, long timeStamp, double value){
+int fitValueSwing(Swing* data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.0));
 
     if (data->length == 0) {
@@ -140,11 +140,11 @@ struct slopeAndIntercept compute_slope_and_intercept(
     }
 }
 
-double getModelFirst(struct swing current_swing){
+double getModelFirst(Swing current_swing){
     return current_swing.upper_bound_slope * current_swing.first_timestamp + current_swing.upper_bound_intercept;
 }
 
-double getModelLast(struct swing current_swing){
+double getModelLast(Swing current_swing){
     return current_swing.upper_bound_slope * current_swing.last_timestamp + current_swing.upper_bound_intercept;
 }
 
@@ -157,10 +157,10 @@ int equalOrNAN(double v1, double v2){
     return v1==v2 || (isNan(v1) && isNan(v2));
 }
 
-float get_bytes_per_value_swing(struct swing* data){
+float get_bytes_per_value_swing(Swing* data){
     return (float) (2 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
-void get_model_swing(struct swing* data, float *arr){
+void get_model_swing(Swing* data, float *arr){
   double first_value = data->upper_bound_slope * (double) data->first_timestamp + data->upper_bound_intercept;
 
   double last_value = data->upper_bound_slope * (double) data->last_timestamp + data->upper_bound_intercept;
@@ -169,15 +169,15 @@ void get_model_swing(struct swing* data, float *arr){
   arr[1] = (float) last_value;
 }
 
-size_t get_length_swing(struct swing* data){
+size_t get_length_swing(Swing* data){
   return data->length;
 }
 
 //
 // Created by power on 23-09-2022.
 //
-struct swing getSwing(double errorBound){
-  struct swing data;
+Swing getSwing(double errorBound){
+  Swing data;
   data.error_bound = errorBound;
   data.first_timestamp = 0;
   data.last_timestamp = 0;
@@ -190,7 +190,7 @@ struct swing getSwing(double errorBound){
   return data;
 }
 
-void resetSwing(struct swing *data){
+void resetSwing(Swing *data){
   data->first_timestamp = 0;
   data->last_timestamp = 0;
   data->first_value = NAN;
