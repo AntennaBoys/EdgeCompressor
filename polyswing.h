@@ -16,7 +16,7 @@ typedef struct terms {
     double pow0;
 } terms;
 
-struct polySwing {
+struct Poly_swing {
     /// Maximum relative error for the value of each data point.
     double error_bound;
     /// Time at which the first value represented by the current model was
@@ -43,12 +43,12 @@ struct polySwing {
     Mat* ATA;
     Mat* ATY;
     int terminateSegment;
-};
+} typedef Poly_swing;
 
 
-int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value);
-struct polySwing getPolySwing(double errorBound);
-float get_bytes_per_value_polyswing(struct polySwing* data);
-void deletePolySwing(struct polySwing* polySwing);
+int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value);
+Poly_swing getPolySwing(double errorBound);
+float get_bytes_per_value_polyswing(Poly_swing* data);
+void deletePolySwing(Poly_swing* polySwing);
 float* gridPolySwing(float pow0, float pow1, uint8_t* values, long* timestamps, int timestampCount);
 #endif

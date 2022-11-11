@@ -5,12 +5,12 @@
 
 void updateATA(Mat* ATA, long new_x);
 void updateATY(Mat* ATY, long new_x, double new_y);
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, struct polySwing *model);
-terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwing *model);
-void writeToFile(FILE *file, struct polySwing model, int index, char* start, int id);
-void resetStruct(struct polySwing *data);
+Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model);
+terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model);
+void writeToFile(FILE *file, Poly_swing model, int index, char* start, int id);
+void resetStruct(Poly_swing *data);
 
-int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value){
+int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     data->deltaTime = timeStamp - data->first_timestamp;
@@ -96,7 +96,7 @@ int fitValuesPolySwing(struct polySwing *data, long timeStamp, double value){
 }
 
 
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, struct polySwing *model){
+Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
     updateATA(ATA, new_x);
     updateATY(ATY, new_x, new_y);
 
@@ -178,7 +178,7 @@ void updateATA(Mat* ATA, long new_x){
     set(ATA, 3, 3, current + pow(new_x, 4));
 }
 
-terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwing *model){
+terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model){
     Mat* res = updateAll(ATA, ATY, x, y, model);
 
     terms result = {0,0,0};
@@ -194,16 +194,16 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, struct polySwin
 }
 
 
-void resetStruct(struct polySwing *data){
+void resetStruct(Poly_swing *data){
     data->length = 0;
 }
 
-float get_bytes_per_value_polyswing(struct polySwing* data){
+float get_bytes_per_value_polyswing(Poly_swing* data){
     return (float) (3 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
 
-struct polySwing getPolySwing(double errorBound){
-    struct polySwing model;
+Poly_swing getPolySwing(double errorBound){
+    Poly_swing model;
     model.error_bound = errorBound;
     model.length = 0;
     model.deltaTime = 0;
@@ -211,7 +211,7 @@ struct polySwing getPolySwing(double errorBound){
     return model;
 }
 
-void deletePolySwing(struct polySwing* polySwing){
+void deletePolySwing(Poly_swing* polySwing){
     freemat(polySwing->ATA);
     freemat(polySwing->ATY);
 }

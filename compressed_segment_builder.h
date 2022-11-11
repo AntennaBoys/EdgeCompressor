@@ -12,7 +12,7 @@ struct CompressedSegmentBuilder{
     int swing_could_fit_all;
     struct Gorilla gorilla;
     int polyswing_could_fit_all;
-    struct polySwing polyswing;
+    Poly_swing polyswing;
     long* uncompressed_timestamps;
     float* uncompressed_values;
 } typedef CompressedSegmentBuilder;
