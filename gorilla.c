@@ -56,7 +56,7 @@ int32_t floatToBit(float val){
 }
 
 
-void fitValueGorilla(struct Gorilla* data, float value){
+void fitValueGorilla(Gorilla* data, float value){
     int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
     int32_t last_value_as_integer = floatToBit(data->last_value);
     int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
@@ -105,15 +105,15 @@ void fitValueGorilla(struct Gorilla* data, float value){
     data->length++;
 }
 
-float get_bytes_per_value_gorilla(struct Gorilla* data){
+float get_bytes_per_value_gorilla(Gorilla* data){
     return (float) len(&data->compressed_values) / (float) data->length;
 }
 
-size_t len(struct BitVecBuilder* data){
+size_t len(Bit_vec_builder* data){
     return data->bytes_counter + (size_t) (data->remaining_bits != 8);
 }
 
-uint8_t* finish(struct BitVecBuilder* data){
+uint8_t* finish(Bit_vec_builder* data){
   if (data->remaining_bits != 8){
     data->bytes_capacity++;
     data->bytes = realloc(data->bytes, 4 * data->bytes_capacity * sizeof(*data->bytes));
@@ -122,11 +122,11 @@ uint8_t* finish(struct BitVecBuilder* data){
   return data->bytes;
 }
 
-uint8_t* get_compressed_values(struct Gorilla* data){
+uint8_t* get_compressed_values(Gorilla* data){
   return finish(&data->compressed_values);
 }
 
-size_t get_length_gorilla(struct Gorilla* data){
+size_t get_length_gorilla(Gorilla* data){
     return data->length;
 }
 
@@ -134,16 +134,16 @@ size_t get_length_gorilla(struct Gorilla* data){
 
 
 
-void append_a_zero_bit(struct BitVecBuilder* data){
+void append_a_zero_bit(Bit_vec_builder* data){
     append_bits(data, 0, 1);
 }
 
-void append_a_one_bit(struct BitVecBuilder* data){
+void append_a_one_bit(Bit_vec_builder* data){
     append_bits(data, 1, 1);
 }
 
 
-void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
+void append_bits(Bit_vec_builder* data, long bits, uint8_t number_of_bits){
     uint8_t _number_of_bits = number_of_bits;
 
     while(_number_of_bits > 0){
@@ -180,8 +180,8 @@ void append_bits(struct BitVecBuilder* data, long bits, uint8_t number_of_bits){
     }
 }
 
-struct Gorilla getGorilla(){
-    struct Gorilla data;
+Gorilla getGorilla(){
+    Gorilla data;
     data.last_value = 0;
     data.last_leading_zero_bits = UCHAR_MAX;
     data.last_trailing_zero_bits = 0;
@@ -206,7 +206,7 @@ struct Gorilla getGorilla(){
     return data;
 }
 
-void resetGorilla(struct Gorilla* gorilla){
+void resetGorilla(Gorilla* gorilla){
     gorilla->last_leading_zero_bits = UCHAR_MAX;
     gorilla->last_trailing_zero_bits = 0;
     gorilla->last_value = 0;
@@ -222,7 +222,7 @@ void resetGorilla(struct Gorilla* gorilla){
     }
 }
 
-void deleteGorilla(struct Gorilla* gorilla){
+void deleteGorilla(Gorilla* gorilla){
     free(gorilla->compressed_values.bytes);
 }
 

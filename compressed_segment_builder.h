@@ -10,7 +10,7 @@ struct CompressedSegmentBuilder{
     int pmc_mean_could_fit_all;
     Swing swing;
     int swing_could_fit_all;
-    struct Gorilla gorilla;
+    Gorilla gorilla;
     int polyswing_could_fit_all;
     Poly_swing polyswing;
     long* uncompressed_timestamps;

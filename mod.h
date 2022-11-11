@@ -26,12 +26,12 @@ struct bytes_per_value{
     float bytes;
 };
 
-void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gorilla* gorilla, float *uncompressed_values);
+void select_gorilla(struct SelectedModel* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values);
 void select_pmc_mean(struct SelectedModel* model, size_t start_index, Pmc_mean* pmcmean);
 void select_swing(struct SelectedModel* model, size_t start_index, Swing* swing);
 void selectPolySwing(struct SelectedModel* model, size_t start_index, Poly_swing* polySwing);
 
-void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, struct Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values);
+void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values);
 
 struct SelectedModel getSelectedModel(void);
 void resetSelectedModel(struct SelectedModel* model);

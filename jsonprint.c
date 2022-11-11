@@ -31,7 +31,7 @@ void writeSwingToFile(FILE *file, Swing model, int index, int first){
     fprintf(file,"  }\n");
 }
 
-void writeGorillaToFile(FILE* file, struct Gorilla model, int index, int first){
+void writeGorillaToFile(FILE* file, Gorilla model, int index, int first){
     if (!first){
         fprintf(file,"  ,{\n");
     }else{

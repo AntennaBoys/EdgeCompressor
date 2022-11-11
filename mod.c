@@ -4,7 +4,7 @@
 #define MODEL_COUNT 4
 
 
-void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, struct Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
+void selectModel(struct SelectedModel* data, size_t start_index, Pmc_mean* pmcmean, Swing* swing, Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values){
     struct bytes_per_value bytes[MODEL_COUNT];
 
     bytes[0].id = PMC_MEAN_ID;
@@ -78,7 +78,7 @@ void select_swing(struct SelectedModel* model, size_t start_index, Swing* swing)
 
 
 
-void select_gorilla(struct SelectedModel* model, size_t start_index, struct Gorilla* gorilla, float *uncompressed_values){
+void select_gorilla(struct SelectedModel* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
 
     float max = uncompressed_values[start_index];
@@ -114,7 +114,7 @@ void selectPolySwing(struct SelectedModel* model, size_t start_index, Poly_swing
   size_t end_index = start_index + polySwing->length - 1;
   float pow0 = polySwing->current.pow0;
   float pow1 = polySwing->current.pow1;
-  struct BitVecBuilder bitVecBuilder;
+  Bit_vec_builder bitVecBuilder;
   bitVecBuilder.current_byte = 0;
   bitVecBuilder.remaining_bits = 8;
   model->values_capacity = 4;
