@@ -381,16 +381,18 @@ void deletePolySwing(struct polySwing* polySwing){
     freemat(polySwing->ATY);
 }
 
-float* gridPolySwing(float pow0, float pow1, uint8_t* values, long* timestamps, int timestampCount){
+float* gridPolySwing(float c, float b, uint8_t* values, long* timestamps, int timestampCount){
     BitReader bitReader = tryNewBitreader(values, 4);
-    float pow2 = intToFloat(read_bits(&bitReader, 32));
+    float a = intToFloat(read_bits(&bitReader, 32));
     float* result;
     result = malloc(timestampCount * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridPolySwing: result)\n");
     }
+    long deltatime;
     for(int i = 0; i < timestampCount; i++){
-        result[i] = pow1 * timestamps[i] + pow2 * (timestamps[i] * timestamps[i]) + pow0;
+        deltatime = timestamps[i] - timestamps[0];
+        result[i] = b * deltatime + a * (deltatime * deltatime) + c;
     }
     return result;
 }

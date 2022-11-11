@@ -47,6 +47,7 @@ void select_pmc_mean(struct SelectedModel* model, size_t start_index, struct PMC
   size_t end_index = start_index + get_length_pmcmean(pmcmean) - 1;
 
   model->model_type_id = (uint8_t) PMC_MEAN_ID;
+  model->values[0] = 0;
   model->end_index = end_index;
   model->min_value = value;
   model->max_value = value;
