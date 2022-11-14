@@ -7,6 +7,7 @@
 #include <math.h>
 #include "jsonprint.h"
 #include <limits.h>
+#include "vector_based.h"
 
 
 #define ERROR_BOUND 0.1
@@ -35,6 +36,7 @@ int main()
     Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
     Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
 
+    Vector_based vb = getVector_based();
     
 
     FILE* stream = fopen(dataPath, "r");
@@ -44,6 +46,12 @@ int main()
     int latFirst = 1;
     long timestamp = 0;
     struct tm tmVar;
+
+    FILE *test1;
+    test1 = fopen("/home/teis/git/EdgeCompressor/vector_plot.csv", "w+");
+    fprintf(test1,"lat, long\n");
+    fclose(test1);
+
     while(fgets(line, 1024, stream)){
         char* latStr = strdup(line);
         char* longStr = strdup(line);
@@ -58,9 +66,9 @@ int main()
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
             timestamp = time == timestamp ? time + 1 : time;
-            insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
-                
+            // insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            // insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            fitValuesVectorBased(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
             
 
             free(longStr);
@@ -73,14 +81,14 @@ int main()
             continue;
         }
     }
-    if(latData.current_size > 0){
-        force_compress_data(&latData, latFirst);
-    }
-    if(longData.current_size > 0){
-        force_compress_data(&longData, longFirst);
-    }
-    delete_uncompressed_data_maneger(&latData);
-    delete_uncompressed_data_maneger(&longData);
+    // if(latData.current_size > 0){
+    //     force_compress_data(&latData, latFirst);
+    // }
+    // if(longData.current_size > 0){
+    //     force_compress_data(&longData, longFirst);
+    // }
+    // delete_uncompressed_data_maneger(&latData);
+    // delete_uncompressed_data_maneger(&longData);
     closeFile(stream);
 }
 
