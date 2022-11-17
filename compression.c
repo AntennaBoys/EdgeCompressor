@@ -71,7 +71,7 @@ void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, floa
         fitValueGorilla(&builder->gorilla, value);
     }
     if(builder->polyswing_could_fit_all){
-        builder->polyswing_could_fit_all = fitValuesPolySwing(&builder->polyswing, timestamp, value);// && builder->polyswing.length < 4;
+        builder->polyswing_could_fit_all = fit_values_polyswing(&builder->polyswing, timestamp, value);// && builder->polyswing.length < 4;
     }
 }
 

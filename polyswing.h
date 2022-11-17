@@ -46,7 +46,7 @@ struct Poly_swing {
 } typedef Poly_swing;
 
 
-int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value);
+int fit_values_polyswing(Poly_swing *data, long timeStamp, double value);
 Poly_swing getPolySwing(double errorBound);
 float get_bytes_per_value_polyswing(Poly_swing* data);
 void deletePolySwing(Poly_swing* poly_swing);

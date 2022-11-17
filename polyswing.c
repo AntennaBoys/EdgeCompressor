@@ -3,14 +3,13 @@
 #include "bitreader.h"
 
 
-void updateATA(Mat* ATA, long new_x);
-void updateATY(Mat* ATY, long new_x, double new_y);
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model);
+void update_ATA(Mat* ATA, long new_x);
+void update_ATY(Mat* ATY, long new_x, double new_y);
+Mat* update_all(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model);
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model);
-void writeToFile(FILE *file, Poly_swing model, int index, char* start, int id);
-void resetStruct(Poly_swing *data);
+void reset_struct(Poly_swing *data);
 
-int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
+int fit_values_polyswing(Poly_swing *data, long timeStamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     data->deltaTime = timeStamp - data->first_timestamp;
@@ -96,9 +95,9 @@ int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
 }
 
 
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
-    updateATA(ATA, new_x);
-    updateATY(ATY, new_x, new_y);
+Mat* update_all(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
+    update_ATA(ATA, new_x);
+    update_ATY(ATY, new_x, new_y);
 
     Mat* _ATA, *_ATY, *res;
 
@@ -145,7 +144,7 @@ Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
     return res;
 }
 
-void updateATY(Mat* ATY, long new_x, double new_y){
+void update_ATY(Mat* ATY, long new_x, double new_y){
     float current = get(ATY, 1,1);
     set(ATY, 1, 1, current + pow(new_x, 0)*new_y);
     current = get(ATY, 1,2);
@@ -154,7 +153,7 @@ void updateATY(Mat* ATY, long new_x, double new_y){
     set(ATY, 1, 3, current + pow(new_x, 2)*new_y);
 }
 
-void updateATA(Mat* ATA, long new_x){
+void update_ATA(Mat* ATA, long new_x){
     //Øverste række
     float current = get(ATA, 1,1);
     set(ATA, 1, 1, current + pow(new_x, 0));
@@ -179,7 +178,7 @@ void updateATA(Mat* ATA, long new_x){
 }
 
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model){
-    Mat* res = updateAll(ATA, ATY, x, y, model);
+    Mat* res = update_all(ATA, ATY, x, y, model);
 
     terms result = {0,0,0};
     int pow = get(ATA, 1,1);
@@ -194,7 +193,7 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *mod
 }
 
 
-void resetStruct(Poly_swing *data){
+void reset_struct(Poly_swing *data){
     data->length = 0;
 }
 
