@@ -1,7 +1,7 @@
 #include "vector_based.h"
 #include <stdio.h>
 
-#define ERROR 2.5
+#define ERROR 0.02
 
 Vector_based get_vector_based(){
     Vector_based vb;
@@ -32,15 +32,25 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
     else if (data->length == 1) {
         data->prev_delta = data->current_delta;
         data->current_delta = time_stamp - data->start_time;
-
-
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
-        data->end_time = time_stamp;
-        data->length++;        
-        
-        // Build vector
-        data->vec.x = data->current.longitude - data->prev.longitude;
-        data->vec.y = data->current.latitude - data->prev.latitude;
+
+        // Calculate distance between first point and current
+        double distance = sqrt( (data->prev.longitude - data->current.longitude) * (data->prev.longitude- data->current.longitude) 
+                                + (data->prev.latitude - data->current.latitude) * (data->prev.latitude - data->current.latitude) );
+
+        // Update only if second point is outside the threshold
+        if(distance > ERROR){
+
+
+            data->end_time = time_stamp;
+            data->length++;        
+            
+            // Build vector
+            data->vec.x = data->current.longitude - data->prev.longitude;
+            data->vec.y = data->current.latitude - data->prev.latitude;
+            return 0;
+        }
+
         return 1;
     } 
     else {
