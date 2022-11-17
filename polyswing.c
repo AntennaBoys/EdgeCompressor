@@ -201,9 +201,9 @@ float get_bytes_per_value_polyswing(Poly_swing* data){
     return (float) (3 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
 
-Poly_swing getPolySwing(double errorBound){
+Poly_swing getPolySwing(double error_bound){
     Poly_swing model;
-    model.error_bound = errorBound;
+    model.error_bound = error_bound;
     model.length = 0;
     model.deltaTime = 0;
     model.terminateSegment = 0;
@@ -215,16 +215,16 @@ void deletePolySwing(Poly_swing* poly_swing){
     freemat(poly_swing->ATY);
 }
 
-float* gridPolySwing(float c, float b, uint8_t* values, long* timestamps, int timestampCount){
+float* gridPolySwing(float c, float b, uint8_t* values, long* timestamps, int timestamp_count){
     BitReader bitReader = tryNewBitreader(values, 4);
     float a = intToFloat(read_bits(&bitReader, 32));
     float* result;
-    result = malloc(timestampCount * sizeof(*result));
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridPolySwing: result)\n");
     }
     long deltatime;
-    for(int i = 0; i < timestampCount; i++){
+    for(int i = 0; i < timestamp_count; i++){
         deltatime = timestamps[i] - timestamps[0];
         result[i] = b * deltatime + a * (deltatime * deltatime) + c;
     }

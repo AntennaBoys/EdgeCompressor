@@ -4,20 +4,20 @@
 #include <stdio.h>
 
 
-int fitValuePMC(Pmc_mean *data, float value);
-int isValueWithinErrorBound(Pmc_mean*, float, float);
-int equalOrNAN_pmc(float, float);
-int isNan_pmc(float);
+int fit_value_pmc(Pmc_mean *data, float value);
+int is_value_within_error_bound(Pmc_mean*, float, float);
+int equal_or_nan_pmc(float, float);
+int is_nan_pmc(float);
 
 
-int fitValuePMC(Pmc_mean* data, float value){
+int fit_value_pmc(Pmc_mean* data, float value){
     float nextMinValue = data->minValue < value ? data->minValue : value;
     float nextMaxValue = data->maxValue > value ? data->maxValue : value;
     float nextSumOfValues = data->sumOfValues + value;
     size_t nextLength = data->length+1;
     float average = (nextSumOfValues / nextLength);
 
-    if(isValueWithinErrorBound(data, nextMinValue, average) && isValueWithinErrorBound(data, nextMaxValue, average)){
+    if(is_value_within_error_bound(data, nextMinValue, average) && is_value_within_error_bound(data, nextMaxValue, average)){
         data->minValue = nextMinValue;
         data->maxValue = nextMaxValue;
         data->sumOfValues = nextSumOfValues;
@@ -28,8 +28,8 @@ int fitValuePMC(Pmc_mean* data, float value){
     }
 }
 
-int isValueWithinErrorBound(Pmc_mean* data, float realValue, float approxValue){
-    if(equalOrNAN_pmc(realValue, approxValue)){
+int is_value_within_error_bound(Pmc_mean* data, float realValue, float approxValue){
+    if(equal_or_nan_pmc(realValue, approxValue)){
         return 1;
     } else {
         float difference = realValue - approxValue;
@@ -43,11 +43,11 @@ float get_bytes_per_value_pmc(Pmc_mean* data){
 }
 
 
-int equalOrNAN_pmc(float v1, float v2){
-    return v1==v2 || (isNan_pmc(v1) && isNan_pmc(v2));
+int equal_or_nan_pmc(float v1, float v2){
+    return v1==v2 || (is_nan_pmc(v1) && is_nan_pmc(v2));
 }
 
-int isNan_pmc(float val){
+int is_nan_pmc(float val){
     return val != val; //Wacky code but should work for now. Val is NAN if val != val returns 1
 }
 
@@ -59,9 +59,9 @@ size_t get_length_pmcmean (Pmc_mean* data){
     return data->length;
 }
 
-Pmc_mean getPMCMean(double errorBound){
+Pmc_mean get_pmc_mean(double error_bound){
   Pmc_mean data;
-  data.error = errorBound;
+  data.error = error_bound;
   data.minValue = NAN;
   data.maxValue = NAN;
   data.sumOfValues = 0;
@@ -69,20 +69,20 @@ Pmc_mean getPMCMean(double errorBound){
   return data;
 }
 
-void resetPMCMean(Pmc_mean *pmc){
+void reset_pmc_mean(Pmc_mean *pmc){
   pmc->minValue = NAN;
   pmc->maxValue = NAN;
   pmc->sumOfValues = 0;
   pmc->length = 0;
 }
 
-float* gridPMCMean(float value, int timestampCount){
+float* grid_pmc_mean(float value, int timestamp_count){
     float* result;
-    result = malloc(timestampCount * sizeof(*result));
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
-        printf("CALLOC ERROR (gridPMCMean: result)\n");
+        printf("CALLOC ERROR (grid_pmc_mean: result)\n");
     }
-    for(int i = 0; i < timestampCount; i++){
+    for(int i = 0; i < timestamp_count; i++){
         result[i] = value;
     }
     return result;

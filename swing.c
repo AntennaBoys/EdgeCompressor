@@ -176,9 +176,9 @@ size_t get_length_swing(Swing* data){
 //
 // Created by power on 23-09-2022.
 //
-Swing getSwing(double errorBound){
+Swing getSwing(double error_bound){
   Swing data;
-  data.error_bound = errorBound;
+  data.error_bound = error_bound;
   data.first_timestamp = 0;
   data.last_timestamp = 0;
   data.first_value = NAN;
@@ -209,14 +209,14 @@ struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimest
     }
 }
 
-float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount){
+float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestamp_count){
     float* result;
-    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestampCount], min, max, values);
-    result = malloc(timestampCount * sizeof(*result));
+    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestamp_count], min, max, values);
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridSwing: result)\n");
     }
-    for(int i = 0; i < timestampCount; i++){
+    for(int i = 0; i < timestamp_count; i++){
         result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;
     }
     return result;

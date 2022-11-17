@@ -11,16 +11,16 @@ void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, floa
 float* getReconstructedValues(Selected_model model, long* timestamps);
 double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount);
 
-Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double errorBound){
+Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound){
     Compressed_segment_builder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
     builder.polyswing_could_fit_all = 1;
     builder.start_index = startIndex;
-    builder.pmc_mean = getPMCMean(errorBound);
-    builder.swing = getSwing(errorBound);
+    builder.pmc_mean = get_pmc_mean(error_bound);
+    builder.swing = getSwing(error_bound);
     builder.gorilla = getGorilla();
-    builder.polyswing = getPolySwing(errorBound);
+    builder.polyswing = getPolySwing(error_bound);
     builder.uncompressed_timestamps = uncompressedTimestamps;
     builder.uncompressed_values = uncompressedValues;
     
@@ -62,7 +62,7 @@ int canFitMore(Compressed_segment_builder builder){
 
 void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value){
     if(builder->pmc_mean_could_fit_all){
-        builder->pmc_mean_could_fit_all = fitValuePMC(&builder->pmc_mean, value);
+        builder->pmc_mean_could_fit_all = fit_value_pmc(&builder->pmc_mean, value);
     }
     if(builder->swing_could_fit_all){
         builder->swing_could_fit_all = fitValueSwing(&builder->swing, timestamp, value);
@@ -75,7 +75,7 @@ void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, floa
     }
 }
 
-void tryCompress(Uncompressed_data* data, double errorBound, int* first){
+void tryCompress(Uncompressed_data* data, double error_bound, int* first){
     size_t currentIndex = 0;
     currentIndex = finishBatch(data->segment_builder, data->output, *first);
     *first = 0;
@@ -89,7 +89,7 @@ void tryCompress(Uncompressed_data* data, double errorBound, int* first){
     currentIndex = 0;
 }
 
-void forceCompress(Uncompressed_data* data, double errorBound, int first){
+void forceCompress(Uncompressed_data* data, double error_bound, int first){
     int isFirst = first;
     Compressed_segment_builder builder = data->segment_builder;
     size_t currentIndex = 0;
@@ -104,7 +104,7 @@ void forceCompress(Uncompressed_data* data, double errorBound, int first){
         resize_uncompressed_data(data);
         currentIndex = 0;
         if(currentIndex != data->current_size){
-            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->current_size, errorBound);
+            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->current_size, error_bound);
         }
     }
     //finishBatch(data->segment_builder, data->output, first);
@@ -114,7 +114,7 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     switch (model.model_type_id)
     {
     case PMC_MEAN_ID:
-        return gridPMCMean(model.min_value, model.end_index+1);
+        return grid_pmc_mean(model.min_value, model.end_index+1);
     case SWING_ID:
         return gridSwing(model.min_value, model.max_value, model.values[0], timestamps, model.end_index+1);
     case GORILLA_ID:

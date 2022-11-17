@@ -43,5 +43,5 @@ Bit_vec_builder;
 Gorilla getGorilla(void);
 void resetGorilla(Gorilla* gorilla);
 void deleteGorilla(Gorilla* gorilla);
-float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount);
+float* gridGorilla(uint8_t* values, int valuesCount, int timestamp_count);
 #endif
