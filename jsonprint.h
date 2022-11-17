@@ -11,6 +11,6 @@ void closeFile(FILE* file);
 void writeSwingToFile(FILE *file, Swing model, int index, int first);
 void writeGorillaToFile(FILE* file, Gorilla model, int index, int first);
 void writePMCMeanToFile(FILE* file, Pmc_mean model, int index, int first);
-void writeModelToFile(FILE* file, Selected_model model, int first, int startTime, int endTime, double error);
+void writeModelToFile(FILE* file, Selected_model model, int first, int start_time, int end_time, double error);
 
 #endif

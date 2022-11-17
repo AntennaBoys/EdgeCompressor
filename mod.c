@@ -76,7 +76,39 @@ void select_swing(Selected_model* model, size_t start_index, Swing* swing){
 
 }
 
+void select_vector_based(Selected_model* model, Vector_based* vector_model){
+  Bit_vec_builder bit_vec_builder;
+  bit_vec_builder.current_byte = 0;
+  bit_vec_builder.remaining_bits = 8;
+  bit_vec_builder.bytes_counter = 0;
+  bit_vec_builder.bytes_capacity = 4;
+  bit_vec_builder.bytes = (uint8_t*) malloc (bit_vec_builder.bytes_capacity * sizeof(uint8_t));
+  if(bit_vec_builder.bytes == NULL){
+      printf("MALLOC ERROR (select_vector_based)\n");
+  }
 
+  model->values_capacity = 8;
+  model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
+  if(model->values == NULL){
+      printf("REALLOC ERROR (selecPolySwing)\n");
+  }
+
+  model->min_value = vector_model->start.latitude;
+  model->max_value = vector_model->start.longitude;
+
+  int32_t lat_as_int = float_to_bit((float)vector_model->vec.y);
+  int32_t long_as_int = float_to_bit((float)vector_model->vec.x);
+  append_bits(&bit_vec_builder, lat_as_int, VALUE_SIZE_IN_BITS);
+  append_bits(&bit_vec_builder, long_as_int, VALUE_SIZE_IN_BITS);
+
+  for(int i = 0; i < 8; i++){
+    model->values[i] = bit_vec_builder.bytes[i];
+  }
+
+  size_t end_index = vector_model->model_length - 1;
+  model->model_type_id = (uint8_t) VECTOR_ID;
+  model->end_index = end_index;
+}
 
 void select_gorilla(Selected_model* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values){
     size_t end_index = start_index + get_length_gorilla(gorilla) - 1;
@@ -114,25 +146,25 @@ void select_poly_swing(Selected_model* model, size_t start_index, Poly_swing* po
   size_t end_index = start_index + poly_swing->length - 1;
   float pow0 = poly_swing->current.pow0;
   float pow1 = poly_swing->current.pow1;
-  Bit_vec_builder bitVecBuilder;
-  bitVecBuilder.current_byte = 0;
-  bitVecBuilder.remaining_bits = 8;
+  Bit_vec_builder bit_vec_builder;
+  bit_vec_builder.current_byte = 0;
+  bit_vec_builder.remaining_bits = 8;
   model->values_capacity = 4;
   model->values = realloc(model->values, model->values_capacity * sizeof(*model->values));
   if(model->values == NULL){
       printf("REALLOC ERROR (selecPolySwing)\n");
   }
-  bitVecBuilder.bytes_counter = 0;
+  bit_vec_builder.bytes_counter = 0;
 
-  bitVecBuilder.bytes_capacity = 4;
-  bitVecBuilder.bytes = (uint8_t*) malloc (bitVecBuilder.bytes_capacity * sizeof(uint8_t));
-  if(bitVecBuilder.bytes == NULL){
+  bit_vec_builder.bytes_capacity = 4;
+  bit_vec_builder.bytes = (uint8_t*) malloc (bit_vec_builder.bytes_capacity * sizeof(uint8_t));
+  if(bit_vec_builder.bytes == NULL){
       printf("MALLOC ERROR\n");
   }
-  int32_t floatAsInt = floatToBit((float)poly_swing->current.pow2);
-  append_bits(&bitVecBuilder, floatAsInt, VALUE_SIZE_IN_BITS);
+  int32_t floatAsInt = float_to_bit((float)poly_swing->current.pow2);
+  append_bits(&bit_vec_builder, floatAsInt, VALUE_SIZE_IN_BITS);
   for(int i = 0; i < 4; i++){
-    model->values[i] = bitVecBuilder.bytes[i];
+    model->values[i] = bit_vec_builder.bytes[i];
   }
   model->end_index = end_index;
   model->min_value = pow0;

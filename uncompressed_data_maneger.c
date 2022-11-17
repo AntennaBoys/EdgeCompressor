@@ -1,16 +1,17 @@
 #include "uncompressed_data_maneger.h"
 #include "compression.h"
+#include "jsonprint.h"
 #define ERROR_BOUND 0.01
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_path){
+Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_based){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
     data.output = openFile(file_path);
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
-    data.new_builder = 1;
+    data.reset_internal_model = 1;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
@@ -19,6 +20,21 @@ Uncompressed_data create_uncompressed_data_maneger(char* file_path){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.values)\n");
     }
     return data;
+}
+
+void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first){
+    if(!fit_values_vector_based(model, timestamp, lat, lon)){
+        print_vector_based(output, model, first);
+        reset_vector_based(model);
+        fit_values_vector_based(model, timestamp, lat, lon);
+    }
+}
+
+void print_vector_based(FILE* output, Vector_based *model, int *first){
+    Selected_model selected_model = get_selected_model();
+    select_vector_based(&selected_model, model);
+    writeModelToFile(output, selected_model, *first, model->start_time, model->end_time, 0.0);
+    first = 0;
 }
 
 void resize(Uncompressed_data* data){
@@ -46,20 +62,21 @@ void resize_uncompressed_data(Uncompressed_data* data){
 void insert_data(Uncompressed_data* data, long timestamp, float value, int* first){
     data->current_size++;
     resize_uncompressed_data(data);
-    if(!data->new_builder){
+    if(!data->reset_internal_model){
         data->segment_builder.uncompressed_timestamps = data->timestamps;
         data->segment_builder.uncompressed_values = data->values;
     }
     data->timestamps[data->current_size-1] = timestamp;
     data->values[data->current_size-1] = value;
-    if(data->new_builder){
-        data->segment_builder = newCompressedSegmentBuilder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND);
-        data->new_builder = 0;
+
+    if(data->reset_internal_model){
+        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND);
+        data->reset_internal_model = 0;
     }else{
-        tryToUpdateModels(&data->segment_builder, timestamp, value);
+        try_to_update_models(&data->segment_builder, timestamp, value);
     }
-    if(!canFitMore(data->segment_builder)){
-        tryCompress(data, ERROR_BOUND, first);
+    if(!can_fit_more(data->segment_builder)){
+        try_compress(data, ERROR_BOUND, first);
     }
 }
 

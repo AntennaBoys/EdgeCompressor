@@ -6,12 +6,12 @@
 #define GORILLAMAX 50
 
 void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
-int canFitMore(Compressed_segment_builder builder);
-void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value);
+int can_fit_more(Compressed_segment_builder builder);
+void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value);
 float* getReconstructedValues(Selected_model model, long* timestamps);
-double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount);
+double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 
-Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound){
+Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound){
     Compressed_segment_builder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
@@ -19,17 +19,17 @@ Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* 
     builder.start_index = startIndex;
     builder.pmc_mean = get_pmc_mean(error_bound);
     builder.swing = getSwing(error_bound);
-    builder.gorilla = getGorilla();
+    builder.gorilla = get_gorilla();
     builder.polyswing = get_polyswing(error_bound);
     builder.uncompressed_timestamps = uncompressedTimestamps;
     builder.uncompressed_values = uncompressedValues;
     
     size_t currentIndex = startIndex;
-    while (canFitMore(builder) && currentIndex < endIndex)
+    while (can_fit_more(builder) && currentIndex < endIndex)
     {
         long timestamp = uncompressedTimestamps[currentIndex];
         float value = uncompressedValues[currentIndex];
-        tryToUpdateModels(&builder, timestamp, value);
+        try_to_update_models(&builder, timestamp, value);
         currentIndex++;
     }
     return builder;
@@ -39,28 +39,28 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
     Selected_model model = get_selected_model();
     select_model(&model, builder.start_index, &builder.pmc_mean, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
 
-    int startTime = builder.uncompressed_timestamps[builder.start_index];
-    int endTime = builder.uncompressed_timestamps[model.end_index];
+    int start_time = builder.uncompressed_timestamps[builder.start_index];
+    int end_time = builder.uncompressed_timestamps[model.end_index];
 
     float* reconstructedValues = getReconstructedValues(model, builder.uncompressed_timestamps);
     double error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
     
     
-    writeModelToFile(file, model ,first, startTime, endTime, error);
-    deleteGorilla(&builder.gorilla);
+    writeModelToFile(file, model ,first, start_time, end_time, error);
+    delete_gorilla(&builder.gorilla);
     delete_polyswing(&builder.polyswing);
     delete_selected_model(&model);
     return model.end_index + 1;
 }
 
-int canFitMore(Compressed_segment_builder builder){
+int can_fit_more(Compressed_segment_builder builder){
     return builder.pmc_mean_could_fit_all 
         || builder.swing_could_fit_all 
         || builder.gorilla.length < GORILLAMAX
         || builder.polyswing_could_fit_all;
 }
 
-void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, float value){
+void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value){
     if(builder->pmc_mean_could_fit_all){
         builder->pmc_mean_could_fit_all = fit_value_pmc(&builder->pmc_mean, value);
     }
@@ -75,7 +75,7 @@ void tryToUpdateModels(Compressed_segment_builder* builder, long timestamp, floa
     }
 }
 
-void tryCompress(Uncompressed_data* data, double error_bound, int* first){
+void try_compress(Uncompressed_data* data, double error_bound, int* first){
     size_t currentIndex = 0;
     currentIndex = finishBatch(data->segment_builder, data->output, *first);
     *first = 0;
@@ -85,7 +85,7 @@ void tryCompress(Uncompressed_data* data, double error_bound, int* first){
     }
     data->current_size = data->current_size - currentIndex;
     resize_uncompressed_data(data);
-    data->new_builder = 1;
+    data->reset_internal_model = 1;
     currentIndex = 0;
 }
 
@@ -104,7 +104,7 @@ void forceCompress(Uncompressed_data* data, double error_bound, int first){
         resize_uncompressed_data(data);
         currentIndex = 0;
         if(currentIndex != data->current_size){
-            builder = newCompressedSegmentBuilder(currentIndex, data->timestamps, data->values, data->current_size, error_bound);
+            builder = new_compressed_segment_builder(currentIndex, data->timestamps, data->values, data->current_size, error_bound);
         }
     }
     //finishBatch(data->segment_builder, data->output, first);
@@ -118,7 +118,7 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     case SWING_ID:
         return gridSwing(model.min_value, model.max_value, model.values[0], timestamps, model.end_index+1);
     case GORILLA_ID:
-        return gridGorilla(model.values, model.values_capacity, model.end_index+1);
+        return grid_gorilla(model.values, model.values_capacity, model.end_index+1);
     case POLYSWING_ID:
         return grid_polyswing(model.min_value, model.max_value, model.values, timestamps, model.end_index+1);
     default:
@@ -128,14 +128,14 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     
 }
 
-double getRMSE(float* baseValues, float* reconstructedValues, int valuesCount){
+double getRMSE(float* baseValues, float* reconstructedValues, int values_count){
     double error = 0;
     float baseValue = 0;
     float reconstructedValue = 0;
-    for(int i = 0; i < valuesCount; i++){
+    for(int i = 0; i < values_count; i++){
         baseValue = baseValues[i];
         reconstructedValue = reconstructedValues[i];
         error += (baseValue - reconstructedValue) * (baseValue - reconstructedValue);
     }
-    return sqrt(error/valuesCount);
+    return sqrt(error/values_count);
 }
