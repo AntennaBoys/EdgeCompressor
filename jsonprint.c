@@ -72,7 +72,7 @@ void writePMCMeanToFile(FILE* file, Pmc_mean model, int index, int first){
     fprintf(file,"  }\n");
 }
 
-void writeModelToFile(FILE* file, Selected_model model, int first, int startTime, int endTime, double error){
+void writeModelToFile(FILE* file, Selected_model model, int first, int start_time, int end_time, double error){
     if (!first){
         fprintf(file,"  ,{\n");
     }else{
@@ -94,7 +94,7 @@ void writeModelToFile(FILE* file, Selected_model model, int first, int startTime
         }
     }
     fprintf(file,"],\n");
-    fprintf(file,"   \"start_time\":%d,\n", startTime);
-    fprintf(file,"   \"end_time\":%d\n", endTime);
+    fprintf(file,"   \"start_time\":%d,\n", start_time);
+    fprintf(file,"   \"end_time\":%d\n", end_time);
     fprintf(file,"  }\n");
 }

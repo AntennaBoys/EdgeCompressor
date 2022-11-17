@@ -36,12 +36,12 @@ uint8_t* get_compressed_values(Gorilla* data);
 
 uint8_t leading_zeros(int32_t num);
 uint8_t trailing_zeros(int32_t num);
-int32_t floatToBit(float val);
+int32_t float_to_bit(float val);
 
 Gorilla;
 Bit_vec_builder;
-Gorilla getGorilla(void);
-void resetGorilla(Gorilla* gorilla);
-void deleteGorilla(Gorilla* gorilla);
-float* gridGorilla(uint8_t* values, int valuesCount, int timestamp_count);
+Gorilla get_gorilla(void);
+void reset_gorilla(Gorilla* gorilla);
+void delete_gorilla(Gorilla* gorilla);
+float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count);
 #endif

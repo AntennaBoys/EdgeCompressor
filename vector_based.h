@@ -14,19 +14,20 @@ typedef struct Vector {
 typedef struct Vector_based {
     Position prev;
     Position current;
+    Position start;
 
-    long int startTime;
-    long int endTime;
+    long int start_time;
+    long int end_time;
     unsigned int length;
     Vector vec;
     
-    int currentDelta;
-    int prevDelta;
+    int current_delta;
+    int prev_delta;
     
 } Vector_based;
 
-Vector_based getVector_based();
-int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, double longitude);
-
+Vector_based get_vector_based();
+int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude);
+void reset_vector_based(Vector_based* vb);
 
 #endif

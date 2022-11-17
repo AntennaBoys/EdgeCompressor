@@ -13,7 +13,8 @@
 #define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
-
+#define VECTOR_TRUE 1
+#define VECTOR_FALSE 0
 
 
 
@@ -33,10 +34,10 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
-    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
-
-    Vector_based vb = getVector_based();
+    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
+    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
+    FILE* position = openFile(outPutCsvFilePosition);
+    Vector_based vb = get_vector_based();
     
 
     FILE* stream = fopen(dataPath, "r");
@@ -44,11 +45,12 @@ int main()
 
     int longFirst = 1;
     int latFirst = 1;
+    int position_first = 1;
     long timestamp = 0;
     struct tm tmVar;
 
     FILE *test1;
-    test1 = fopen("/home/teis/git/EdgeCompressor/vector_plot.csv", "w+");
+    
     fprintf(test1,"lat, long\n");
     fclose(test1);
 
@@ -66,9 +68,10 @@ int main()
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
             timestamp = time == timestamp ? time + 1 : time;
-            // insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            // insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
-            fitValuesVectorBased(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
+            //insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            //insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), position_first);
+            //fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
             
 
             free(longStr);
@@ -89,5 +92,6 @@ int main()
     // }
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
-    closeFile(stream);
+    closeFile(position);
+    fclose(stream);
 }

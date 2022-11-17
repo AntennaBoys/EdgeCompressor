@@ -51,14 +51,14 @@ uint8_t trailing_zeros(int32_t num){
     return count;
 }
 
-int32_t floatToBit(float val){
+int32_t float_to_bit(float val){
     return *(int32_t *)&val;
 }
 
 
 void fitValueGorilla(Gorilla* data, float value){
-    int32_t value_as_integer = floatToBit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
-    int32_t last_value_as_integer = floatToBit(data->last_value);
+    int32_t value_as_integer = float_to_bit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
+    int32_t last_value_as_integer = float_to_bit(data->last_value);
     int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
     
     if(data->compressed_values.bytes_counter == 0){
@@ -180,7 +180,7 @@ void append_bits(Bit_vec_builder* data, long bits, uint8_t number_of_bits){
     }
 }
 
-Gorilla getGorilla(){
+Gorilla get_gorilla(){
     Gorilla data;
     data.last_value = 0;
     data.last_leading_zero_bits = UCHAR_MAX;
@@ -206,7 +206,7 @@ Gorilla getGorilla(){
     return data;
 }
 
-void resetGorilla(Gorilla* gorilla){
+void reset_gorilla(Gorilla* gorilla){
     gorilla->last_leading_zero_bits = UCHAR_MAX;
     gorilla->last_trailing_zero_bits = 0;
     gorilla->last_value = 0;
@@ -222,19 +222,19 @@ void resetGorilla(Gorilla* gorilla){
     }
 }
 
-void deleteGorilla(Gorilla* gorilla){
+void delete_gorilla(Gorilla* gorilla){
     free(gorilla->compressed_values.bytes);
 }
 
 
-float* gridGorilla(uint8_t* values, int valuesCount, int timestamp_count){
+float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count){
     float* result;
     result = malloc(timestamp_count * sizeof(*result));
     if(!result){
-        printf("CALLOC ERROR (gridGorilla: result)\n");
+        printf("CALLOC ERROR (grid_gorilla: result)\n");
     }
     int resultIndex = 0;
-    BitReader bitReader = tryNewBitreader(values, valuesCount);
+    BitReader bitReader = tryNewBitreader(values, values_count);
     int leadingZeros = 255;
     int trailingZeros = 0;
     uint32_t lastValue = read_bits(&bitReader, VALUE_SIZE_IN_BITS);

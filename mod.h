@@ -4,6 +4,7 @@
 #include "swing.h"
 #include "PMCMean.h"
 #include "polyswing.h"
+#include "vector_based.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -11,6 +12,7 @@
 #define SWING_ID 1
 #define GORILLA_ID 2
 #define POLYSWING_ID 3
+#define VECTOR_ID 4
 
 struct Selected_model {
     uint8_t model_type_id;
@@ -30,6 +32,7 @@ void select_gorilla(Selected_model* model, size_t start_index, Gorilla* gorilla,
 void select_pmc_mean(Selected_model* model, size_t start_index, Pmc_mean* pmc_mean);
 void select_swing(Selected_model* model, size_t start_index, Swing* swing);
 void select_poly_swing(Selected_model* model, size_t start_index, Poly_swing* poly_swing);
+void select_vector_based(Selected_model* model, Vector_based* vector_model);
 
 void select_model(Selected_model* data, size_t start_index, Pmc_mean* pmc_mean, Swing* swing, Gorilla* gorilla, Poly_swing* polyswing, float *uncompressed_values);
 

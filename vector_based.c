@@ -3,41 +3,39 @@
 
 #define ERROR 2.5
 
-Vector_based getVector_based(){
+Vector_based get_vector_based(){
     Vector_based vb;
     vb.prev = (Position){ .latitude = 0, .longitude = 0};
     vb.current = (Position){ .latitude = 0, .longitude = 0};
     vb.length = 0;
-    vb.currentDelta = 0;
-    vb.prevDelta = 0;
+    vb.current_delta = 0;
+    vb.prev_delta = 0;
     return vb;   
 }
 
+void reset_vector_based(Vector_based* vb){
+    vb->prev = (Position){ .latitude = 0, .longitude = 0};
+    vb->current = (Position){ .latitude = 0, .longitude = 0};
+    vb->length = 0;
+    vb->current_delta = 0;
+    vb->prev_delta = 0;
+}
 
-int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, double longitude){
-    FILE *test1;
-    test1 = fopen("/home/teis/git/EdgeCompressor/vector_plot.csv", "a");
+int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude){
     if(data->length == 0){
-
-        fprintf(test1,"%lf, %lf\n", latitude, longitude);
-        fclose(test1);
-
+        data->start = (Position){.latitude = latitude, .longitude = longitude};
         data->prev = (Position){ .latitude = latitude, .longitude = longitude};
-        data->startTime = timeStamp;
+        data->start_time = time_stamp;
         data->length++;
         return 1;
     }
     else if (data->length == 1) {
-        data->prevDelta = data->currentDelta;
-        data->currentDelta = timeStamp - data->startTime;
+        data->prev_delta = data->current_delta;
+        data->current_delta = time_stamp - data->start_time;
 
-
-        // printf("%lf, %lf\n", latitude, longitude);
-        fprintf(test1,"%lf, %lf\n", latitude, longitude);
-        fclose(test1);
 
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
-        data->endTime = timeStamp;
+        data->end_time = time_stamp;
         data->length++;        
         
         // Build vector
@@ -46,21 +44,21 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         return 1;
     } 
     else {
-        data->prevDelta = data->currentDelta;
-        data->currentDelta = timeStamp - data->endTime;
-        data->endTime = timeStamp;
+        data->prev_delta = data->current_delta;
+        data->current_delta = time_stamp - data->end_time;
+        data->end_time = time_stamp;
 
 
         // Make prediction
         Position prediction; 
 
         // Scale vector down based on previous delta
-        data->vec.y = data->vec.y / (double)(data->prevDelta);
-        data->vec.x = data->vec.x / (double)(data->prevDelta);
+        data->vec.y = data->vec.y / (double)(data->prev_delta);
+        data->vec.x = data->vec.x / (double)(data->prev_delta);
 
         // Scale vector up based on current delta
-        data->vec.y *= (double)(data->currentDelta);
-        data->vec.x *= (double)(data->currentDelta);
+        data->vec.y *= (double)(data->current_delta);
+        data->vec.x *= (double)(data->current_delta);
 
         prediction.latitude = data->current.latitude + data->vec.y;
         prediction.longitude = data->current.longitude + data->vec.x;
@@ -80,13 +78,10 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         data->length++;
 
         if(distance > ERROR){
-            // printf("%lf, %lf\n", latitude, longitude);
-            fprintf(test1,"%lf, %lf\n", latitude, longitude);
-            fclose(test1);
 
             // Set point as the first point in the next segment
             data->prev = (Position){ .latitude = latitude, .longitude = longitude};
-            data->startTime = timeStamp;
+            data->start_time = time_stamp;
             data->length = 1;
 
             return 0;
