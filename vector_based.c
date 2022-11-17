@@ -1,13 +1,15 @@
 #include "vector_based.h"
 #include <stdio.h>
 
-#define ERROR 0.022
+#define ERROR 2.5
 
 Vector_based getVector_based(){
     Vector_based vb;
     vb.prev = (Position){ .latitude = 0, .longitude = 0};
     vb.current = (Position){ .latitude = 0, .longitude = 0};
     vb.length = 0;
+    vb.currentDelta = 0;
+    vb.prevDelta = 0;
     return vb;   
 }
 
@@ -17,7 +19,6 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
     test1 = fopen("/home/teis/git/EdgeCompressor/vector_plot.csv", "a");
     if(data->length == 0){
 
-        printf("%lf, %lf\n", latitude, longitude);
         fprintf(test1,"%lf, %lf\n", latitude, longitude);
         fclose(test1);
 
@@ -27,8 +28,11 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         return 1;
     }
     else if (data->length == 1) {
+        data->prevDelta = data->currentDelta;
+        data->currentDelta = timeStamp - data->startTime;
 
-        printf("%lf, %lf\n", latitude, longitude);
+
+        // printf("%lf, %lf\n", latitude, longitude);
         fprintf(test1,"%lf, %lf\n", latitude, longitude);
         fclose(test1);
 
@@ -42,12 +46,25 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         return 1;
     } 
     else {
+        data->prevDelta = data->currentDelta;
+        data->currentDelta = timeStamp - data->endTime;
         data->endTime = timeStamp;
+
 
         // Make prediction
         Position prediction; 
+
+        // Scale vector down based on previous delta
+        data->vec.y = data->vec.y / (double)(data->prevDelta);
+        data->vec.x = data->vec.x / (double)(data->prevDelta);
+
+        // Scale vector up based on current delta
+        data->vec.y *= (double)(data->currentDelta);
+        data->vec.x *= (double)(data->currentDelta);
+
         prediction.latitude = data->current.latitude + data->vec.y;
         prediction.longitude = data->current.longitude + data->vec.x;
+
 
         // Update current
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
@@ -63,7 +80,7 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         data->length++;
 
         if(distance > ERROR){
-            printf("%lf, %lf\n", latitude, longitude);
+            // printf("%lf, %lf\n", latitude, longitude);
             fprintf(test1,"%lf, %lf\n", latitude, longitude);
             fclose(test1);
 
@@ -76,7 +93,7 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
         } 
 
         //printf("Vector --- x: %f, y: %f\n", data->vec.x, data->vec.y);
-        printf("%lf, %lf\n", prediction.latitude, prediction.longitude);
+        // printf("%lf, %lf\n", prediction.latitude, prediction.longitude);
 
         return 1;
         
