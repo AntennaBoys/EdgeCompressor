@@ -1,6 +1,6 @@
 #include "uncompressed_data_maneger.h"
 #include "compression.h"
-#define ERROR_BOUND 0.0005
+#define ERROR_BOUND 0.01
 
 void resize(Uncompressed_data* data);
 

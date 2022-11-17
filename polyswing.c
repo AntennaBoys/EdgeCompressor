@@ -3,21 +3,20 @@
 #include "bitreader.h"
 
 
-void updateATA(Mat* ATA, long new_x);
-void updateATY(Mat* ATY, long new_x, double new_y);
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model);
+void update_ATA(Mat* ATA, long new_x);
+void update_ATY(Mat* ATY, long new_x, double new_y);
+Mat* update_all(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model);
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model);
-void writeToFile(FILE *file, Poly_swing model, int index, char* start, int id);
-void resetStruct(Poly_swing *data);
+void reset_struct(Poly_swing *data);
 
-int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
+int fit_values_polyswing(Poly_swing *data, long timestamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
-    data->deltaTime = timeStamp - data->first_timestamp;
+    data->delta_time = timestamp - data->first_timestamp;
     if (data->length == 0) {
         // Line 1 - 2 of Algorithm 1 in the Swing and Slide paper.
-        data->first_timestamp = timeStamp;
-        data->last_timestamp = timeStamp;
+        data->first_timestamp = timestamp;
+        data->last_timestamp = timestamp;
         data->first_value = value;
         data->length += 1;
         data->ATA = newmat(3,3, 0);
@@ -27,62 +26,62 @@ int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
     else if (data->length == 1) {
         // Line 3 of Algorithm 1 in the Swing and Slide paper.
         data->second_value = value;
-        data->second_timestamp = timeStamp;
+        data->second_timestamp = timestamp;
         data->length += 1;
         return 1;
     } else if (data->length == 2){
-        data->last_timestamp = timeStamp;
+        data->last_timestamp = timestamp;
         ingest(0, data->first_value,0, data->ATA, data->ATY, data);
         ingest(data->second_timestamp - data->first_timestamp, data->second_value,0, data->ATA, data->ATY, data);
 
-        Mat* upperATA = copyvalue(data->ATA);
-        Mat* upperATY = copyvalue(data->ATY);
-        data->upper = ingest(data->deltaTime, value+maximum_deviation, 0, upperATA, upperATY, data);
-        freemat(upperATA);
-        freemat(upperATY);
+        Mat* upper_ATA = copyvalue(data->ATA);
+        Mat* upper_ATY = copyvalue(data->ATY);
+        data->upper = ingest(data->delta_time, value+maximum_deviation, 0, upper_ATA, upper_ATY, data);
+        freemat(upper_ATA);
+        freemat(upper_ATY);
 
-        Mat* lowerATA = copyvalue(data->ATA);
-        Mat* lowerATY = copyvalue(data->ATY);
-        data->lower = ingest(data->deltaTime, value-maximum_deviation, 0, lowerATA, lowerATY, data);
-        freemat(lowerATA);
-        freemat(lowerATY);
+        Mat* lower_ATA = copyvalue(data->ATA);
+        Mat* lower_ATY = copyvalue(data->ATY);
+        data->lower = ingest(data->delta_time, value-maximum_deviation, 0, lower_ATA, lower_ATY, data);
+        freemat(lower_ATA);
+        freemat(lower_ATY);
 
-        data->current = ingest(data->deltaTime, value,0, data->ATA, data->ATY, data);
+        data->current = ingest(data->delta_time, value,0, data->ATA, data->ATY, data);
         data->length += 1;
         return 1;
     }
     else {
         // Line 6 of Algorithm 1 in the Swing and Slide paper.
-        double upper_bound_approximate_value = data->upper.pow2 * data->deltaTime * data->deltaTime + data->upper.pow1 * data->deltaTime + data->upper.pow0;
-        double lower_bound_approximate_value = data->lower.pow2 * data->deltaTime * data->deltaTime + data->lower.pow1 * data->deltaTime + data->lower.pow0;
+        double upper_bound_approximate_value = data->upper.pow2 * data->delta_time * data->delta_time + data->upper.pow1 * data->delta_time + data->upper.pow0;
+        double lower_bound_approximate_value = data->lower.pow2 * data->delta_time * data->delta_time + data->lower.pow1 * data->delta_time + data->lower.pow0;
 
         if (upper_bound_approximate_value + maximum_deviation < value
             || lower_bound_approximate_value - maximum_deviation > value)
         {
             return 0;
         } else {
-            data->last_timestamp = timeStamp;
+            data->last_timestamp = timestamp;
 
             // Line 17 of Algorithm 1 in the Swing and Slide paper.
             if (upper_bound_approximate_value - maximum_deviation > value) {
-                Mat* upperATA = copyvalue(data->ATA);
-                Mat* upperATY = copyvalue(data->ATY);
-                data->upper = ingest(data->deltaTime, value+maximum_deviation, 0, upperATA, upperATY, data);
-                freemat(upperATA);
-                freemat(upperATY);
+                Mat* upper_ATA = copyvalue(data->ATA);
+                Mat* upper_ATY = copyvalue(data->ATY);
+                data->upper = ingest(data->delta_time, value+maximum_deviation, 0, upper_ATA, upper_ATY, data);
+                freemat(upper_ATA);
+                freemat(upper_ATY);
             }
             if (lower_bound_approximate_value + maximum_deviation < value) {
-                Mat* lowerATA = copyvalue(data->ATA);
-                Mat* lowerATY = copyvalue(data->ATY);
-                data->lower = ingest(data->deltaTime, value-maximum_deviation, 0, lowerATA, lowerATY, data);
-                freemat(lowerATA);
-                freemat(lowerATY);
+                Mat* lower_ATA = copyvalue(data->ATA);
+                Mat* lower_ATY = copyvalue(data->ATY);
+                data->lower = ingest(data->delta_time, value-maximum_deviation, 0, lower_ATA, lower_ATY, data);
+                freemat(lower_ATA);
+                freemat(lower_ATY);
             }
-            if (data->terminateSegment){
+            if (data->terminate_segment){
                 return 0;
             }
-            struct terms temp = ingest(data->deltaTime, value,1, data->ATA, data->ATY, data);
-            if (data->terminateSegment){
+            struct terms temp = ingest(data->delta_time, value,1, data->ATA, data->ATY, data);
+            if (data->terminate_segment){
                 return 0;
             }
             else {
@@ -96,9 +95,9 @@ int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value){
 }
 
 
-Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
-    updateATA(ATA, new_x);
-    updateATY(ATY, new_x, new_y);
+Mat* update_all(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
+    update_ATA(ATA, new_x);
+    update_ATY(ATY, new_x, new_y);
 
     Mat* _ATA, *_ATY, *res;
 
@@ -138,14 +137,14 @@ Mat* updateAll(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model){
             freemat(ATA_inv);
         } else {
             printf("wrong\n");
-            model->terminateSegment = 1;
+            model->terminate_segment = 1;
             res = newmat(3,3,0);
         }
     }
     return res;
 }
 
-void updateATY(Mat* ATY, long new_x, double new_y){
+void update_ATY(Mat* ATY, long new_x, double new_y){
     float current = get(ATY, 1,1);
     set(ATY, 1, 1, current + pow(new_x, 0)*new_y);
     current = get(ATY, 1,2);
@@ -154,7 +153,7 @@ void updateATY(Mat* ATY, long new_x, double new_y){
     set(ATY, 1, 3, current + pow(new_x, 2)*new_y);
 }
 
-void updateATA(Mat* ATA, long new_x){
+void update_ATA(Mat* ATA, long new_x){
     //Øverste række
     float current = get(ATA, 1,1);
     set(ATA, 1, 1, current + pow(new_x, 0));
@@ -179,7 +178,7 @@ void updateATA(Mat* ATA, long new_x){
 }
 
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model){
-    Mat* res = updateAll(ATA, ATY, x, y, model);
+    Mat* res = update_all(ATA, ATY, x, y, model);
 
     terms result = {0,0,0};
     int pow = get(ATA, 1,1);
@@ -194,7 +193,7 @@ terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *mod
 }
 
 
-void resetStruct(Poly_swing *data){
+void reset_struct(Poly_swing *data){
     data->length = 0;
 }
 
@@ -202,30 +201,30 @@ float get_bytes_per_value_polyswing(Poly_swing* data){
     return (float) (3 * VALUE_SIZE_IN_BYTES) / (float) data->length;
 }
 
-Poly_swing getPolySwing(double errorBound){
+Poly_swing get_polyswing(double error_bound){
     Poly_swing model;
-    model.error_bound = errorBound;
+    model.error_bound = error_bound;
     model.length = 0;
-    model.deltaTime = 0;
-    model.terminateSegment = 0;
+    model.delta_time = 0;
+    model.terminate_segment = 0;
     return model;
 }
 
-void deletePolySwing(Poly_swing* poly_swing){
+void delete_polyswing(Poly_swing* poly_swing){
     freemat(poly_swing->ATA);
     freemat(poly_swing->ATY);
 }
 
-float* gridPolySwing(float c, float b, uint8_t* values, long* timestamps, int timestampCount){
+float* grid_polyswing(float c, float b, uint8_t* values, long* timestamps, int timestamp_count){
     BitReader bitReader = tryNewBitreader(values, 4);
     float a = intToFloat(read_bits(&bitReader, 32));
     float* result;
-    result = malloc(timestampCount * sizeof(*result));
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
-        printf("CALLOC ERROR (gridPolySwing: result)\n");
+        printf("CALLOC ERROR (grid_polyswing: result)\n");
     }
     long deltatime;
-    for(int i = 0; i < timestampCount; i++){
+    for(int i = 0; i < timestamp_count; i++){
         deltatime = timestamps[i] - timestamps[0];
         result[i] = b * deltatime + a * (deltatime * deltatime) + c;
     }

@@ -227,9 +227,9 @@ void deleteGorilla(Gorilla* gorilla){
 }
 
 
-float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount){
+float* gridGorilla(uint8_t* values, int valuesCount, int timestamp_count){
     float* result;
-    result = malloc(timestampCount * sizeof(*result));
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridGorilla: result)\n");
     }
@@ -239,7 +239,7 @@ float* gridGorilla(uint8_t* values, int valuesCount, int timestampCount){
     int trailingZeros = 0;
     uint32_t lastValue = read_bits(&bitReader, VALUE_SIZE_IN_BITS);
     result[resultIndex++] = intToFloat(lastValue);
-    for(int i = 0; i < timestampCount-1; i++){
+    for(int i = 0; i < timestamp_count-1; i++){
         if(read_bit(&bitReader)){
             if(read_bit(&bitReader)){
                 leadingZeros = read_bits(&bitReader, 5);

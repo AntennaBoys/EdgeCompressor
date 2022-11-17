@@ -28,7 +28,7 @@ struct Poly_swing {
     /// First value in the segment the current model is fitted to.
     double first_value; // f64 instead of Value to remove casts in fit_value()
 
-    long deltaTime;
+    long delta_time;
     
     terms upper;
     terms lower;
@@ -42,13 +42,13 @@ struct Poly_swing {
     double second_value;
     Mat* ATA;
     Mat* ATY;
-    int terminateSegment;
+    int terminate_segment;
 } typedef Poly_swing;
 
 
-int fitValuesPolySwing(Poly_swing *data, long timeStamp, double value);
-Poly_swing getPolySwing(double errorBound);
+int fit_values_polyswing(Poly_swing *data, long timestamp, double value);
+Poly_swing get_polyswing(double error_bound);
 float get_bytes_per_value_polyswing(Poly_swing* data);
-void deletePolySwing(Poly_swing* poly_swing);
-float* gridPolySwing(float pow0, float pow1, uint8_t* values, long* timestamps, int timestampCount);
+void delete_polyswing(Poly_swing* poly_swing);
+float* grid_polyswing(float pow0, float pow1, uint8_t* values, long* timestamps, int timestamp_count);
 #endif

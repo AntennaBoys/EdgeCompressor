@@ -33,15 +33,15 @@ struct Swing {
     /// The number of data points the current model has been fitted to.
     int length;
 } typedef Swing;
-int fitValueSwing(Swing *data, long timeStamp, double value);
+int fitValueSwing(Swing *data, long timestamp, double value);
 double getModelFirst(Swing current_swing);
 double getModelLast(Swing current_swing);
 float get_bytes_per_value_swing(Swing* data);
 void get_model_swing(Swing* data, float arr[]);
 size_t get_length_swing(Swing* data);
 
-Swing getSwing(double errorBound);
+Swing getSwing(double error_bound);
 void resetSwing(Swing *data);
-float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount);
+float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestamp_count);
 
 #endif

@@ -66,7 +66,7 @@ void writePMCMeanToFile(FILE* file, Pmc_mean model, int index, int first){
     fprintf(file,"   \"end_index\":%d,\n", index);
     fprintf(file,"   \"min_value\":NaN,\n");
     fprintf(file,"   \"max_value\":NaN,\n");
-    fprintf(file,"   \"values\":[%f],\n", model.sumOfValues / model.length);
+    fprintf(file,"   \"values\":[%f],\n", model.sum_of_values / model.length);
     fprintf(file,"   \"start_time\":NaN,\n");
     fprintf(file,"   \"end_time\":NaN\n");
     fprintf(file,"  }\n");

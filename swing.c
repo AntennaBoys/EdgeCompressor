@@ -18,24 +18,24 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValueSwing(Swing *data, long timeStamp, double value);
+int fitValueSwing(Swing *data, long timestamp, double value);
 
 
 
-int fitValueSwing(Swing* data, long timeStamp, double value){
+int fitValueSwing(Swing* data, long timestamp, double value){
     double maximum_deviation = fabs(value * (data->error_bound / 100.0));
 
     if (data->length == 0) {
         // Line 1 - 2 of Algorithm 1 in the Swing and Slide paper.
-        data->first_timestamp = timeStamp;
-        data->last_timestamp = timeStamp;
+        data->first_timestamp = timestamp;
+        data->last_timestamp = timestamp;
         data->first_value = value;
         data->length += 1;
         return 1;
     } else if (isNan(data->first_value) || isNan(value)) {
         // Extend Swing to handle both types of infinity and NAN.
         if (equalOrNAN(data->first_value, value)) {
-            data->last_timestamp = timeStamp;
+            data->last_timestamp = timestamp;
             data->upper_bound_slope = value;
             data->upper_bound_intercept = value;
             data->lower_bound_slope = value;
@@ -47,11 +47,11 @@ int fitValueSwing(Swing* data, long timeStamp, double value){
         }
     } else if (data->length == 1) {
         // Line 3 of Algorithm 1 in the Swing and Slide paper.
-        data->last_timestamp = timeStamp;
+        data->last_timestamp = timestamp;
         struct slopeAndIntercept slopes = compute_slope_and_intercept(
                 data->first_timestamp,
                 data->first_value,
-                timeStamp,
+                timestamp,
                 value + maximum_deviation
         );
 
@@ -61,7 +61,7 @@ int fitValueSwing(Swing* data, long timeStamp, double value){
         slopes = compute_slope_and_intercept(
                 data->first_timestamp,
                 data->first_value,
-                timeStamp,
+                timestamp,
                 value - maximum_deviation
         );
 
@@ -71,15 +71,15 @@ int fitValueSwing(Swing* data, long timeStamp, double value){
         return 1;
     } else {
         // Line 6 of Algorithm 1 in the Swing and Slide paper.
-        double upper_bound_approximate_value = data->upper_bound_slope * timeStamp + data->upper_bound_intercept;
-        double lower_bound_approximate_value = data->lower_bound_slope * timeStamp + data->lower_bound_intercept;
+        double upper_bound_approximate_value = data->upper_bound_slope * timestamp + data->upper_bound_intercept;
+        double lower_bound_approximate_value = data->lower_bound_slope * timestamp + data->lower_bound_intercept;
 
         if (upper_bound_approximate_value + maximum_deviation < value
            || lower_bound_approximate_value - maximum_deviation > value)
         {
             return 0;
         } else {
-            data->last_timestamp = timeStamp;
+            data->last_timestamp = timestamp;
 
             // Line 17 of Algorithm 1 in the Swing and Slide paper.
             if (upper_bound_approximate_value - maximum_deviation > value) {
@@ -87,7 +87,7 @@ int fitValueSwing(Swing* data, long timeStamp, double value){
                         compute_slope_and_intercept(
                                 data->first_timestamp,
                                 data->first_value,
-                                timeStamp,
+                                timestamp,
                                 value + maximum_deviation
                         );
                 data->upper_bound_slope = slopes.slope;
@@ -100,7 +100,7 @@ int fitValueSwing(Swing* data, long timeStamp, double value){
                         compute_slope_and_intercept(
                                 data->first_timestamp,
                                 data->first_value,
-                                timeStamp,
+                                timestamp,
                                 value - maximum_deviation
                         );
                 data->lower_bound_slope = slopes.slope;
@@ -176,9 +176,9 @@ size_t get_length_swing(Swing* data){
 //
 // Created by power on 23-09-2022.
 //
-Swing getSwing(double errorBound){
+Swing getSwing(double error_bound){
   Swing data;
-  data.error_bound = errorBound;
+  data.error_bound = error_bound;
   data.first_timestamp = 0;
   data.last_timestamp = 0;
   data.first_value = NAN;
@@ -201,22 +201,22 @@ void resetSwing(Swing *data){
   data->length = 0;
 }
 
-struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimestamp, long lastTimestamp, double minValue, double maxValue, int value){
+struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimestamp, long lastTimestamp, double min_value, double max_value, int value){
     if(value == 1){
-        return compute_slope_and_intercept(firstTimestamp, minValue, lastTimestamp, maxValue);
+        return compute_slope_and_intercept(firstTimestamp, min_value, lastTimestamp, max_value);
     }else{
-        return compute_slope_and_intercept(firstTimestamp, maxValue, lastTimestamp, minValue);
+        return compute_slope_and_intercept(firstTimestamp, max_value, lastTimestamp, min_value);
     }
 }
 
-float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestampCount){
+float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestamp_count){
     float* result;
-    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestampCount], min, max, values);
-    result = malloc(timestampCount * sizeof(*result));
+    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestamp_count], min, max, values);
+    result = malloc(timestamp_count * sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridSwing: result)\n");
     }
-    for(int i = 0; i < timestampCount; i++){
+    for(int i = 0; i < timestamp_count; i++){
         result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;
     }
     return result;
