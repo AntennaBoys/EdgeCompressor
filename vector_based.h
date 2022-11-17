@@ -19,6 +19,10 @@ typedef struct Vector_based {
     long int endTime;
     unsigned int length;
     Vector vec;
+    
+    int currentDelta;
+    int prevDelta;
+    
 } Vector_based;
 
 Vector_based getVector_based();
