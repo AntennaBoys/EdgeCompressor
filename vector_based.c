@@ -1,7 +1,7 @@
 #include "vector_based.h"
 #include <stdio.h>
 
-#define ERROR 2.5
+#define ERROR 0.02
 
 Vector_based getVector_based(){
     Vector_based vb;
@@ -30,19 +30,27 @@ int fitValuesVectorBased(Vector_based *data, long timeStamp, double latitude, do
     else if (data->length == 1) {
         data->prevDelta = data->currentDelta;
         data->currentDelta = timeStamp - data->startTime;
-
-
-        // printf("%lf, %lf\n", latitude, longitude);
-        fprintf(test1,"%lf, %lf\n", latitude, longitude);
-        fclose(test1);
-
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
-        data->endTime = timeStamp;
-        data->length++;        
-        
-        // Build vector
-        data->vec.x = data->current.longitude - data->prev.longitude;
-        data->vec.y = data->current.latitude - data->prev.latitude;
+
+        // Calculate distance between first point and current
+        double distance = sqrt( (data->prev.longitude - data->current.longitude) * (data->prev.longitude- data->current.longitude) 
+                                + (data->prev.latitude - data->current.latitude) * (data->prev.latitude - data->current.latitude) );
+
+        // Update only if second point is outside the threshold
+        if(distance > ERROR){
+            // printf("%lf, %lf\n", latitude, longitude);
+            fprintf(test1,"%lf, %lf\n", latitude, longitude);
+            fclose(test1);
+
+            data->endTime = timeStamp;
+            data->length++;        
+            
+            // Build vector
+            data->vec.x = data->current.longitude - data->prev.longitude;
+            data->vec.y = data->current.latitude - data->prev.latitude;
+            return 0;
+        }
+
         return 1;
     } 
     else {
