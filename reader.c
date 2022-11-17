@@ -91,21 +91,3 @@ int main()
     // delete_uncompressed_data_maneger(&longData);
     closeFile(stream);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
