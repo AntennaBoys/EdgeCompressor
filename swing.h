@@ -33,7 +33,7 @@ struct Swing {
     /// The number of data points the current model has been fitted to.
     int length;
 } typedef Swing;
-int fitValueSwing(Swing *data, long timeStamp, double value);
+int fitValueSwing(Swing *data, long timestamp, double value);
 double getModelFirst(Swing current_swing);
 double getModelLast(Swing current_swing);
 float get_bytes_per_value_swing(Swing* data);

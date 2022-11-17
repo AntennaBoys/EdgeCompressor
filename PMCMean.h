@@ -4,9 +4,9 @@
 #include <stdlib.h>
 struct Pmc_mean {
     double error;
-    float minValue;
-    float maxValue;
-    float sumOfValues;
+    float min_value;
+    float max_value;
+    float sum_of_values;
     size_t length;
 } typedef Pmc_mean;
 

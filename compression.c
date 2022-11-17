@@ -20,7 +20,7 @@ Compressed_segment_builder newCompressedSegmentBuilder(size_t startIndex, long* 
     builder.pmc_mean = get_pmc_mean(error_bound);
     builder.swing = getSwing(error_bound);
     builder.gorilla = getGorilla();
-    builder.polyswing = getPolySwing(error_bound);
+    builder.polyswing = get_polyswing(error_bound);
     builder.uncompressed_timestamps = uncompressedTimestamps;
     builder.uncompressed_values = uncompressedValues;
     
@@ -48,7 +48,7 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
     
     writeModelToFile(file, model ,first, startTime, endTime, error);
     deleteGorilla(&builder.gorilla);
-    deletePolySwing(&builder.polyswing);
+    delete_polyswing(&builder.polyswing);
     delete_selected_model(&model);
     return model.end_index + 1;
 }
@@ -120,7 +120,7 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     case GORILLA_ID:
         return gridGorilla(model.values, model.values_capacity, model.end_index+1);
     case POLYSWING_ID:
-        return gridPolySwing(model.min_value, model.max_value, model.values, timestamps, model.end_index+1);
+        return grid_polyswing(model.min_value, model.max_value, model.values, timestamps, model.end_index+1);
     default:
         printf("Invalid ID in getReconstructedValues");
         break;
