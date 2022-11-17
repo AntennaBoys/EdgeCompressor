@@ -19,6 +19,7 @@ typedef struct Vector_based {
     long int start_time;
     long int end_time;
     unsigned int length;
+    unsigned int model_length;
     Vector vec;
     
     int current_delta;

@@ -49,10 +49,7 @@ int main()
     long timestamp = 0;
     struct tm tmVar;
 
-    FILE *test1;
-    
-    fprintf(test1,"lat, long\n");
-    fclose(test1);
+
 
     while(fgets(line, 1024, stream)){
         char* latStr = strdup(line);
@@ -70,7 +67,7 @@ int main()
             timestamp = time == timestamp ? time + 1 : time;
             //insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
             //insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
-            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), position_first);
+            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), &position_first);
             //fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
             
 
@@ -92,6 +89,7 @@ int main()
     // }
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
+    print_vector_based(position, &vb, &position_first);
     closeFile(position);
     fclose(stream);
 }

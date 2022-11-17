@@ -24,13 +24,17 @@ Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_b
 
 void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first){
     if(!fit_values_vector_based(model, timestamp, lat, lon)){
-        Selected_model selected_model = get_selected_model();
-        select_vector_based(&selected_model, model);
-        writeModelToFile(output, selected_model, first, model->start_time, model->end_time, 0.0);
-        first = 0;
+        print_vector_based(output, model, first);
         reset_vector_based(model);
         fit_values_vector_based(model, timestamp, lat, lon);
     }
+}
+
+void print_vector_based(FILE* output, Vector_based *model, int *first){
+    Selected_model selected_model = get_selected_model();
+    select_vector_based(&selected_model, model);
+    writeModelToFile(output, selected_model, *first, model->start_time, model->end_time, 0.0);
+    first = 0;
 }
 
 void resize(Uncompressed_data* data){

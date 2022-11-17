@@ -20,5 +20,6 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
 void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first);
 void delete_uncompressed_data_maneger(Uncompressed_data* data);
 void force_compress_data(Uncompressed_data* data, int first);
+void print_vector_based(FILE* output, Vector_based *model, int *first);
 
 #endif

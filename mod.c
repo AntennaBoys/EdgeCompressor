@@ -105,7 +105,7 @@ void select_vector_based(Selected_model* model, Vector_based* vector_model){
     model->values[i] = bit_vec_builder.bytes[i];
   }
 
-  size_t end_index = vector_model->length - 1;
+  size_t end_index = vector_model->model_length - 1;
   model->model_type_id = (uint8_t) VECTOR_ID;
   model->end_index = end_index;
 }
