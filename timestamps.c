@@ -7,6 +7,7 @@
 const uint8_t SIZE_OF_LONG = (uint8_t) sizeof(long) * 8;
 
 uint8_t* compress_regular_residual_timestamps(long* timestamps, long timestamp_count);
+uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp_count);
 
 uint8_t* long_to_bytes(long value){
     uint8_t* result;
@@ -43,7 +44,7 @@ uint8_t* compress_residual_timestamps(long* timestamps, long timestamp_count){
     if(uncompressed_timestamps_are_regular(timestamps, timestamp_count)){
         compress_regular_residual_timestamps(timestamps, timestamp_count);
     }else{
-        //handle irregular timestamps
+        compress_irregular_residual_timestamps(timestamps, timestamp_count);
     }
 }
 
@@ -78,49 +79,29 @@ uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp
     }
     append_a_one_bit(&compressed_timestamps);
     long last_delta = timestamps[1] - timestamps[0];
-
+    append_bits(&compressed_timestamps, last_delta, 14);
+    long last_timestamp = timestamps[1];
+    for(int i = 2; i < timestamp_count-1; i++){
+        long timestamp = timestamps[i];
+        long delta = timestamp - last_timestamp;
+        long delta_of_delta = delta - last_delta;
+        if(delta_of_delta == 0){
+            append_a_zero_bit(&compressed_timestamps);
+        }else if(delta_of_delta >= -63 && delta_of_delta <= 64){
+            append_bits(&compressed_timestamps, 0b10, 2);
+            append_bits(&compressed_timestamps, delta_of_delta, 7);
+        }else if(delta_of_delta >= -255 && delta_of_delta <= 256){
+            append_bits(&compressed_timestamps, 0b110, 3);
+            append_bits(&compressed_timestamps, delta_of_delta, 9);
+        }else if(delta_of_delta >= -2047 && delta_of_delta <= 2048){
+            append_bits(&compressed_timestamps, 0b1110, 4);
+            append_bits(&compressed_timestamps, delta_of_delta, 12);
+        }else{
+            append_bits(&compressed_timestamps, 0b1111, 4);
+            append_bits(&compressed_timestamps, delta_of_delta, 32);
+        }
+        last_delta = delta;
+        last_timestamp = timestamp;
+    }
+    return finish_with_one_bits(&compressed_timestamps);
 }
-
-//fn compress_irregular_residual_timestamps(uncompressed_timestamps: &[Timestamp]) -> Vec<u8> {
-//    let mut compressed_timestamps = BitVecBuilder::new();
-//    compressed_timestamps.append_a_one_bit();
-//
-//    // Store the second timestamp as a delta using 14 bits.
-//    let mut last_delta = uncompressed_timestamps[1] - uncompressed_timestamps[0];
-//    compressed_timestamps.append_bits(last_delta as u32, 14); // 14-bit delta is max four hours.
-//
-//    // Encode the timestamps from the third timestamp to the second to last.
-//    // A delta-of-delta is computed and then encoded in buckets of different
-//    // sizes. Assumes that the delta-of-delta can fit in at most 32 bits.
-//    let mut last_timestamp = uncompressed_timestamps[1];
-//    for timestamp in &uncompressed_timestamps[2..uncompressed_timestamps.len() - 1] {
-//        let delta = timestamp - last_timestamp;
-//        let delta_of_delta = delta - last_delta;
-//
-//        match delta_of_delta {
-//            0 => compressed_timestamps.append_a_zero_bit(),
-//            -63..=64 => {
-//                compressed_timestamps.append_bits(0b10, 2);
-//                compressed_timestamps.append_bits(delta_of_delta as u32, 7);
-//            }
-//            -255..=256 => {
-//                compressed_timestamps.append_bits(0b110, 3);
-//                compressed_timestamps.append_bits(delta_of_delta as u32, 9);
-//            }
-//            -2047..=2048 => {
-//                compressed_timestamps.append_bits(0b1110, 4);
-//                compressed_timestamps.append_bits(delta_of_delta as u32, 12);
-//            }
-//            _ => {
-//                compressed_timestamps.append_bits(0b1111, 4);
-//                compressed_timestamps.append_bits(delta_of_delta as u32, 32);
-//            }
-//        }
-//        last_delta = delta;
-//        last_timestamp = *timestamp;
-//    }
-//
-//    // All remaining bits in the byte the BitVecBuilder is currently packing
-//    // bits into is set to one to indicate that all timestamps are decompressed.
-//    compressed_timestamps.finish_with_one_bits()
-//}
