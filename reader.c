@@ -34,8 +34,8 @@ const char* getfield(char* line, int num)
 
 int main()
 {
-    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
-    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
+    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
+    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
     FILE* position = openFile(outPutCsvFilePosition);
     Vector_based vb = get_vector_based();
     

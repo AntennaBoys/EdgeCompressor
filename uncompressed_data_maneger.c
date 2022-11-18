@@ -1,11 +1,11 @@
 #include "uncompressed_data_maneger.h"
 #include "compression.h"
 #include "jsonprint.h"
-#define ERROR_BOUND 0.01
+#define ERROR_BOUND 0.001
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_based){
+Uncompressed_data create_uncompressed_data_maneger(char* file_path){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
