@@ -6,8 +6,8 @@
 #include "gorilla.h"
 const uint8_t SIZE_OF_LONG = (uint8_t) sizeof(long) * 8;
 
-uint8_t* compress_regular_residual_timestamps(long* timestamps, long timestamp_count);
-uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp_count);
+Timestamps compress_regular_residual_timestamps(long* timestamps, long timestamp_count);
+Timestamps compress_irregular_residual_timestamps(long* timestamps, long timestamp_count);
 
 uint8_t* long_to_bytes(long value){
     uint8_t* result;
@@ -40,34 +40,38 @@ int uncompressed_timestamps_are_regular(long* timestamps, long timestamp_count){
     return 1;
 }
 
-uint8_t* compress_residual_timestamps(long* timestamps, long timestamp_count){
+Timestamps compress_residual_timestamps(long* timestamps, long timestamp_count){
+    if(timestamp_count <= 2){
+        return (Timestamps){.compressed_timestamp_count=0};
+    }
     if(uncompressed_timestamps_are_regular(timestamps, timestamp_count)){
-        compress_regular_residual_timestamps(timestamps, timestamp_count);
+        return compress_regular_residual_timestamps(timestamps, timestamp_count);
     }else{
-        compress_irregular_residual_timestamps(timestamps, timestamp_count);
+        return compress_irregular_residual_timestamps(timestamps, timestamp_count);
     }
 }
 
-uint8_t* compress_regular_residual_timestamps(long* timestamps, long timestamp_count){
+Timestamps compress_regular_residual_timestamps(long* timestamps, long timestamp_count){
     uint8_t leading_zeroes = leading_zeros(timestamp_count);
     int number_of_bits_to_write = ((SIZE_OF_LONG*timestamp_count)-leading_zeroes)+1;
     uint8_t number_of_bytes_to_write = (uint8_t)ceilf(number_of_bits_to_write/8);
-    uint8_t* result;
-    result = malloc(number_of_bytes_to_write * sizeof(*result));
-    if(!result){
+    Timestamps result;
+    result.compressed_time = malloc(number_of_bytes_to_write * sizeof(*result.compressed_time));
+    if(!result.compressed_time){
         printf("MALLOC ERROR (compress_regular_residual_timestamps)");
     }
     uint8_t* timestamp_count_as_bytes = long_to_bytes(timestamp_count);
     int start_index = 8 - number_of_bytes_to_write;
     for(int i = 0; i < number_of_bytes_to_write; i++){
-        result[i] = timestamp_count_as_bytes[start_index + i];
+        result.compressed_time[i] = timestamp_count_as_bytes[start_index + i];
     }
 
     free(timestamp_count_as_bytes);
+    result.compressed_timestamp_count = number_of_bytes_to_write;
     return result;
 }
 
-uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp_count){
+Timestamps compress_irregular_residual_timestamps(long* timestamps, long timestamp_count){
     Bit_vec_builder compressed_timestamps;
     compressed_timestamps.current_byte = 0;
     compressed_timestamps.remaining_bits = 8;
@@ -75,7 +79,7 @@ uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp
     compressed_timestamps.bytes_capacity = 4;
     compressed_timestamps.bytes = (uint8_t*) malloc (compressed_timestamps.bytes_capacity * sizeof(uint8_t));
     if(compressed_timestamps.bytes == NULL){
-        printf("MALLOC ERROR (select_vector_based)\n");
+        printf("MALLOC ERROR (compress_irregular_residual_timestamps)\n");
     }
     append_a_one_bit(&compressed_timestamps);
     long last_delta = timestamps[1] - timestamps[0];
@@ -103,5 +107,11 @@ uint8_t* compress_irregular_residual_timestamps(long* timestamps, long timestamp
         last_delta = delta;
         last_timestamp = timestamp;
     }
-    return finish_with_one_bits(&compressed_timestamps);
+    Timestamps result = (Timestamps){.compressed_time = finish_with_one_bits(&compressed_timestamps),
+                                     .compressed_timestamp_count = compressed_timestamps.bytes_counter};
+    return result;
+}
+
+void free_timestamps(Timestamps* timestamps){
+    free(timestamps->compressed_time);
 }

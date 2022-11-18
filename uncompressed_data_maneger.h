@@ -22,4 +22,5 @@ void delete_uncompressed_data_maneger(Uncompressed_data* data);
 void force_compress_data(Uncompressed_data* data, int first);
 void print_vector_based(FILE* output, Vector_based *model, int *first);
 
+
 #endif

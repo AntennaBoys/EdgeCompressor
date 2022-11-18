@@ -8,5 +8,12 @@
 #include "gorilla.h"
 #include "math.h"
 
+typedef struct Timestamps{
+    uint8_t* compressed_time;
+    int compressed_timestamp_count;
+} Timestamps;
+
+void free_timestamps(Timestamps* timestamps);
+Timestamps compress_residual_timestamps(long* timestamps, long timestamp_count);
 
 #endif //COMPRESSEXEC_TIMESTAMPS_H

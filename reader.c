@@ -36,7 +36,7 @@ int main()
 {
     Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
     Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
-    FILE* position = openFile(outPutCsvFilePosition);
+    FILE* position_file = openFile(outPutCsvFilePosition);
     Vector_based vb = get_vector_based();
     
 
@@ -65,9 +65,9 @@ int main()
             tmVar.tm_isdst = 1;
             long time = mktime(&tmVar)+3600;
             timestamp = time == timestamp ? time + 1 : time;
-            //insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            //insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
-            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), &position_first);
+            insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            //insert_vector_based_data(position_file, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), &position_first);
             //fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
             
 
@@ -81,15 +81,15 @@ int main()
             continue;
         }
     }
-    // if(latData.current_size > 0){
-    //     force_compress_data(&latData, latFirst);
-    // }
-    // if(longData.current_size > 0){
-    //     force_compress_data(&longData, longFirst);
-    // }
-    // delete_uncompressed_data_maneger(&latData);
-    // delete_uncompressed_data_maneger(&longData);
-    print_vector_based(position, &vb, &position_first);
-    closeFile(position);
+    if(latData.current_size > 0){
+        force_compress_data(&latData, latFirst);
+    }
+    if(longData.current_size > 0){
+        force_compress_data(&longData, longFirst);
+    }
+    delete_uncompressed_data_maneger(&latData);
+    delete_uncompressed_data_maneger(&longData);
+    //print_vector_based(position_file, &vb, &position_first);
+    //closeFile(position_file);
     fclose(stream);
 }

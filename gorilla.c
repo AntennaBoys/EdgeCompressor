@@ -122,7 +122,7 @@ uint8_t* finish(Bit_vec_builder* data){
   return data->bytes;
 }
 
-uint8_t finish_with_one_bits(Bit_vec_builder* data){
+uint8_t* finish_with_one_bits(Bit_vec_builder* data){
     if(data->remaining_bits != 8){
         uint8_t remaining_bits = pow(2, data->remaining_bits)-1;
         append_bits(data, remaining_bits, data->remaining_bits);
