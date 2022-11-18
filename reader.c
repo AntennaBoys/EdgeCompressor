@@ -9,14 +9,17 @@
 #include <limits.h>
 #include "vector_based.h"
 
+#include <unistd.h>
+#include <stdio.h>
+#include <getopt.h>
+#include <ctype.h>
+
 
 #define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
 #define VECTOR_TRUE 1
 #define VECTOR_FALSE 0
-
-
 
 
 const char* getfield(char* line, int num)
@@ -32,8 +35,54 @@ const char* getfield(char* line, int num)
     return NULL;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+int c;
+    int digit_optind = 0;
+
+   while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"position", required_argument, 0,  'p' },
+            {"columns",  required_argument, 0,  'c' },
+            {0,         0,                 0,  0 }
+        };
+
+       c = getopt_long(argc, argv, "pc:",
+                 long_options, &option_index);
+        if (c == -1)
+            break;
+        // printf("DEBUG: %d\n", debug);
+       switch (c) {
+        case 'p':
+            printf("option %s", long_options[option_index].name);
+            if (optarg)
+                printf(" with arg %s", optarg);
+            printf("\n");
+            break;
+
+        case 'c':
+            if (digit_optind != 0 && digit_optind != this_option_optind)
+              printf("digits occur in two different argv-elements.\n");
+            digit_optind = this_option_optind;
+            printf("option %c\n", c);
+            if (optarg)
+                printf(" with arg %s\n", optarg);
+            break;
+        default:
+            printf("?? getopt returned character code 0%o ??\n", c);
+        }
+    }
+
+   if (optind < argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind < argc)
+            printf("%s ", argv[optind++]);
+        printf("\n");
+    }
+
+
     Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
     Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
     FILE* position = openFile(outPutCsvFilePosition);
