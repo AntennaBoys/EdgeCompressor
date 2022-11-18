@@ -47,6 +47,7 @@ void select_pmc_mean(Selected_model* model, size_t start_index, Pmc_mean* pmc_me
   size_t end_index = start_index + get_length_pmcmean(pmc_mean) - 1;
 
   model->model_type_id = (uint8_t) PMC_MEAN_ID;
+  model->values_capacity = 0;
   model->values[0] = 0;
   model->end_index = end_index;
   model->min_value = value;

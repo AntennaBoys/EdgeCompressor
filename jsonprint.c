@@ -35,7 +35,7 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
     }
     fprintf(file,"],\n");
     fprintf(file,"   \"start_time\":%d,\n", start_time);
-    fprintf(file,"   \"end_time\":%d\n", end_time);
+    fprintf(file,"   \"end_time\":%d,\n", end_time);
     fprintf(file,"   \"compressed_timestamps\":[");
     firstInArray = 1;
     for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
@@ -46,6 +46,6 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
             firstInArray = 0;
         }
     }
-    fprintf(file,"],\n");
+    fprintf(file,"]\n");
     fprintf(file,"  }\n");
 }
