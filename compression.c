@@ -52,6 +52,7 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
     }
     Timestamps time = compress_residual_timestamps(temp_times, model.end_index+1);
     writeModelToFile(file, time, model, first, start_time, end_time, error);
+    free_timestamps(&time);
     delete_gorilla(&builder.gorilla);
     delete_polyswing(&builder.polyswing);
     delete_selected_model(&model);
