@@ -23,7 +23,7 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);
     fprintf(file,"   \"error\":%lf,\n", error);
-    fprintf(file,"   \"values\":[");
+    fprintf(file,"   \"values\":\"");
     int firstInArray = 1;
     for (int i = 0; i < model.values_capacity; i++){
         if(!firstInArray){
@@ -33,10 +33,10 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
             firstInArray = 0;
         }
     }
-    fprintf(file,"],\n");
+    fprintf(file,"\",\n");
     fprintf(file,"   \"start_time\":%d,\n", start_time);
     fprintf(file,"   \"end_time\":%d,\n", end_time);
-    fprintf(file,"   \"compressed_timestamps\":[");
+    fprintf(file,"   \"compressed_timestamps\":\"");
     firstInArray = 1;
     for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
         if(!firstInArray){
@@ -46,6 +46,6 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
             firstInArray = 0;
         }
     }
-    fprintf(file,"]\n");
+    fprintf(file,"\"\n");
     fprintf(file,"  }\n");
 }
