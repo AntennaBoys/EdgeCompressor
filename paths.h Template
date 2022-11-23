@@ -1,6 +1,8 @@
 char* dataPath = "Path to data";
 char* outPutCsvFileLat = "Path to Lat output";
 char* outPutCsvFileLong = "Path to Long output";
+char* outPutCsvFilePosition = "Path for vector output";
+char* outPutCsvFileTimestamps = "Path to timestamp output";
 // Lav en kopi
 // Udfyld felterne 
 // Fjern " Template" fra fil navnet
