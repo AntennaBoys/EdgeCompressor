@@ -13,6 +13,7 @@ struct Uncompressed_data{
     int reset_internal_model;
     Compressed_segment_builder segment_builder;
     Vector_based vector_model;
+    int first;
 } typedef Uncompressed_data;
 Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_based);
 void resize_uncompressed_data(Uncompressed_data* data);
