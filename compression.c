@@ -45,8 +45,14 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
     float* reconstructedValues = getReconstructedValues(model, builder.uncompressed_timestamps);
     double error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
     
-    
-    writeModelToFile(file, model ,first, start_time, end_time, error);
+    long* temp_times;
+    temp_times = malloc((model.end_index+1) * sizeof(*temp_times));
+    for(int i = 0; i <= model.end_index; i++){
+        temp_times[i] = builder.uncompressed_timestamps[i];
+    }
+    Timestamps time = compress_residual_timestamps(temp_times, model.end_index+1);
+    writeModelToFile(file, time, model, first, start_time, end_time, error);
+    free_timestamps(&time);
     delete_gorilla(&builder.gorilla);
     delete_polyswing(&builder.polyswing);
     delete_selected_model(&model);

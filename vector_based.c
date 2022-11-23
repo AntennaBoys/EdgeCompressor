@@ -1,5 +1,6 @@
 #include "vector_based.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define ERROR 0.02
 
@@ -11,6 +12,9 @@ Vector_based get_vector_based(){
     vb.current_delta = 0;
     vb.prev_delta = 0;
     vb.model_length = 0;
+    vb.max_timestamps = 256;
+    vb.timestamps = malloc(vb.max_timestamps * sizeof(*vb.timestamps));
+    vb.current_timestamp_index = 0;
     return vb;   
 }
 
@@ -21,6 +25,10 @@ void reset_vector_based(Vector_based* vb){
     vb->current_delta = 0;
     vb->prev_delta = 0;
     vb->model_length = 0;
+    free_vectorbased(vb);
+    vb->max_timestamps = 256;
+    vb->timestamps = malloc(vb->max_timestamps * sizeof(*vb->timestamps));
+    vb->current_timestamp_index = 0;
 }
 
 int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude){
@@ -30,6 +38,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->start_time = time_stamp;
         data->length++;
         data->model_length++;
+        data->timestamps[data->current_timestamp_index++] = time_stamp;
         return 1;
     }
     else if (data->length == 1) {
@@ -44,6 +53,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         // Build vector
         data->vec.x = data->current.longitude - data->prev.longitude;
         data->vec.y = data->current.latitude - data->prev.latitude;
+        data->timestamps[data->current_timestamp_index++] = time_stamp;
         return 1;
     } 
     else {
@@ -81,21 +91,21 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->length++;
 
         if(distance > ERROR){
-
-            // Set point as the first point in the next segment
-            data->prev = (Position){ .latitude = latitude, .longitude = longitude};
-            data->start_time = time_stamp;
-            data->length = 1;
-
             return 0;
         } 
 
         //printf("Vector --- x: %f, y: %f\n", data->vec.x, data->vec.y);
         // printf("%lf, %lf\n", prediction.latitude, prediction.longitude);
         data->model_length++;
+        data->timestamps[data->current_timestamp_index++] = time_stamp;
+        if(data->current_timestamp_index + 1 >= data->max_timestamps) {
+            data->max_timestamps = data->max_timestamps * 2;
+            data->timestamps = realloc(data->timestamps, data->max_timestamps * sizeof(*data->timestamps));
+        }
         return 1;
         
     }
-
-
+}
+void free_vectorbased(Vector_based* vb){
+    free(vb->timestamps);
 }
