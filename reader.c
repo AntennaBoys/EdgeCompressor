@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 
     Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
     Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
+    Uncompressed_data* ud;
     FILE *position = openFile(outPutCsvFilePosition);
     Vector_based vb = get_vector_based();
 
@@ -71,8 +72,21 @@ int main(int argc, char *argv[])
             int latCol = args.latCol.col;
             int longCol = args.longCol.col;
 
-            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first);
+            // Compress position data if position columns are specified in input parameters
+            if(args.containsPosition){
+                insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first);
+            }
+
+            // Compress all other columns specified in input parameters
+            for(int i = 0; i < args.numberOfCols; i++){
+                Uncompressed_data ud;
+                char* str = strdup(line);
+                int col = args.cols[i].col;
+                insert_data(&ud, timestamp, strtof(getfield(str, col), &errorPointer), &ud.first);
+            }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
+
+
 
             free(longStr);
             free(latStr);
@@ -94,6 +108,9 @@ int main(int argc, char *argv[])
     // }
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
+    force_compress_data(&ud, &ud.first);
+
+
     print_vector_based(position, &vb, &position_first);
     closeFile(position);
     fclose(stream);
