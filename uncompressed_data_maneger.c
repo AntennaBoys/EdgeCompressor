@@ -13,6 +13,7 @@ Uncompressed_data create_uncompressed_data_maneger(char* file_path){
     data.output = openFile(file_path);
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
     data.reset_internal_model = 1;
+    data.first = 1;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
