@@ -38,10 +38,10 @@ uint8_t leading_zeros(int32_t num);
 uint8_t trailing_zeros(int32_t num);
 int32_t float_to_bit(float val);
 
-Gorilla;
-Bit_vec_builder;
 Gorilla get_gorilla(void);
 void reset_gorilla(Gorilla* gorilla);
 void delete_gorilla(Gorilla* gorilla);
 float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count);
+uint8_t leading_zeros(int32_t num);
+uint8_t* finish_with_one_bits(Bit_vec_builder* data);
 #endif

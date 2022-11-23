@@ -35,11 +35,9 @@ const char *getfield(char *line, int num)
 int main(int argc, char *argv[])
 {
     Arguments args = handleArguments(argc, argv);
-
-    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
-    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
-    Uncompressed_data* ud;
-    FILE *position = openFile(outPutCsvFilePosition);
+    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
+    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
+    FILE* position_file = openFile(outPutCsvFilePosition);
     Vector_based vb = get_vector_based();
 
     FILE *stream = fopen(dataPath, "r");
