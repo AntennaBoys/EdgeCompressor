@@ -6,11 +6,11 @@
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_path){
+Uncompressed_data create_uncompressed_data_maneger(char* file_name){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
-    data.output = openFile(file_path);
+    data.output = openFile(file_name);
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
     data.reset_internal_model = 1;
     data.first = 1;
@@ -38,7 +38,7 @@ void print_vector_based(FILE* output, Vector_based *model, int *first){
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
     writeModelToFile(output, timestamps, selected_model, *first, model->start_time, model->end_time, 0.0);
     free_timestamps(&timestamps);
-    first = 0;
+    *first = 0;
 }
 
 void resize(Uncompressed_data* data){

@@ -11,6 +11,8 @@
 
 #include "argument_handler.h"
 
+#include <unistd.h>
+
 #define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
 #define GORILLA_MAX 50
@@ -34,10 +36,12 @@ const char *getfield(char *line, int num)
 
 int main(int argc, char *argv[])
 {
+    paths_init();
     Arguments args = handleArguments(argc, argv);
-    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
-    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
-    FILE* position_file = openFile(outPutCsvFilePosition);
+
+
+
+    FILE* position_file = openFile("position.json");
     Vector_based vb = get_vector_based();
 
     Uncompressed_data* dataList = malloc(args.numberOfCols * sizeof(Uncompressed_data));
@@ -50,6 +54,8 @@ int main(int argc, char *argv[])
     int position_first = 1;
     long timestamp = 0;
     struct tm tmVar;
+
+
 
     for(int i = 0; i < args.numberOfCols; i++){
         char filename[10];

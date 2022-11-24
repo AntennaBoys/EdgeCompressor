@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "paths.h"
 
 
 typedef struct Cols {
@@ -19,6 +19,7 @@ typedef struct Arguments {
     int timestampCol;
     int numberOfCols;
     int containsPosition;
+    char* output;
 } Arguments;
 
 void removeQuotesFromArgs(char* str);
