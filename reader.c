@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
 
 
     for(int i = 0; i < args.numberOfCols; i++){
-        char filename[10];
-        snprintf(filename, sizeof(filename), "file_%d", args.cols[i].col);
+        char filename[16];
+        snprintf(filename, sizeof(filename), "file_%d.json", args.cols[i].col);
         printf("filename: %s", filename);
         dataList[i] = create_uncompressed_data_maneger(filename);
     }
