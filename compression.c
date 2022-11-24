@@ -7,7 +7,7 @@
 
 void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
 int can_fit_more(Compressed_segment_builder builder);
-void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value);
+void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value, int is_error_absolute);
 float* getReconstructedValues(Selected_model model, long* timestamps);
 double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 

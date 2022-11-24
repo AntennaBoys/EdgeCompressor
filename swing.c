@@ -18,7 +18,7 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValueSwing(Swing *data, long timestamp, double value);
+int fitValueSwing(Swing *data, long timestamp, double value, int is_error_absolute);
 
 
 

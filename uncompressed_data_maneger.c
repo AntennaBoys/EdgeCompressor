@@ -63,7 +63,7 @@ void resize_uncompressed_data(Uncompressed_data* data){
     }
 }
 
-void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, int isAbsoluteError){
+void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, int is_error_absolute){
     data->current_size++;
     resize_uncompressed_data(data);
     if(!data->reset_internal_model){
@@ -74,10 +74,10 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
     data->values[data->current_size-1] = value;
 
     if(data->reset_internal_model){
-        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND, isAbsoluteError);
+        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND, is_error_absolute);
         data->reset_internal_model = 0;
     }else{
-        try_to_update_models(&data->segment_builder, timestamp, value);
+        try_to_update_models(&data->segment_builder, timestamp, value, is_error_absolute);
     }
     if(!can_fit_more(data->segment_builder)){
         try_compress(data, ERROR_BOUND, first);
