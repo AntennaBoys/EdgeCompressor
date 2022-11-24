@@ -31,7 +31,7 @@ void reset_vector_based(Vector_based* vb){
     vb->current_timestamp_index = 0;
 }
 
-int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude){
+int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude, float error){
     if(data->length == 0){
         data->start = (Position){.latitude = latitude, .longitude = longitude};
         data->prev = (Position){ .latitude = latitude, .longitude = longitude};
@@ -90,7 +90,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
 
         data->length++;
 
-        if(distance > ERROR){
+        if(distance > error){
             return 0;
         } 
 
