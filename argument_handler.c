@@ -186,7 +186,6 @@ Arguments handleArguments(int argc, char *argv[])
         mkdir(outPutCsvFile);
     #elif defined(__linux__)
         mkdir(outPutCsvFile, 0777);
-    // #else more?
     #endif
 
     return argStruct;

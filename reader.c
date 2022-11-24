@@ -84,10 +84,11 @@ int main(int argc, char *argv[])
             // insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
             int latCol = args.latCol.col;
             int longCol = args.longCol.col;
+            float error = args.latCol.error;
 
             // Compress position data if position columns are specified in input parameters
             if(args.containsPosition){
-                insert_vector_based_data(position_file, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first);
+                insert_vector_based_data(position_file, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first, error);
             }
 
             // Compress all other columns specified in input parameters
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
                 
                 char* str = strdup(line);
                 int col = args.cols[i].col;
-                insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), &dataList[i].first);
+                insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), &dataList[i].first, args.cols[i].error);
             }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
 
@@ -122,7 +123,8 @@ int main(int argc, char *argv[])
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
     for(int i = 0; i < args.numberOfCols; i++){
-        force_compress_data(&dataList[i], &dataList[i].first);
+        force_compress_data(&dataList[i], dataList[i].first, args.cols[i].error);
+        closeFile(dataList[i].output);
     }
 
 

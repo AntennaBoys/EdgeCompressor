@@ -24,11 +24,11 @@ Uncompressed_data create_uncompressed_data_maneger(char* file_name){
     return data;
 }
 
-void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first){
-    if(!fit_values_vector_based(model, timestamp, lat, lon)){
+void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first, float error){
+    if(!fit_values_vector_based(model, timestamp, lat, lon, error)){
         print_vector_based(output, model, first);
         reset_vector_based(model);
-        fit_values_vector_based(model, timestamp, lat, lon);
+        fit_values_vector_based(model, timestamp, lat, lon, error);
     }
 }
 
@@ -63,7 +63,7 @@ void resize_uncompressed_data(Uncompressed_data* data){
     }
 }
 
-void insert_data(Uncompressed_data* data, long timestamp, float value, int* first){
+void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, float error){
     data->current_size++;
     resize_uncompressed_data(data);
     if(!data->reset_internal_model){
@@ -74,18 +74,18 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
     data->values[data->current_size-1] = value;
 
     if(data->reset_internal_model){
-        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND);
+        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, error);
         data->reset_internal_model = 0;
     }else{
         try_to_update_models(&data->segment_builder, timestamp, value);
     }
     if(!can_fit_more(data->segment_builder)){
-        try_compress(data, ERROR_BOUND, first);
+        try_compress(data, error, first);
     }
 }
 
-void force_compress_data(Uncompressed_data* data, int first){
-    forceCompress(data, ERROR_BOUND, first);
+void force_compress_data(Uncompressed_data* data, int first, float error){
+    forceCompress(data, error, first);
 }
 
 void delete_uncompressed_data_maneger(Uncompressed_data* data){
