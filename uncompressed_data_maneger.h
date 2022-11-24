@@ -15,7 +15,7 @@ struct Uncompressed_data{
     Vector_based vector_model;
     int first;
 } typedef Uncompressed_data;
-Uncompressed_data create_uncompressed_data_maneger(char* file_path);
+Uncompressed_data create_uncompressed_data_maneger(char* file_name);
 void resize_uncompressed_data(Uncompressed_data* data);
 void insert_data(Uncompressed_data* data, long timestamp, float value, int* first);
 void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first);
