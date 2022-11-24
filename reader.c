@@ -9,6 +9,7 @@
 #include <limits.h>
 #include "vector_based.h"
 
+#include "argument_handler.h"
 
 #define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
@@ -18,10 +19,9 @@
 
 
 
-
-const char* getfield(char* line, int num)
+const char *getfield(char *line, int num)
 {
-    const char* tok;
+    const char *tok;
     for (tok = strtok(line, ",");
          tok && *tok;
          tok = strtok(NULL, ",\n"))
@@ -32,15 +32,17 @@ const char* getfield(char* line, int num)
     return NULL;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat, VECTOR_TRUE);
-    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong, VECTOR_TRUE);
-    FILE* position = openFile(outPutCsvFilePosition);
+    Arguments args = handleArguments(argc, argv);
+    Uncompressed_data latData = create_uncompressed_data_maneger(outPutCsvFileLat);
+    Uncompressed_data longData = create_uncompressed_data_maneger(outPutCsvFileLong);
+    FILE* position_file = openFile(outPutCsvFilePosition);
     Vector_based vb = get_vector_based();
-    
 
-    FILE* stream = fopen(dataPath, "r");
+    Uncompressed_data* dataList = malloc(args.numberOfCols * sizeof(Uncompressed_data));
+
+    FILE *stream = fopen(dataPath, "r");
     char line[1024];
 
     int longFirst = 1;
@@ -49,32 +51,56 @@ int main()
     long timestamp = 0;
     struct tm tmVar;
 
+    for(int i = 0; i < args.numberOfCols; i++){
+        char filename[10];
+        snprintf(filename, sizeof(filename), "file_%d", args.cols[i].col);
+        printf("filename: %s", filename);
+        dataList[i] = create_uncompressed_data_maneger(filename);
+    }
 
+    while (fgets(line, 1024, stream))
+    {
+        char *latStr = strdup(line);
+        char *longStr = strdup(line);
+        char *ts = strdup(line);
+        char *errorPointer;
+        const char *timestampTemp = getfield(ts, args.timestampCol);
 
-    while(fgets(line, 1024, stream)){
-        char* latStr = strdup(line);
-        char* longStr = strdup(line);
-        char* ts = strdup(line);
-        char* errorPointer;
-        const char* timestampTemp = getfield(ts, 2);
-
-        //01/09/2022 00:00:0
-        if(sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec)==6){
+        // 01/09/2022 00:00:0
+        if (sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec) == 6)
+        {
             tmVar.tm_year -= 1900;
             tmVar.tm_mon -= 1;
             tmVar.tm_isdst = 1;
-            long time = mktime(&tmVar)+3600;
+            long time = mktime(&tmVar) + 3600;
             timestamp = time == timestamp ? time + 1 : time;
-            //insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
-            //insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
-            insert_vector_based_data(position, &vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer), &position_first);
-            //fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
-            
+            // insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
+            // insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
+            int latCol = args.latCol.col;
+            int longCol = args.longCol.col;
+
+            // Compress position data if position columns are specified in input parameters
+            if(args.containsPosition){
+                insert_vector_based_data(position_file, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first);
+            }
+
+            // Compress all other columns specified in input parameters
+            for(int i = 0; i < args.numberOfCols; i++){
+                
+                char* str = strdup(line);
+                int col = args.cols[i].col;
+                insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), &dataList[i].first);
+            }
+            // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
+
+
 
             free(longStr);
             free(latStr);
             free(ts);
-        }else {
+        }
+        else
+        {
             free(latStr);
             free(longStr);
             free(ts);
@@ -89,7 +115,12 @@ int main()
     // }
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
-    print_vector_based(position, &vb, &position_first);
-    closeFile(position);
+    for(int i = 0; i < args.numberOfCols; i++){
+        force_compress_data(&dataList[i], &dataList[i].first);
+    }
+
+
+    print_vector_based(position_file, &vb, &position_first);
+    closeFile(position_file);
     fclose(stream);
 }

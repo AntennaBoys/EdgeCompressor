@@ -13,13 +13,15 @@ struct Uncompressed_data{
     int reset_internal_model;
     Compressed_segment_builder segment_builder;
     Vector_based vector_model;
+    int first;
 } typedef Uncompressed_data;
-Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_based);
+Uncompressed_data create_uncompressed_data_maneger(char* file_path);
 void resize_uncompressed_data(Uncompressed_data* data);
 void insert_data(Uncompressed_data* data, long timestamp, float value, int* first);
 void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first);
 void delete_uncompressed_data_maneger(Uncompressed_data* data);
 void force_compress_data(Uncompressed_data* data, int first);
 void print_vector_based(FILE* output, Vector_based *model, int *first);
+
 
 #endif

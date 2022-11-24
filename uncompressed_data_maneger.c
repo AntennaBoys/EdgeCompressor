@@ -1,17 +1,19 @@
 #include "uncompressed_data_maneger.h"
 #include "compression.h"
 #include "jsonprint.h"
-#define ERROR_BOUND 0.01
+#include "timestamps.h"
+#define ERROR_BOUND 0.001
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_path, int vector_based){
+Uncompressed_data create_uncompressed_data_maneger(char* file_path){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
     data.output = openFile(file_path);
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
     data.reset_internal_model = 1;
+    data.first = 1;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
@@ -33,7 +35,9 @@ void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp,
 void print_vector_based(FILE* output, Vector_based *model, int *first){
     Selected_model selected_model = get_selected_model();
     select_vector_based(&selected_model, model);
-    writeModelToFile(output, selected_model, *first, model->start_time, model->end_time, 0.0);
+    Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
+    writeModelToFile(output, timestamps, selected_model, *first, model->start_time, model->end_time, 0.0);
+    free_timestamps(&timestamps);
     first = 0;
 }
 
