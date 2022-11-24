@@ -23,7 +23,6 @@ typedef struct Vector_based {
     Vector vec;
     
     int current_delta;
-    int prev_delta;
     long* timestamps;
     int max_timestamps;
     int current_timestamp_index;
