@@ -1,4 +1,4 @@
-char* dataPath = "Path to data";
+char* dataPath = "";
 char* outPutCsvFileLat = "Path to Lat output";
 char* outPutCsvFileLong = "Path to Long output";
 char* outPutCsvFilePosition = "Path for vector output";

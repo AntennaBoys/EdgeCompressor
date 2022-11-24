@@ -14,6 +14,7 @@ struct Uncompressed_data{
     Compressed_segment_builder segment_builder;
     Vector_based vector_model;
     int first;
+    int is_absolute_error;
 } typedef Uncompressed_data;
 Uncompressed_data create_uncompressed_data_maneger(char* file_path);
 void resize_uncompressed_data(Uncompressed_data* data);

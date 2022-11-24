@@ -11,7 +11,7 @@ struct Pmc_mean {
 } typedef Pmc_mean;
 
 int fit_value_pmc(Pmc_mean *data, float value);
-int is_value_within_error_bound(Pmc_mean*, float, float);
+int is_value_within_error_bound(Pmc_mean*, float, float,int);
 int equal_or_nan_pmc(float, float);
 int is_nan_pmc(float);
 float get_bytes_per_value_pmc(Pmc_mean* data);
