@@ -45,10 +45,10 @@ Arguments handleArguments(int argc, char *argv[])
         case 'p':
             // Debug mode seems to add single quotation marks around the arguments. 
             // The following two if's remove those
-            if(optarg[0] == '\''){
+            if(optarg[0] == '\'' || optarg[0] == '\"'){
                 optarg = &optarg[1];
             }
-            if(optarg[strlen(optarg)-1] == '\''){
+            if(optarg[strlen(optarg)-1] == '\'' || optarg[strlen(optarg)-1] == '\"'){
                 optarg[strlen(optarg)-1] = '\0';
             }
 
@@ -89,10 +89,10 @@ Arguments handleArguments(int argc, char *argv[])
             
             // Debug mode seems to add single quotation marks around the arguments. 
             // The following two if's remove those
-            if(optarg[0] == '\''){
+            if(optarg[0] == '\'' || optarg[0] == '\"'){
                 optarg = &optarg[1];
             }
-            if(optarg[strlen(optarg)-1] == '\''){
+            if(optarg[strlen(optarg)-1] == '\'' || optarg[strlen(optarg)-1] == '\"'){
                 optarg[strlen(optarg)-1] = '\0';
             }
 
@@ -140,14 +140,14 @@ Arguments handleArguments(int argc, char *argv[])
             if(count % 3 != 0){
                 printf("Not the expected number of arguments for columns. Number of parameters should be divisible by 3 and follow the following format:\n");
                 printf("<column (int)> <error (float)> <absolute (A) / relative (R)>\n");
-                exit(1);
+                //exit(1);
             }
             break;
         case 't':
-            if(optarg[0] == '\''){
+            if(optarg[0] == '\'' || optarg[0] == '\"'){
                 optarg = &optarg[1];
             }
-            if(optarg[strlen(optarg)-1] == '\''){
+            if(optarg[strlen(optarg)-1] == '\'' || optarg[strlen(optarg)-1] == '\"'){
                 optarg[strlen(optarg)-1] = '\0';
             }
             argStruct.timestampCol = atoi(optarg);
