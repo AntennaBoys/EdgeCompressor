@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "distance_calculator.h"
 
-#define ERROR 0.02
+#define ERROR 50
 
 Vector_based get_vector_based(){
     Vector_based vb;
@@ -81,9 +81,9 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         // Update current
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
 
-        // calls Distance calculator, to get distance between two points on a sphere, takes two pairs of lat,long and a unit. K is for kilometers, M would be miles
+        // calls Distance calculator, to get distance between two points on a sphere, takes two pairs of lat,long
         // handled as a sphere, which means we get some measure of error the longer a distance is.
-        double km_distance = haversine_distance(prediction.latitude, prediction.longitude,data->current.latitude, data->current.longitude);
+        double m_distance = haversine_distance(prediction.latitude, prediction.longitude,data->current.latitude, data->current.longitude);
 
         // Calculate distance between predicted and current
         double distance = sqrt( (prediction.longitude - data->current.longitude) * (prediction.longitude - data->current.longitude) 
@@ -95,7 +95,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
 
         data->length++;
 
-        if(km_distance > ERROR){
+        if(m_distance > ERROR){
             return 0;
         } 
 
