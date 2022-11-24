@@ -67,7 +67,7 @@ build/*
 .idea/*
 
 # Environment
-paths.h
+paths.c
 result.csv
 longResult.csv
 latResult.csv
