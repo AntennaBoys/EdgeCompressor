@@ -6,11 +6,11 @@
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_path){
+Uncompressed_data create_uncompressed_data_maneger(char* file_name){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
-    data.output = openFile(file_path);
+    data.output = openFile(file_name);
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
     data.reset_internal_model = 1;
     data.first = 1;
@@ -24,11 +24,11 @@ Uncompressed_data create_uncompressed_data_maneger(char* file_path){
     return data;
 }
 
-void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first){
-    if(!fit_values_vector_based(model, timestamp, lat, lon)){
+void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp, float lat, float lon, int *first, float error){
+    if(!fit_values_vector_based(model, timestamp, lat, lon, error)){
         print_vector_based(output, model, first);
         reset_vector_based(model);
-        fit_values_vector_based(model, timestamp, lat, lon);
+        fit_values_vector_based(model, timestamp, lat, lon, error);
     }
 }
 
@@ -38,7 +38,7 @@ void print_vector_based(FILE* output, Vector_based *model, int *first){
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
     writeModelToFile(output, timestamps, selected_model, *first, model->start_time, model->end_time, 0.0);
     free_timestamps(&timestamps);
-    first = 0;
+    *first = 0;
 }
 
 void resize(Uncompressed_data* data){
@@ -63,7 +63,9 @@ void resize_uncompressed_data(Uncompressed_data* data){
     }
 }
 
-void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, int is_error_absolute){
+
+void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, float error, int is_error_absolute){
+
     data->current_size++;
     resize_uncompressed_data(data);
     if(!data->reset_internal_model){
@@ -74,18 +76,19 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
     data->values[data->current_size-1] = value;
 
     if(data->reset_internal_model){
-        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, ERROR_BOUND, is_error_absolute);
+        data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, error, is_error_absolute);
+
         data->reset_internal_model = 0;
     }else{
         try_to_update_models(&data->segment_builder, timestamp, value, is_error_absolute);
     }
     if(!can_fit_more(data->segment_builder)){
-        try_compress(data, ERROR_BOUND, first);
+        try_compress(data, error, first);
     }
 }
 
-void force_compress_data(Uncompressed_data* data, int first){
-    forceCompress(data, ERROR_BOUND, first);
+void force_compress_data(Uncompressed_data* data, int first, float error){
+    forceCompress(data, error, first);
 }
 
 void delete_uncompressed_data_maneger(Uncompressed_data* data){

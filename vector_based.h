@@ -23,7 +23,6 @@ typedef struct Vector_based {
     Vector vec;
     
     int current_delta;
-    int prev_delta;
     long* timestamps;
     int max_timestamps;
     int current_timestamp_index;
@@ -31,7 +30,7 @@ typedef struct Vector_based {
 } Vector_based;
 
 Vector_based get_vector_based();
-int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude);
+int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude, double longitude, float error);
 void reset_vector_based(Vector_based* vb);
 void free_vectorbased(Vector_based* vb);
 

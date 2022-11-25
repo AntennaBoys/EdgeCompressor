@@ -15,7 +15,7 @@ Arguments handleArguments(int argc, char *argv[])
     argStruct.cols = NULL;
     argStruct.containsPosition = 0;
     argStruct.timestampCol = -1;
-
+    
     int c;
     int digit_optind = 0;
     const char s[2] = " ";
@@ -32,9 +32,10 @@ Arguments handleArguments(int argc, char *argv[])
             {"position", required_argument, 0, 'p'},
             {"columns", required_argument, 0, 'c'},
             {"timestamps", required_argument, 0, 't'},
+            {"output", required_argument, 0, 'o'},
             {0, 0, 0, 0}};
 
-        c = getopt_long(argc, argv, "p:c:t:",
+        c = getopt_long(argc, argv, "p:c:t:o:",
                         long_options, &option_index);
         if (c == -1)
             break;
@@ -152,6 +153,13 @@ Arguments handleArguments(int argc, char *argv[])
             }
             argStruct.timestampCol = atoi(optarg);
             break;
+        case 'o':
+            argStruct.output = optarg;
+            outPutCsvFile = optarg;
+            strcat(outPutCsvFile, "/");
+            printf("OUTPUT! : %s\n", optarg);
+            
+            break;
         default:
             printf("Unknown option, exiting ...\n");
             exit(1);
@@ -172,6 +180,13 @@ Arguments handleArguments(int argc, char *argv[])
             printf("%s ", argv[optind++]);
         printf("\n");
     }
+
+    // Make folder for output
+    #if defined(_WIN32)
+        mkdir(outPutCsvFile);
+    #elif defined(__linux__)
+        mkdir(outPutCsvFile, 0777);
+    #endif
 
     return argStruct;
 }
