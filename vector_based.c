@@ -10,7 +10,6 @@ Vector_based get_vector_based(){
     vb.current = (Position){ .latitude = 0, .longitude = 0};
     vb.length = 0;
     vb.current_delta = 0;
-    vb.prev_delta = 0;
     vb.model_length = 0;
     vb.max_timestamps = 256;
     vb.timestamps = malloc(vb.max_timestamps * sizeof(*vb.timestamps));
@@ -23,7 +22,6 @@ void reset_vector_based(Vector_based* vb){
     vb->current = (Position){ .latitude = 0, .longitude = 0};
     vb->length = 0;
     vb->current_delta = 0;
-    vb->prev_delta = 0;
     vb->model_length = 0;
     free_vectorbased(vb);
     vb->max_timestamps = 256;
@@ -42,9 +40,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         return 1;
     }
     else if (data->length == 1) {
-        data->prev_delta = data->current_delta;
         data->current_delta = time_stamp - data->start_time;
-
 
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
         data->end_time = time_stamp;
@@ -53,29 +49,24 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         // Build vector
         data->vec.x = data->current.longitude - data->prev.longitude;
         data->vec.y = data->current.latitude - data->prev.latitude;
+        data->vec.y = data->vec.y / (double)(data->current_delta);
+        data->vec.x = data->vec.x / (double)(data->current_delta);
         data->timestamps[data->current_timestamp_index++] = time_stamp;
         return 1;
     } 
     else {
-        data->prev_delta = data->current_delta;
         data->current_delta = time_stamp - data->end_time;
         data->end_time = time_stamp;
-
 
         // Make prediction
         Position prediction; 
 
         // Scale vector down based on previous delta
-        data->vec.y = data->vec.y / (double)(data->prev_delta);
-        data->vec.x = data->vec.x / (double)(data->prev_delta);
 
         // Scale vector up based on current delta
-        data->vec.y *= (double)(data->current_delta);
-        data->vec.x *= (double)(data->current_delta);
 
-        prediction.latitude = data->current.latitude + data->vec.y;
-        prediction.longitude = data->current.longitude + data->vec.x;
-
+        prediction.latitude = data->current.latitude + (data->vec.y * (double)(data->current_delta));
+        prediction.longitude = data->current.longitude + (data->vec.x * (double)(data->current_delta));
 
         // Update current
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
@@ -83,7 +74,6 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         // Calculate distance between predicted and current
         double distance = sqrt( (prediction.longitude - data->current.longitude) * (prediction.longitude - data->current.longitude) 
                                 + (prediction.latitude - data->current.latitude) * (prediction.latitude - data->current.latitude) );
-
 
         //printf("Distance: %f\n", distance);
         data->current = prediction;
