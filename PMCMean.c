@@ -35,7 +35,7 @@ int is_value_within_error_bound(Pmc_mean* data, float real_value, float approx_v
         float difference = real_value - approx_value;
         float result = fabsf(difference / real_value);
         if(is_error_absolute){  // check if relative or absolute error
-            return fabs(difference) <= data->error;
+            return fabsf(difference) <= data->error;
         }
         return (result * 100) <= data->error;
     }
