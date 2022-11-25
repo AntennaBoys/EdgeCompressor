@@ -87,9 +87,3 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
 void force_compress_data(Uncompressed_data* data, int *first, float error){
     forceCompress(data, error, first);
 }
-
-void delete_uncompressed_data_maneger(Uncompressed_data* data){
-    free(data->timestamps);
-    free(data->values);
-    closeFile(data->output);
-}

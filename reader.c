@@ -121,7 +121,6 @@ int main(int argc, char *argv[])
     // delete_uncompressed_data_maneger(&longData);
     for(int i = 0; i < args.numberOfCols; i++){
         force_compress_data(&dataList[i], &first_print, args.cols[i].error);
-        closeFile(dataList[i].output);
     }
 
     if(args.containsPosition){
