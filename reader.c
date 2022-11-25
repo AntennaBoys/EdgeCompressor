@@ -96,7 +96,9 @@ int main(int argc, char *argv[])
                 
                 char* str = strdup(line);
                 int col = args.cols[i].col;
-                insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), &dataList[i].first, args.cols[i].error);
+
+                insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), &dataList[i].first, args.cols[i].error, args.cols->isAbsolute);
+
             }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
 

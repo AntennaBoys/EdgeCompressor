@@ -9,8 +9,16 @@ Mat* update_all(Mat* ATA, Mat* ATY, long new_x, double new_y, Poly_swing *model)
 terms ingest(long x, double y, int printmat, Mat* ATA, Mat* ATY, Poly_swing *model);
 void reset_struct(Poly_swing *data);
 
-int fit_values_polyswing(Poly_swing *data, long timestamp, double value){
-    double maximum_deviation = fabs(value * (data->error_bound / 100.1));
+int fit_values_polyswing(Poly_swing *data, long timestamp, double value, int is_error_absolute){
+    double maximum_deviation = 0;
+    if (is_error_absolute)  // check if using relative or absolute error bounds
+    {
+        maximum_deviation = data->error_bound;
+    }
+    else
+    {
+        maximum_deviation = fabs(value * (data->error_bound / 100.1));
+    }
 
     data->delta_time = timestamp - data->first_timestamp;
     if (data->length == 0) {

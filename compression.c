@@ -7,11 +7,11 @@
 
 void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
 int can_fit_more(Compressed_segment_builder builder);
-void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value);
+void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value, int is_error_absolute);
 float* getReconstructedValues(Selected_model model, long* timestamps);
 double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 
-Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound){
+Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound, int is_absolute_error){
     Compressed_segment_builder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
@@ -24,12 +24,13 @@ Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, lon
     builder.uncompressed_timestamps = uncompressedTimestamps;
     builder.uncompressed_values = uncompressedValues;
     
+    
     size_t currentIndex = startIndex;
     while (can_fit_more(builder) && currentIndex < endIndex)
     {
         long timestamp = uncompressedTimestamps[currentIndex];
         float value = uncompressedValues[currentIndex];
-        try_to_update_models(&builder, timestamp, value);
+        try_to_update_models(&builder, timestamp, value, is_absolute_error);
         currentIndex++;
     }
     return builder;
@@ -66,18 +67,18 @@ int can_fit_more(Compressed_segment_builder builder){
         || builder.polyswing_could_fit_all;
 }
 
-void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value){
+void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value, int is_error_absolute){
     if(builder->pmc_mean_could_fit_all){
-        builder->pmc_mean_could_fit_all = fit_value_pmc(&builder->pmc_mean, value);
+        builder->pmc_mean_could_fit_all = fit_value_pmc(&builder->pmc_mean, value, is_error_absolute);
     }
     if(builder->swing_could_fit_all){
-        builder->swing_could_fit_all = fitValueSwing(&builder->swing, timestamp, value);
+        builder->swing_could_fit_all = fitValueSwing(&builder->swing, timestamp, value, is_error_absolute);
     }
     if(builder->gorilla.length < GORILLAMAX){
         fitValueGorilla(&builder->gorilla, value);
     }
     if(builder->polyswing_could_fit_all){
-        builder->polyswing_could_fit_all = fit_values_polyswing(&builder->polyswing, timestamp, value);// && builder->polyswing.length < 4;
+        builder->polyswing_could_fit_all = fit_values_polyswing(&builder->polyswing, timestamp, value, is_error_absolute);// && builder->polyswing.length < 4;
     }
 }
 
@@ -110,7 +111,7 @@ void forceCompress(Uncompressed_data* data, double error_bound, int first){
         resize_uncompressed_data(data);
         currentIndex = 0;
         if(currentIndex != data->current_size){
-            builder = new_compressed_segment_builder(currentIndex, data->timestamps, data->values, data->current_size, error_bound);
+            builder = new_compressed_segment_builder(currentIndex, data->timestamps, data->values, data->current_size, error_bound, data->is_absolute_error);
         }
     }
     //finishBatch(data->segment_builder, data->output, first);
