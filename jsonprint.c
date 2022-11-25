@@ -3,7 +3,8 @@
 
 
 FILE* openFile(char* fileName){
-    char* full_path = strdup(outPutCsvFile);
+    char* full_path = malloc((strlen(outPutCsvFile) + strlen(fileName)) * sizeof(char));
+    strcpy(full_path, outPutCsvFile);
     strcat(full_path, fileName);
     FILE* file = fopen(full_path, "w+");
     fprintf(file,"{\"models\":[\n");
