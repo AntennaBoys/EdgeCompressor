@@ -16,13 +16,14 @@ void closeFile(FILE* file){
     fclose(file);
 }
 
-void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int first, int start_time, int end_time, double error){
+void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int first, int start_time, int end_time, double error, int column_id){
     if (!first){
         fprintf(file,"  ,{\n");
     }else{
         fprintf(file,"{\n");
     }
     fprintf(file,"   \"Mid\":%d,\n", model.model_type_id);
+    fprintf(file,"   \"Cid\":%d,\n", column_id);
     fprintf(file,"   \"end_index\":%d,\n", (int)model.end_index);
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);

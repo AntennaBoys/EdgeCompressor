@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 
 
-    FILE* position_file = openFile("position.json");
+    FILE* output_file = openFile("output.json");
     Vector_based vb = get_vector_based();
 
     Uncompressed_data* dataList = malloc(args.numberOfCols * sizeof(Uncompressed_data));
@@ -49,19 +49,16 @@ int main(int argc, char *argv[])
     FILE *stream = fopen(dataPath, "r");
     char line[1024];
 
-    int longFirst = 1;
-    int latFirst = 1;
-    int position_first = 1;
+    int first_print = 1;
     long timestamp = 0;
     struct tm tmVar;
-
-
+    int cur_id = 0;
+    if(args.containsPosition){
+        cur_id++;
+    }
 
     for(int i = 0; i < args.numberOfCols; i++){
-        char filename[16];
-        snprintf(filename, sizeof(filename), "file_%d.json", args.cols[i].col);
-        printf("filename: %s", filename);
-        dataList[i] = create_uncompressed_data_maneger(filename);
+        dataList[i] = create_uncompressed_data_maneger(output_file, cur_id++, &first_print);
     }
 
     while (fgets(line, 1024, stream))
@@ -88,7 +85,7 @@ int main(int argc, char *argv[])
 
             // Compress position data if position columns are specified in input parameters
             if(args.containsPosition){
-                insert_vector_based_data(position_file, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &position_first, error);
+                insert_vector_based_data(output_file, &vb, timestamp, strtof(getfield(latStr, latCol), &errorPointer), strtof(getfield(longStr, longCol), &errorPointer), &first_print, error);
             }
 
             // Compress all other columns specified in input parameters
@@ -123,12 +120,13 @@ int main(int argc, char *argv[])
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
     for(int i = 0; i < args.numberOfCols; i++){
-        force_compress_data(&dataList[i], dataList[i].first, args.cols[i].error);
+        force_compress_data(&dataList[i], &first_print, args.cols[i].error);
         closeFile(dataList[i].output);
     }
 
-
-    print_vector_based(position_file, &vb, &position_first);
-    closeFile(position_file);
+    if(args.containsPosition){
+        print_vector_based(output_file, &vb, &first_print);
+    }
+    closeFile(output_file);
     fclose(stream);
 }

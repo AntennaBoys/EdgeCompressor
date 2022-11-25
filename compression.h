@@ -13,7 +13,7 @@
 
 Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound);
 void try_compress(Uncompressed_data* data, double error_bound, int* first);
-void forceCompress(Uncompressed_data* data, double error_bound, int first);
+void forceCompress(Uncompressed_data* data, double error_bound, int* first);
 void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value);
 int can_fit_more(Compressed_segment_builder builder);
 
