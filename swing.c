@@ -27,11 +27,12 @@ int fitValueSwing(Swing* data, long timestamp, double value, int is_error_absolu
     double maximum_deviation = 0;
     if (is_error_absolute)  // check if using relative or absolute error bounds
     {
-        maximum_deviation = fabs(value * (data->error_bound / 100.0));     
+        maximum_deviation = data->error_bound;
     }
     else
     {
-        maximum_deviation = data->error_bound;
+        maximum_deviation = fabs(value * (data->error_bound / 100.0));
+
     }
     
     
