@@ -18,12 +18,24 @@ struct slopeAndIntercept compute_slope_and_intercept(
         double final_value);
 int isNan(double val);
 int equalOrNAN(double v1, double v2);
-int fitValueSwing(Swing *data, long timestamp, double value);
+int fitValueSwing(Swing *data, long timestamp, double value, int is_error_absolute);
 
 
 
-int fitValueSwing(Swing* data, long timestamp, double value){
-    double maximum_deviation = fabs(value * (data->error_bound / 100.0));
+int fitValueSwing(Swing* data, long timestamp, double value, int is_error_absolute){
+
+    double maximum_deviation = 0;
+    if (is_error_absolute)  // check if using relative or absolute error bounds
+    {
+        maximum_deviation = data->error_bound;
+    }
+    else
+    {
+        maximum_deviation = fabs(value * (data->error_bound / 100.0));
+
+    }
+    
+    
 
     if (data->length == 0) {
         // Line 1 - 2 of Algorithm 1 in the Swing and Slide paper.
