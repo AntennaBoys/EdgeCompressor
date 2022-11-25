@@ -36,7 +36,7 @@ Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, lon
     return builder;
 }
 
-int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
+int finishBatch(Compressed_segment_builder builder, FILE* file, int id ,int* first){
     Selected_model model = get_selected_model();
     select_model(&model, builder.start_index, &builder.pmc_mean, &builder.swing, &builder.gorilla, &builder.polyswing, builder.uncompressed_values);
 
@@ -52,7 +52,7 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int first){
         temp_times[i] = builder.uncompressed_timestamps[i];
     }
     Timestamps time = compress_residual_timestamps(temp_times, model.end_index+1);
-    writeModelToFile(file, time, model, first, start_time, end_time, error);
+    writeModelToFile(file, time, model, first, start_time, end_time, error, id);
     free_timestamps(&time);
     delete_gorilla(&builder.gorilla);
     delete_polyswing(&builder.polyswing);
@@ -84,8 +84,7 @@ void try_to_update_models(Compressed_segment_builder* builder, long timestamp, f
 
 void try_compress(Uncompressed_data* data, double error_bound, int* first){
     size_t currentIndex = 0;
-    currentIndex = finishBatch(data->segment_builder, data->output, *first);
-    *first = 0;
+    currentIndex = finishBatch(data->segment_builder, data->output, data->id, first);
     for (int i = 0; i+currentIndex < data->current_size; i++){
         data->values[i] = data->values[i+currentIndex];
         data->timestamps[i] = data->timestamps[i+currentIndex];
@@ -96,13 +95,11 @@ void try_compress(Uncompressed_data* data, double error_bound, int* first){
     currentIndex = 0;
 }
 
-void forceCompress(Uncompressed_data* data, double error_bound, int first){
-    int isFirst = first;
+void forceCompress(Uncompressed_data* data, double error_bound, int *first){
     Compressed_segment_builder builder = data->segment_builder;
     size_t currentIndex = 0;
     while(currentIndex < data->current_size){
-        currentIndex = finishBatch(builder, data->output, isFirst);
-        isFirst = 0;
+        currentIndex = finishBatch(builder, data->output, data->id, first);
         for (int i = 0; i+currentIndex < data->current_size; i++){
             data->values[i] = data->values[i+currentIndex];
             data->timestamps[i] = data->timestamps[i+currentIndex];

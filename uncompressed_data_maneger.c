@@ -6,14 +6,15 @@
 
 void resize(Uncompressed_data* data);
 
-Uncompressed_data create_uncompressed_data_maneger(char* file_name){
+Uncompressed_data create_uncompressed_data_maneger(FILE * output, int id, int* first){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
-    data.output = openFile(file_name);
+    data.output = output;
     data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
     data.reset_internal_model = 1;
-    data.first = 1;
+    data.first = first;
+    data.id = id;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
@@ -36,9 +37,8 @@ void print_vector_based(FILE* output, Vector_based *model, int *first){
     Selected_model selected_model = get_selected_model();
     select_vector_based(&selected_model, model);
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
-    writeModelToFile(output, timestamps, selected_model, *first, model->start_time, model->end_time, 0.0);
+    writeModelToFile(output, timestamps, selected_model, first, model->start_time, model->end_time, 0.0, 0);
     free_timestamps(&timestamps);
-    *first = 0;
 }
 
 void resize(Uncompressed_data* data){
@@ -87,12 +87,6 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
     }
 }
 
-void force_compress_data(Uncompressed_data* data, int first, float error){
+void force_compress_data(Uncompressed_data* data, int *first, float error){
     forceCompress(data, error, first);
-}
-
-void delete_uncompressed_data_maneger(Uncompressed_data* data){
-    free(data->timestamps);
-    free(data->values);
-    closeFile(data->output);
 }
