@@ -10,6 +10,6 @@
 
 FILE* openFile(char* fileName);
 void closeFile(FILE* file);
-void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int first, int start_time, int end_time, double error, int column_id);
+void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int *first, int start_time, int end_time, double error, int column_id);
 
 #endif
