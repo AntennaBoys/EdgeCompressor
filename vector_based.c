@@ -13,7 +13,7 @@ Vector_based get_vector_based(){
     vb.current_delta = 0;
     vb.model_length = 0;
     vb.max_timestamps = 256;
-    vb.timestamps = malloc(vb.max_timestamps * sizeof(*vb.timestamps));
+    vb.timestamps = calloc(vb.max_timestamps, sizeof(*vb.timestamps));
     vb.current_timestamp_index = 0;
     return vb;   
 }
@@ -26,7 +26,7 @@ void reset_vector_based(Vector_based* vb){
     vb->model_length = 0;
     free_vectorbased(vb);
     vb->max_timestamps = 256;
-    vb->timestamps = malloc(vb->max_timestamps * sizeof(*vb->timestamps));
+    vb->timestamps = calloc(vb->max_timestamps, sizeof(*vb->timestamps));
     vb->current_timestamp_index = 0;
 }
 

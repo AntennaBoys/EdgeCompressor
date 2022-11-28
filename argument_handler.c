@@ -106,7 +106,7 @@ Arguments handleArguments(int argc, char *argv[])
                 // Handle arg here
                 if(count%3 == 0){
                     if(argStruct.cols == NULL){
-                        argStruct.cols = malloc(sizeof(Cols));
+                        argStruct.cols = calloc(1, sizeof(Cols));
                         // argStruct.cols->currentSize = 1;
                         argStruct.numberOfCols = 1;
                         argStruct.cols[0].col = atoi(token);
@@ -187,6 +187,6 @@ Arguments handleArguments(int argc, char *argv[])
     #elif defined(__linux__)
         mkdir(outPutCsvFile, 0777);
     #endif
-
+    
     return argStruct;
 }

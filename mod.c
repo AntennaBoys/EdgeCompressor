@@ -83,7 +83,7 @@ void select_vector_based(Selected_model* model, Vector_based* vector_model){
   bit_vec_builder.remaining_bits = 8;
   bit_vec_builder.bytes_counter = 0;
   bit_vec_builder.bytes_capacity = 4;
-  bit_vec_builder.bytes = (uint8_t*) malloc (bit_vec_builder.bytes_capacity * sizeof(uint8_t));
+  bit_vec_builder.bytes = (uint8_t*) calloc (bit_vec_builder.bytes_capacity, sizeof(uint8_t));
   if(bit_vec_builder.bytes == NULL){
       printf("MALLOC ERROR (select_vector_based)\n");
   }
@@ -109,6 +109,7 @@ void select_vector_based(Selected_model* model, Vector_based* vector_model){
   size_t end_index = vector_model->model_length - 1;
   model->model_type_id = (uint8_t) VECTOR_ID;
   model->end_index = end_index;
+  free(bit_vec_builder.bytes );
 }
 
 void select_gorilla(Selected_model* model, size_t start_index, Gorilla* gorilla, float *uncompressed_values){
@@ -158,7 +159,7 @@ void select_poly_swing(Selected_model* model, size_t start_index, Poly_swing* po
   bit_vec_builder.bytes_counter = 0;
 
   bit_vec_builder.bytes_capacity = 4;
-  bit_vec_builder.bytes = (uint8_t*) malloc (bit_vec_builder.bytes_capacity * sizeof(uint8_t));
+  bit_vec_builder.bytes = (uint8_t*) calloc (bit_vec_builder.bytes_capacity, sizeof(uint8_t));
   if(bit_vec_builder.bytes == NULL){
       printf("MALLOC ERROR\n");
   }
@@ -181,7 +182,7 @@ Selected_model get_selected_model(){
     mod.min_value = 0;
     mod.max_value = 0;
     mod.values_capacity = 1;
-    mod.values = (uint8_t*) malloc (mod.values_capacity * sizeof(uint8_t));
+    mod.values = (uint8_t*) calloc (mod.values_capacity, sizeof(uint8_t));
     if(mod.values == NULL){
         printf("MALLOC ERROR (mod)\n");
     }

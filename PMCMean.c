@@ -81,7 +81,7 @@ void reset_pmc_mean(Pmc_mean *pmc){
 
 float* grid_pmc_mean(float value, int timestamp_count){
     float* result;
-    result = malloc(timestamp_count * sizeof(*result));
+    result = calloc(timestamp_count, sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (grid_pmc_mean: result)\n");
     }

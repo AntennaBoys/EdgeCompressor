@@ -11,14 +11,14 @@ Uncompressed_data create_uncompressed_data_maneger(FILE * output, int id, int* f
     data.max_size = 1;
     data.current_size = 0;
     data.output = output;
-    data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
+    data.timestamps = calloc(data.max_size, sizeof(*data.timestamps));
     data.reset_internal_model = 1;
     data.first = first;
     data.id = id;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
-    data.values = malloc(data.max_size * sizeof(*data.values));
+    data.values = calloc(data.max_size, sizeof(*data.values));
     if(!data.values){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.values)\n");
     }

@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     FILE* output_file = openFile("output.json");
     Vector_based vb = get_vector_based();
 
-    Uncompressed_data* dataList = malloc(args.numberOfCols * sizeof(Uncompressed_data));
+    Uncompressed_data* dataList = calloc(args.numberOfCols, sizeof(Uncompressed_data));
 
     FILE *stream = fopen(dataPath, "r");
     char line[1024];
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
                 int col = args.cols[i].col;
 
                 insert_data(&dataList[i], timestamp, strtof(getfield(str, col), &errorPointer), dataList[i].first, args.cols[i].error, args.cols->isAbsolute);
-
+                free(str);
             }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
 
@@ -123,11 +123,17 @@ int main(int argc, char *argv[])
     // delete_uncompressed_data_maneger(&longData);
     for(int i = 0; i < args.numberOfCols; i++){
         force_compress_data(&dataList[i], &first_print, args.cols[i].error);
+        free(dataList[i].timestamps);
+        free(dataList[i].values);
     }
 
     if(args.containsPosition){
         print_vector_based(output_file, &vb, &first_print);
     }
     closeFile(output_file);
+
+    free(args.cols);
+    free(dataList);
+    free_vectorbased(&vb);
     fclose(stream);
 }

@@ -227,7 +227,7 @@ float* grid_polyswing(float c, float b, uint8_t* values, long* timestamps, int t
     BitReader bitReader = tryNewBitreader(values, 4);
     float a = intToFloat(read_bits(&bitReader, 32));
     float* result;
-    result = malloc(timestamp_count * sizeof(*result));
+    result = calloc(timestamp_count, sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (grid_polyswing: result)\n");
     }

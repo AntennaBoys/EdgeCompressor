@@ -47,7 +47,7 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int id ,int* fir
     double error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
     
     long* temp_times;
-    temp_times = malloc((model.end_index+1) * sizeof(*temp_times));
+    temp_times = calloc((model.end_index+1), sizeof(*temp_times));
     for(int i = 0; i <= model.end_index; i++){
         temp_times[i] = builder.uncompressed_timestamps[i];
     }
@@ -57,6 +57,8 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int id ,int* fir
     delete_gorilla(&builder.gorilla);
     delete_polyswing(&builder.polyswing);
     delete_selected_model(&model);
+    free(temp_times);
+    free(reconstructedValues);
     return model.end_index + 1;
 }
 

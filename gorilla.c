@@ -202,7 +202,7 @@ Gorilla get_gorilla(){
     
     //is this correct?
     data.compressed_values.bytes_capacity = 1;
-    data.compressed_values.bytes = (uint8_t*) malloc (data.compressed_values.bytes_capacity * sizeof(uint8_t));
+    data.compressed_values.bytes = (uint8_t*) calloc (data.compressed_values.bytes_capacity, sizeof(uint8_t));
     if(data.compressed_values.bytes == NULL){
         printf("MALLOC ERROR\n");
     }
@@ -237,7 +237,7 @@ void delete_gorilla(Gorilla* gorilla){
 
 float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count){
     float* result;
-    result = malloc(timestamp_count * sizeof(*result));
+    result = calloc(timestamp_count, sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (grid_gorilla: result)\n");
     }
