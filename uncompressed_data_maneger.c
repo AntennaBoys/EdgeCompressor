@@ -2,23 +2,25 @@
 #include "compression.h"
 #include "jsonprint.h"
 #include "timestamps.h"
+#include "distance_calculator.h"
 #define ERROR_BOUND 0.001
 
 void resize(Uncompressed_data* data);
+double get_vector_based_error(Vector_based *model);
 
-Uncompressed_data create_uncompressed_data_maneger(FILE * output, int id, int* first){
+Uncompressed_data create_uncompressed_data_maneger(FILE *output, int id, int* first){
     Uncompressed_data data;
     data.max_size = 1;
     data.current_size = 0;
     data.output = output;
-    data.timestamps = malloc(data.max_size * sizeof(*data.timestamps));
+    data.timestamps = calloc(data.max_size, sizeof(*data.timestamps));
     data.reset_internal_model = 1;
     data.first = first;
     data.id = id;
     if(!data.timestamps){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.timestamps)\n");
     }
-    data.values = malloc(data.max_size * sizeof(*data.values));
+    data.values = calloc(data.max_size, sizeof(*data.values));
     if(!data.values){
         printf("CALLOC ERROR(create_uncompressed_data_maneger->data.values)\n");
     }
@@ -33,13 +35,27 @@ void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp,
     }
 }
 
+double get_vector_based_error(Vector_based *model){
+    double sum_of_errors;
+    for(int i = 0; i < model->model_length; i++){
+        long delta = model->timestamps[i] - model->timestamps[0];
+        double lat = model->start.latitude + (model->vec.y * (double)delta);
+        double lon = model->start.longitude + (model->vec.x * (double)delta);
+        sum_of_errors += haversine_distance(model->lats[i], model->longs[i], lat, lon);
+    }
+    return sum_of_errors / model->model_length;
+}
+
 void print_vector_based(FILE* output, Vector_based *model, int *first){
     Selected_model selected_model = get_selected_model();
     select_vector_based(&selected_model, model);
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
-    writeModelToFile(output, timestamps, selected_model, first, model->start_time, model->end_time, 0.0, 0);
+    writeModelToFile(output, timestamps, selected_model, first, model->start_time, model->end_time,
+                     get_vector_based_error(model), 0);
     free_timestamps(&timestamps);
 }
+
+
 
 void resize(Uncompressed_data* data){
     data->timestamps = realloc(data->timestamps, data->max_size * sizeof(*data->timestamps));

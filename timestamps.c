@@ -11,7 +11,7 @@ Timestamps compress_irregular_residual_timestamps(long* timestamps, long timesta
 
 uint8_t* long_to_bytes(long value){
     uint8_t* result;
-    result = malloc(8 * sizeof(*result));
+    result = calloc(8, sizeof(*result));
     if(!result){
         printf("MALLOC ERROR (long_to_bytes)");
     }
@@ -56,7 +56,7 @@ Timestamps compress_regular_residual_timestamps(long* timestamps, long timestamp
     int number_of_bits_to_write = ((SIZE_OF_LONG*timestamp_count)-leading_zeroes)+1;
     uint8_t number_of_bytes_to_write = (uint8_t)ceilf(number_of_bits_to_write/8);
     Timestamps result;
-    result.compressed_time = malloc(number_of_bytes_to_write * sizeof(*result.compressed_time));
+    result.compressed_time = calloc(number_of_bytes_to_write, sizeof(*result.compressed_time));
     if(!result.compressed_time){
         printf("MALLOC ERROR (compress_regular_residual_timestamps)");
     }

@@ -3,11 +3,13 @@
 
 
 FILE* openFile(char* fileName){
-    char* full_path = malloc((strlen(outPutCsvFile) + strlen(fileName)) * sizeof(char));
+    char* full_path = calloc((strlen(outPutCsvFile) + strlen(fileName)+1), sizeof(char));
     strcpy(full_path, outPutCsvFile);
     strcat(full_path, fileName);
+
     FILE* file = fopen(full_path, "w+");
     fprintf(file,"{\"models\":[\n");
+    free(full_path);
     return file;
 }
 
