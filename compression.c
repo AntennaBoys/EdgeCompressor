@@ -98,10 +98,9 @@ void try_compress(Uncompressed_data* data, double error_bound, int* first){
 }
 
 void forceCompress(Uncompressed_data* data, double error_bound, int *first){
-    Compressed_segment_builder builder = data->segment_builder;
     size_t currentIndex = 0;
     while(currentIndex < data->current_size){
-        currentIndex = finishBatch(builder, data->output, data->id, first);
+        currentIndex = finishBatch(data->segment_builder, data->output, data->id, first);
         for (int i = 0; i+currentIndex < data->current_size; i++){
             data->values[i] = data->values[i+currentIndex];
             data->timestamps[i] = data->timestamps[i+currentIndex];
@@ -110,7 +109,7 @@ void forceCompress(Uncompressed_data* data, double error_bound, int *first){
         resize_uncompressed_data(data);
         currentIndex = 0;
         if(currentIndex != data->current_size){
-            builder = new_compressed_segment_builder(currentIndex, data->timestamps, data->values, data->current_size, error_bound, data->is_absolute_error);
+            data->segment_builder = new_compressed_segment_builder(currentIndex, data->timestamps, data->values, data->current_size, error_bound, data->is_absolute_error);
         }
     }
     //finishBatch(data->segment_builder, data->output, first);
