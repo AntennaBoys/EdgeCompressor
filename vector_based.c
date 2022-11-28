@@ -1,6 +1,7 @@
 #include "vector_based.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "distance_calculator.h"
 
 #define ERROR 50
@@ -14,6 +15,8 @@ Vector_based get_vector_based(){
     vb.model_length = 0;
     vb.max_timestamps = 256;
     vb.timestamps = malloc(vb.max_timestamps * sizeof(*vb.timestamps));
+    vb.longs = malloc(vb.max_timestamps * sizeof(*vb.longs));
+    vb.lats = malloc(vb.max_timestamps * sizeof(*vb.lats));
     vb.current_timestamp_index = 0;
     return vb;   
 }
@@ -27,6 +30,8 @@ void reset_vector_based(Vector_based* vb){
     free_vectorbased(vb);
     vb->max_timestamps = 256;
     vb->timestamps = malloc(vb->max_timestamps * sizeof(*vb->timestamps));
+    vb->longs = malloc(vb->max_timestamps * sizeof(*vb->longs));
+    vb->lats = malloc(vb->max_timestamps * sizeof(*vb->lats));
     vb->current_timestamp_index = 0;
 }
 
@@ -37,7 +42,10 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->start_time = time_stamp;
         data->length++;
         data->model_length++;
-        data->timestamps[data->current_timestamp_index++] = time_stamp;
+        data->timestamps[data->current_timestamp_index] = time_stamp;
+        data->lats[data->current_timestamp_index] = latitude;
+        data->longs[data->current_timestamp_index++] = longitude;
+
         return 1;
     }
     else if (data->length == 1) {
@@ -52,7 +60,9 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->vec.y = data->current.latitude - data->prev.latitude;
         data->vec.y = data->vec.y / (double)(data->current_delta);
         data->vec.x = data->vec.x / (double)(data->current_delta);
-        data->timestamps[data->current_timestamp_index++] = time_stamp;
+        data->timestamps[data->current_timestamp_index] = time_stamp;
+        data->lats[data->current_timestamp_index] = latitude;
+        data->longs[data->current_timestamp_index++] = longitude;
         return 1;
     } 
     else {
@@ -93,10 +103,14 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         //printf("Vector --- x: %f, y: %f\n", data->vec.x, data->vec.y);
         // printf("%lf, %lf\n", prediction.latitude, prediction.longitude);
         data->model_length++;
-        data->timestamps[data->current_timestamp_index++] = time_stamp;
+        data->timestamps[data->current_timestamp_index] = time_stamp;
+        data->lats[data->current_timestamp_index] = latitude;
+        data->longs[data->current_timestamp_index++] = longitude;
         if(data->current_timestamp_index + 1 >= data->max_timestamps) {
             data->max_timestamps = data->max_timestamps * 2;
             data->timestamps = realloc(data->timestamps, data->max_timestamps * sizeof(*data->timestamps));
+            data->longs = realloc(data->longs, data->max_timestamps * sizeof(*data->longs));
+            data->lats = realloc(data->lats, data->max_timestamps * sizeof(*data->lats));
         }
         return 1;
         
