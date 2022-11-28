@@ -24,6 +24,8 @@ typedef struct Vector_based {
     
     int current_delta;
     long* timestamps;
+    float* longs;
+    float* lats;
     int max_timestamps;
     int current_timestamp_index;
     
