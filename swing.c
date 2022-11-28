@@ -193,11 +193,11 @@ Swing getSwing(double error_bound){
   data.error_bound = error_bound;
   data.first_timestamp = 0;
   data.last_timestamp = 0;
-  data.first_value = NAN;
-  data.upper_bound_slope = NAN;
-  data.upper_bound_intercept = NAN;
-  data.lower_bound_slope = NAN;
-  data.lower_bound_intercept = NAN;
+  data.first_value = 0;
+  data.upper_bound_slope = 0;
+  data.upper_bound_intercept = 0;
+  data.lower_bound_slope = 0;
+  data.lower_bound_intercept = 0;
   data.length = 0;
   return data;
 }
@@ -205,11 +205,11 @@ Swing getSwing(double error_bound){
 void resetSwing(Swing *data){
   data->first_timestamp = 0;
   data->last_timestamp = 0;
-  data->first_value = NAN;
-  data->upper_bound_slope = NAN;
-  data->upper_bound_intercept = NAN;
-  data->lower_bound_slope = NAN;
-  data->lower_bound_intercept = NAN;
+  data->first_value = 0;
+  data->upper_bound_slope = 0;
+  data->upper_bound_intercept = 0;
+  data->lower_bound_slope = 0;
+  data->lower_bound_intercept = 0;
   data->length = 0;
 }
 
