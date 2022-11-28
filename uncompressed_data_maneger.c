@@ -36,7 +36,7 @@ void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp,
 }
 
 double get_vector_based_error(Vector_based *model){
-    double sum_of_errors;
+    double sum_of_errors = 0;
     for(int i = 0; i < model->model_length; i++){
         long delta = model->timestamps[i] - model->timestamps[0];
         double lat = model->start.latitude + (model->vec.y * (double)delta);
