@@ -104,5 +104,9 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
 }
 
 void force_compress_data(Uncompressed_data* data, int *first, float error){
+    if(!data->reset_internal_model){
+        data->segment_builder.uncompressed_timestamps = data->timestamps;
+        data->segment_builder.uncompressed_values = data->values;
+    }
     forceCompress(data, error, first);
 }
