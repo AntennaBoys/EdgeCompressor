@@ -33,6 +33,7 @@ Arguments handleArguments(int argc, char *argv[])
             {"columns", required_argument, 0, 'c'},
             {"timestamps", required_argument, 0, 't'},
             {"output", required_argument, 0, 'o'},
+            {"text", required_argument, 0, 'x'},
             {0, 0, 0, 0}};
 
         c = getopt_long(argc, argv, "p:c:t:o:",
@@ -83,6 +84,16 @@ Arguments handleArguments(int argc, char *argv[])
 
             break;
         case 'c':
+        case 'x':
+            Cols* col_array;
+            int* col_count;
+            if(c == 'c'){
+                col_array = argStruct.cols;
+                col_count = argStruct.numberOfCols;
+            }else{
+                col_array = argStruct.text_cols;
+                col_count = argStruct.number_of_text_cols;
+            }
             //From documentation. Not sure what it does
             if (digit_optind != 0 && digit_optind != this_option_optind)
                 printf("digits occur in two different argv-elements.\n");
@@ -105,32 +116,32 @@ Arguments handleArguments(int argc, char *argv[])
                 int column = count / 3;
                 // Handle arg here
                 if(count%3 == 0){
-                    if(argStruct.cols == NULL){
-                        argStruct.cols = calloc(1, sizeof(Cols));
+                    if(col_array == NULL){
+                        col_array = calloc(1, sizeof(Cols));
                         // argStruct.cols->currentSize = 1;
-                        argStruct.numberOfCols = 1;
-                        argStruct.cols[0].col = atoi(token);
-                        printf("First size: %d\n", sizeof(*argStruct.cols));
+                        col_count = 1;
+                        col_array[0].col = atoi(token);
+                        printf("First size: %d\n", sizeof(*col_array));
                     } else {
                         // argStruct.cols->currentSize++;
-                        argStruct.numberOfCols++;
-                        printf("SIZE: %d\n", sizeof(*(argStruct.cols)) * argStruct.numberOfCols);
-                        argStruct.cols = realloc(argStruct.cols, sizeof(*(argStruct.cols)) * argStruct.numberOfCols);
+                        col_count++;
+                        printf("SIZE: %d\n", sizeof(*(col_array)) * col_count);
+                        col_array = realloc(col_array, sizeof(*(col_array)) * col_count);
                         argStruct.cols[column].col = atoi(token);
                     }
                     printf("Column: %s\n", token);
                 }
                 if(count%3 == 1){
                     printf("%s\n", token);
-                    argStruct.cols[column].error = atof(token); 
+                    col_array[column].error = atof(token);
                     printf("Error: %s\n", token);
                 }
                 if(count%3 == 2){
                     if(*token == 'A'){ // Absolute
-                        argStruct.cols[column].isAbsolute = 1;
+                        col_array[column].isAbsolute = 1;
                     }
                     if(*token == 'R'){ // Relative
-                        argStruct.cols[column].isAbsolute = 0;
+                        col_array[column].isAbsolute = 0;
                     }
                     printf("A/R: %s\n", token);
                 }

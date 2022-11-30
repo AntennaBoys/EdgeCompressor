@@ -16,8 +16,10 @@ typedef struct Cols {
 typedef struct Arguments {
     Cols latCol, longCol;
     Cols* cols;
+    Cols* text_cols;
     int timestampCol;
     int numberOfCols;
+    int number_of_text_cols;
     int containsPosition;
     char* output;
 } Arguments;
