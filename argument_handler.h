@@ -10,13 +10,12 @@ typedef struct Cols {
     int col;
     float error;
     int isAbsolute;
-    int currentSize;
 } Cols;
 
 typedef struct Arguments {
     Cols latCol, longCol;
     Cols* cols;
-    Cols* text_cols;
+    int* text_cols;
     int timestampCol;
     int numberOfCols;
     int number_of_text_cols;

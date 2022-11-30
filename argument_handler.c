@@ -1,5 +1,7 @@
 #include "argument_handler.h"
 
+void column_or_text(Cols** cols, int* column_count, int* count, char* token);
+
 void removeQuotesFromArgs(char* str){
     if(str[0] == '\''){
         str = &str[1];
@@ -15,6 +17,8 @@ Arguments handleArguments(int argc, char *argv[])
     argStruct.cols = NULL;
     argStruct.containsPosition = 0;
     argStruct.timestampCol = -1;
+    argStruct.number_of_text_cols = 0;
+    argStruct.numberOfCols = 0;
     
     int c;
     int digit_optind = 0;
@@ -36,7 +40,7 @@ Arguments handleArguments(int argc, char *argv[])
             {"text", required_argument, 0, 'x'},
             {0, 0, 0, 0}};
 
-        c = getopt_long(argc, argv, "p:c:t:o:",
+        c = getopt_long(argc, argv, "p:c:t:o:x:",
                         long_options, &option_index);
         if (c == -1)
             break;
@@ -84,75 +88,72 @@ Arguments handleArguments(int argc, char *argv[])
 
             break;
         case 'c':
+            //From documentation. Not sure what it does
+            if (digit_optind != 0 && digit_optind != this_option_optind)
+                printf("digits occur in two different argv-elements.\n");
+                digit_optind = this_option_optind;
+
+                // Debug mode seems to add single quotation marks around the arguments.
+                // The following two if's remove those
+                if (optarg[0] == '\'' || optarg[0] == '\"') {
+                    optarg = &optarg[1];
+                }
+                if (optarg[strlen(optarg) - 1] == '\'' || optarg[strlen(optarg) - 1] == '\"') {
+                    optarg[strlen(optarg) - 1] = '\0';
+                }
+
+                count = 0;
+
+                token = strtok(optarg, s);
+                while (token != NULL) {
+                    column_or_text(&argStruct.cols, &argStruct.numberOfCols, &count, token);
+
+                    token = strtok(NULL, s); // NULL is not a mistake!
+                    count++;
+                }
+
+                if (count % 3 != 0) {
+                    printf("Not the expected number of arguments for columns. Number of parameters should be divisible by 3 and follow the following format:\n");
+                    printf("<column (int)> <error (float)> <absolute (A) / relative (R)>\n");
+                    //exit(1);
+                }
+                break;
         case 'x':
-            Cols* col_array;
-            int* col_count;
-            if(c == 'c'){
-                col_array = argStruct.cols;
-                col_count = argStruct.numberOfCols;
-            }else{
-                col_array = argStruct.text_cols;
-                col_count = argStruct.number_of_text_cols;
-            }
             //From documentation. Not sure what it does
             if (digit_optind != 0 && digit_optind != this_option_optind)
                 printf("digits occur in two different argv-elements.\n");
             digit_optind = this_option_optind;
-            
-            // Debug mode seems to add single quotation marks around the arguments. 
+
+            // Debug mode seems to add single quotation marks around the arguments.
             // The following two if's remove those
-            if(optarg[0] == '\'' || optarg[0] == '\"'){
+            if (optarg[0] == '\'' || optarg[0] == '\"') {
                 optarg = &optarg[1];
             }
-            if(optarg[strlen(optarg)-1] == '\'' || optarg[strlen(optarg)-1] == '\"'){
-                optarg[strlen(optarg)-1] = '\0';
+            if (optarg[strlen(optarg) - 1] == '\'' || optarg[strlen(optarg) - 1] == '\"') {
+                optarg[strlen(optarg) - 1] = '\0';
             }
 
             count = 0;
 
             token = strtok(optarg, s);
-            while( token != NULL ) {
-                
-                int column = count / 3;
-                // Handle arg here
-                if(count%3 == 0){
-                    if(col_array == NULL){
-                        col_array = calloc(1, sizeof(Cols));
-                        // argStruct.cols->currentSize = 1;
-                        col_count = 1;
-                        col_array[0].col = atoi(token);
-                        printf("First size: %d\n", sizeof(*col_array));
-                    } else {
-                        // argStruct.cols->currentSize++;
-                        col_count++;
-                        printf("SIZE: %d\n", sizeof(*(col_array)) * col_count);
-                        col_array = realloc(col_array, sizeof(*(col_array)) * col_count);
-                        argStruct.cols[column].col = atoi(token);
-                    }
-                    printf("Column: %s\n", token);
+            while (token != NULL) {
+                if (argStruct.number_of_text_cols == 0) {
+                    argStruct.text_cols = calloc(1, sizeof(*argStruct.text_cols));
+                    // argStruct.cols->currentSize = 1;
+                    argStruct.number_of_text_cols = 1;
+                    argStruct.text_cols[0] = atoi(token);
+                    printf("First size: %d\n", sizeof(*argStruct.text_cols));
+                } else {
+                    // argStruct.cols->currentSize++;
+                    argStruct.number_of_text_cols++;
+                    printf("SIZE: %d\n", sizeof(*argStruct.text_cols) * argStruct.number_of_text_cols);
+                    argStruct.text_cols = realloc(argStruct.text_cols, sizeof(*argStruct.text_cols) * argStruct.number_of_text_cols);
+                    argStruct.text_cols[argStruct.number_of_text_cols-1] = atoi(token);
                 }
-                if(count%3 == 1){
-                    printf("%s\n", token);
-                    col_array[column].error = atof(token);
-                    printf("Error: %s\n", token);
-                }
-                if(count%3 == 2){
-                    if(*token == 'A'){ // Absolute
-                        col_array[column].isAbsolute = 1;
-                    }
-                    if(*token == 'R'){ // Relative
-                        col_array[column].isAbsolute = 0;
-                    }
-                    printf("A/R: %s\n", token);
-                }
+                printf("Column: %s\n", token);
+
                 token = strtok(NULL, s); // NULL is not a mistake!
                 count++;
-            }
-
-            if(count % 3 != 0){
-                printf("Not the expected number of arguments for columns. Number of parameters should be divisible by 3 and follow the following format:\n");
-                printf("<column (int)> <error (float)> <absolute (A) / relative (R)>\n");
-                //exit(1);
             }
             break;
         case 't':
@@ -200,4 +201,39 @@ Arguments handleArguments(int argc, char *argv[])
     #endif
     
     return argStruct;
+}
+
+void column_or_text(Cols** cols, int* column_count, int* count, char* token){
+    int column = *count / 3;
+    // Handle arg here
+    if (*count % 3 == 0) {
+        if (*cols == NULL) {
+            *cols = calloc(1, sizeof(Cols));
+            // argStruct.cols->currentSize = 1;
+            *column_count = 1;
+            (*cols)[0].col = atoi(token);
+            printf("First size: %d\n", sizeof(*(*cols)));
+        } else {
+            // argStruct.cols->currentSize++;
+            (*column_count)++;
+            printf("SIZE: %d\n", sizeof(**cols) * (*column_count));
+            *cols = realloc(*cols, sizeof(**cols) * (*column_count));
+            (*cols)[column].col = atoi(token);
+        }
+        printf("Column: %s\n", token);
+    }
+    if (*count % 3 == 1) {
+        printf("%s\n", token);
+        (*cols)[column].error = atof(token);
+        printf("Error: %s\n", token);
+    }
+    if (*count % 3 == 2) {
+        if (*token == 'A') { // Absolute
+            (*cols)[column].isAbsolute = 1;
+        }
+        if (*token == 'R') { // Relative
+            (*cols)[column].isAbsolute = 0;
+        }
+        printf("A/R: %s\n", token);
+    }
 }

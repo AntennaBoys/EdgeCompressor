@@ -57,3 +57,30 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
     fprintf(file,"\"\n");
     fprintf(file,"  }\n");
 }
+
+void write_text_to_file(FILE* file, int* first, int column_id, int count, char* string, long start_time, long end_time, Timestamps timestamps){
+    if (!*first){
+        fprintf(file,"  ,{\n");
+    }else{
+        fprintf(file,"{\n");
+        *first = 0;
+    }
+    fprintf(file,"   \"Mid\":%d,\n", 5);
+    fprintf(file,"   \"Cid\":%d,\n", column_id);
+    fprintf(file,"   \"text\":%s,\n", string);
+    fprintf(file,"   \"count\":%d,\n", count);
+    fprintf(file,"   \"start_time\":%d,\n", start_time);
+    fprintf(file,"   \"end_time\":%d,\n", end_time);
+    fprintf(file,"   \"compressed_timestamps\":\"");
+    int firstInArray = 1;
+    for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
+        if(!firstInArray){
+            fprintf(file, ",%d", timestamps.compressed_time[i]);
+        }else{
+            fprintf(file, "%d", timestamps.compressed_time[i]);
+            firstInArray = 0;
+        }
+    }
+    fprintf(file,"\"\n");
+    fprintf(file,"  }\n");
+}
