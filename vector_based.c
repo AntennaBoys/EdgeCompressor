@@ -58,8 +58,11 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         // Build vector
         data->vec.x = data->current.longitude - data->prev.longitude;
         data->vec.y = data->current.latitude - data->prev.latitude;
+
+        // Scale down vector to only reflect the change for a single time step
         data->vec.y = data->vec.y / (double)(data->current_delta);
         data->vec.x = data->vec.x / (double)(data->current_delta);
+
         data->timestamps[data->current_timestamp_index] = time_stamp;
         data->lats[data->current_timestamp_index] = latitude;
         data->longs[data->current_timestamp_index++] = longitude;
@@ -70,12 +73,8 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->end_time = time_stamp;
 
         // Make prediction
+        // Scale up vector to reflect the change for the current delta
         Position prediction; 
-
-        // Scale vector down based on previous delta
-
-        // Scale vector up based on current delta
-
         prediction.latitude = data->current.latitude + (data->vec.y * (double)(data->current_delta));
         prediction.longitude = data->current.longitude + (data->vec.x * (double)(data->current_delta));
 
