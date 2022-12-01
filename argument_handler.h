@@ -8,9 +8,9 @@
 
 typedef struct Cols {
     int col;
-    float error;
     int isAbsolute;
     int currentSize;
+    float error;
 } Cols;
 
 typedef struct Arguments {

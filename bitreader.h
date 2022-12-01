@@ -3,9 +3,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 struct BitReader{
-    size_t nextBit;
-    int bytesCount;
     uint8_t* bytes;
+    int bytesCount;
+    size_t nextBit;
+
 }typedef BitReader;
 
 BitReader tryNewBitreader(uint8_t* bytes, int byteCount);

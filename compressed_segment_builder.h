@@ -5,16 +5,18 @@
 #include "gorilla.h"
 #include "polyswing.h"
 struct Compressed_segment_builder{
-    size_t start_index;
-    Pmc_mean pmc_mean;
-    int pmc_mean_could_fit_all;
-    Swing swing;
-    int swing_could_fit_all;
-    Gorilla gorilla;
-    int polyswing_could_fit_all;
-    Poly_swing polyswing;
+    Poly_swing polyswing; //152
+    Swing swing; //72
+    Gorilla gorilla; //40
+    Pmc_mean pmc_mean; //32
+
     long* uncompressed_timestamps;
     float* uncompressed_values;
+    int pmc_mean_could_fit_all;
+    int swing_could_fit_all;
+    int polyswing_could_fit_all;
+    size_t start_index;
+
 } typedef Compressed_segment_builder;
 
 #endif

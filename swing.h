@@ -32,6 +32,8 @@ struct Swing {
     double lower_bound_intercept;
     /// The number of data points the current model has been fitted to.
     int length;
+
+    int alignment; // Used for alignment. Don't touch!
 } typedef Swing;
 int fitValueSwing(Swing *data, long timestamp, double value, int is_error_absolute);
 double getModelFirst(Swing current_swing);

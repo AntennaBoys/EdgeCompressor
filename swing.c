@@ -199,6 +199,7 @@ Swing getSwing(double error_bound){
   data.lower_bound_slope = 0;
   data.lower_bound_intercept = 0;
   data.length = 0;
+  data.alignment = 0;
   return data;
 }
 

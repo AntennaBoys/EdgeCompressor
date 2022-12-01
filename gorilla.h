@@ -11,17 +11,16 @@
 struct Bit_vec_builder {
     uint8_t current_byte ;
     uint8_t remaining_bits;
+    uint8_t* bytes;
     int bytes_capacity;
     int bytes_counter;
-    uint8_t* bytes;
 } typedef Bit_vec_builder;
 
 struct Gorilla {
-
+    Bit_vec_builder compressed_values;
     float last_value;
     uint8_t last_leading_zero_bits;
     uint8_t last_trailing_zero_bits;
-    Bit_vec_builder compressed_values;
     size_t length;
 } typedef Gorilla;
 

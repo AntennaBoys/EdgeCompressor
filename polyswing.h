@@ -17,6 +17,11 @@ typedef struct terms {
 } terms;
 
 struct Poly_swing {
+    
+    terms upper;
+    terms lower;
+    terms current;
+    
     /// Maximum relative error for the value of each data point.
     double error_bound;
     /// Time at which the first value represented by the current model was
@@ -30,19 +35,17 @@ struct Poly_swing {
 
     long delta_time;
     
-    terms upper;
-    terms lower;
-    terms current;
-
-
-    /// The number of data points the current model has been fitted to.
-    int length;
     //poly
     long second_timestamp;
     double second_value;
+
     Mat* ATA;
     Mat* ATY;
-    int terminate_segment;
+
+    /// The number of data points the current model has been fitted to.
+    int length;
+
+    int terminate_segment;    
 } typedef Poly_swing;
 
 

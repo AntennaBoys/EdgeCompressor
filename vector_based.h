@@ -15,19 +15,21 @@ typedef struct Vector_based {
     Position prev;
     Position current;
     Position start;
+    Vector vec;
 
     long int start_time;
     long int end_time;
-    unsigned int length;
-    unsigned int model_length;
-    Vector vec;
+
     
-    int current_delta;
     long* timestamps;
     float* longs;
     float* lats;
+
+    int current_delta;
     int max_timestamps;
     int current_timestamp_index;
+    unsigned int length;
+    unsigned int model_length;
     
 } Vector_based;
 

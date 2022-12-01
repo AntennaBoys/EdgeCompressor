@@ -5,17 +5,17 @@
 #include "vector_based.h"
 #include "compressed_segment_builder.h"
 struct Uncompressed_data{
-    size_t max_size;
-    size_t current_size;
+
+    Compressed_segment_builder segment_builder; //336
     FILE* output;
     long* timestamps;
     float* values;
-    int reset_internal_model;
-    Compressed_segment_builder segment_builder;
-    Vector_based vector_model;
     int* first;
+    int reset_internal_model;
     int id;
     int is_absolute_error;
+    size_t max_size;
+    size_t current_size;
 } typedef Uncompressed_data;
 Uncompressed_data create_uncompressed_data_maneger(FILE * output, int id, int* first);
 void resize_uncompressed_data(Uncompressed_data* data);
