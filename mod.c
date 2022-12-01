@@ -55,7 +55,7 @@ void select_pmc_mean(Selected_model* model, size_t start_index, Pmc_mean* pmc_me
 }
 
 void select_swing(Selected_model* model, size_t start_index, Swing* swing){
-  float arr[2];
+  float arr[2] = {0,0};
 
   get_model_swing(swing, arr);
 

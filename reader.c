@@ -122,7 +122,8 @@ int main(int argc, char *argv[])
     // delete_uncompressed_data_maneger(&latData);
     // delete_uncompressed_data_maneger(&longData);
     for(int i = 0; i < args.numberOfCols; i++){
-        force_compress_data(&dataList[i], &first_print, args.cols[i].error);
+        if(dataList[i].current_size > 0)
+            force_compress_data(&dataList[i], &first_print, args.cols[i].error);
         free(dataList[i].timestamps);
         free(dataList[i].values);
     }
