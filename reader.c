@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     Uncompressed_data* dataList = calloc(args.numberOfCols, sizeof(Uncompressed_data));
     Text_compressor* text_compressors;
     if(args.number_of_text_cols > 0){
-        text_compressors = calloc(args.number_of_text_cols, sizeof(text_compressors));
+        text_compressors = calloc(args.number_of_text_cols, sizeof(*text_compressors));
     }
 
     FILE *stream = fopen(dataPath, "r");
