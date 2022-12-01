@@ -1,3 +1,0 @@
-/home/teis/git/EdgeCompressor/CMakeFiles/compressexec.dir
-/home/teis/git/EdgeCompressor/CMakeFiles/edit_cache.dir
-/home/teis/git/EdgeCompressor/CMakeFiles/rebuild_cache.dir
