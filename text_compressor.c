@@ -40,6 +40,7 @@ void reset_text_compressor(Text_compressor* data, char* string, long timestamp){
     free(data->timestamps);
     data->timestamps = calloc(data->max_timestamps, sizeof(*data->timestamps));
     data->timestamps[0] = timestamp;
+    data->string = string;
 }
 
 void print_compressed_text(Text_compressor* data, FILE* file, int* first){

@@ -4,12 +4,34 @@
 
 #include "timestamps.h"
 #include "gorilla.h"
-const uint8_t SIZE_OF_LONG = (uint8_t) sizeof(long) * 8;
+const uint8_t SIZE_OF_LONG = (uint8_t) sizeof(int64_t) * 8;
 
 Timestamps compress_regular_residual_timestamps(long* timestamps, long timestamp_count);
 Timestamps compress_irregular_residual_timestamps(long* timestamps, long timestamp_count);
 
-uint8_t* long_to_bytes(long value){
+uint8_t leading_zeros_long(int64_t num){
+    // Equivalent to
+    // 10000000 00000000 00000000 00000000 00000000 0000000 00000000 00000000
+    int64_t msb = (int64_t)1 << (SIZE_OF_LONG - (int64_t)1);
+
+    int8_t count = 0;
+
+    /* Iterate over each bit */
+    for(int i=0; i<SIZE_OF_LONG; i++)
+    {
+        /* If leading set bit is found */
+        if((num << i) & msb)
+        {
+            /* Terminate the loop */
+            break;
+        }
+        count++;
+    }
+    return count;
+}
+
+
+uint8_t* long_to_bytes(uint64_t value){
     uint8_t* result;
     result = calloc(8, sizeof(*result));
     if(!result){
@@ -29,7 +51,7 @@ uint8_t* long_to_bytes(long value){
 // check for timestamp count before calling this function
 // it needs to be more than 2 as the first and last timestamp already is saved
 int uncompressed_timestamps_are_regular(long* timestamps, long timestamp_count){
-    long interval = timestamps[0] - timestamps[1];
+    long interval = timestamps[1] - timestamps[0];
     long previous_timestamp = timestamps[0];
     for(int i = 1; i < timestamp_count; i++){
         if(timestamps[i] - previous_timestamp != interval){
@@ -52,9 +74,9 @@ Timestamps compress_residual_timestamps(long* timestamps, long timestamp_count){
 }
 
 Timestamps compress_regular_residual_timestamps(long* timestamps, long timestamp_count){
-    uint8_t leading_zeroes = leading_zeros(timestamp_count);
-    int number_of_bits_to_write = ((SIZE_OF_LONG*timestamp_count)-leading_zeroes)+1;
-    uint8_t number_of_bytes_to_write = (uint8_t)ceilf(number_of_bits_to_write/8);
+    uint8_t leading_zeroes = leading_zeros_long(timestamp_count);
+    int number_of_bits_to_write = (((sizeof(uint64_t))*8)-leading_zeroes)+1;
+    uint8_t number_of_bytes_to_write = (uint8_t)ceilf((double)number_of_bits_to_write/8);
     Timestamps result;
     result.compressed_time = calloc(number_of_bytes_to_write, sizeof(*result.compressed_time));
     if(!result.compressed_time){

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 
 
-    FILE* output_file = openFile("output.json");
+    FILE* output_file = openFile("output.csv");
     Vector_based vb = get_vector_based();
 
     Uncompressed_data* dataList = calloc(args.numberOfCols, sizeof(Uncompressed_data));
@@ -110,9 +110,10 @@ int main(int argc, char *argv[])
             for(int i = 0; i < args.number_of_text_cols; i++){
                 char* str = strdup(line);
                 int col = args.text_cols[i];
-                if(!fit_string(&text_compressors[i], getfield(str, col), timestamp)){
+                char* field = getfield(str, col);
+                if(!fit_string(&text_compressors[i], field, timestamp)){
                     print_compressed_text(&text_compressors[i], output_file, &first_print);
-                    reset_text_compressor(&text_compressors[i], getfield(str, col), timestamp);
+                    reset_text_compressor(&text_compressors[i], field, timestamp);
                 }
             }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
