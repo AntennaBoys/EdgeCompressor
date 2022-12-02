@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define GORILLAMAX 50
+#define GORILLAMAX 0
 
 void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
 int can_fit_more(Compressed_segment_builder builder);
@@ -13,8 +13,8 @@ double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 
 Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound, int is_absolute_error){
     Compressed_segment_builder builder;
-    builder.pmc_mean_could_fit_all = 1;
-    builder.swing_could_fit_all = 1;
+    builder.pmc_mean_could_fit_all = 0;
+    builder.swing_could_fit_all = 0;
     builder.polyswing_could_fit_all = 1;
     builder.start_index = startIndex;
     builder.pmc_mean = get_pmc_mean(error_bound);

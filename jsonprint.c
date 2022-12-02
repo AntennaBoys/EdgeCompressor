@@ -8,51 +8,51 @@ FILE* openFile(char* fileName){
     strcat(full_path, fileName);
 
     FILE* file = fopen(full_path, "w+");
-    //fprintf(file,"{\"models\":[\n");
+    fprintf(file,"{\"models\":[\n");
     free(full_path);
     return file;
 }
 
 void closeFile(FILE* file){
-    //fprintf(file,"]}\n");
+    fprintf(file,"]}\n");
     fclose(file);
 }
 
-void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int* first, int start_time, int end_time, double error, int column_id){
+// void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int* first, int start_time, int end_time, double error, int column_id){
 
-    fprintf(file,"%d,", model.model_type_id);
-    fprintf(file,"%d,", column_id);
-    fprintf(file,"%d,", (int)model.end_index);
-    fprintf(file,"%f,", model.min_value);
-    fprintf(file,"%f,", model.max_value);
-    fprintf(file,"%lf,", error);
-    for (int i = 0; i < model.values_capacity; i++){
-        fprintf(file, "%02x", model.values[i]);
-    }
-    fprintf(file,",");
-    fprintf(file,"%d,", start_time);
-    fprintf(file,"%d,", end_time);
-    for (int i = 0; i < timestamps.compressed_timestamp_count; i++) {
-        fprintf(file, "%02x", timestamps.compressed_time[i]);
-    }
-    fprintf(file,"\n");
-}
+//     fprintf(file,"%d,", model.model_type_id);
+//     fprintf(file,"%d,", column_id);
+//     fprintf(file,"%d,", (int)model.end_index);
+//     fprintf(file,"%f,", model.min_value);
+//     fprintf(file,"%f,", model.max_value);
+//     fprintf(file,"%lf,", error);
+//     for (int i = 0; i < model.values_capacity; i++){
+//         fprintf(file, "%02x", model.values[i]);
+//     }
+//     fprintf(file,",");
+//     fprintf(file,"%d,", start_time);
+//     fprintf(file,"%d,", end_time);
+//     for (int i = 0; i < timestamps.compressed_timestamp_count; i++) {
+//         fprintf(file, "%02x", timestamps.compressed_time[i]);
+//     }
+//     fprintf(file,"\n");
+// }
 
-void write_text_to_file(FILE* file, int* first, int column_id, int count, char* string, long start_time, long end_time, Timestamps timestamps){
+// void write_text_to_file(FILE* file, int* first, int column_id, int count, char* string, long start_time, long end_time, Timestamps timestamps){
 
-    fprintf(file,"%d,", 5);
-    fprintf(file,"%d,", column_id);
-    fprintf(file,"%s,", string);
-    fprintf(file,"%d,", count);
-    fprintf(file,"%d,", start_time);
-    fprintf(file,"%d,", end_time);
-    for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
-            fprintf(file, "%x02", timestamps.compressed_time[i]);
-    }
-    fprintf(file,"\n");
-}
+//     fprintf(file,"%d,", 5);
+//     fprintf(file,"%d,", column_id);
+//     fprintf(file,"%s,", string);
+//     fprintf(file,"%d,", count);
+//     fprintf(file,"%d,", start_time);
+//     fprintf(file,"%d,", end_time);
+//     for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
+//             fprintf(file, "%x02", timestamps.compressed_time[i]);
+//     }
+//     fprintf(file,"\n");
+// }
 
-/*
+
 //backup
 void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int* first, int start_time, int end_time, double error, int column_id){
     if (!*first){
@@ -67,7 +67,7 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
     fprintf(file,"   \"min_value\":%f,\n", model.min_value);
     fprintf(file,"   \"max_value\":%f,\n", model.max_value);
     fprintf(file,"   \"error\":%lf,\n", error);
-    fprintf(file,"   \"values\":\"");
+    fprintf(file,"   \"values\":[");
     int firstInArray = 1;
     for (int i = 0; i < model.values_capacity; i++){
         if(!firstInArray){
@@ -77,7 +77,7 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
             firstInArray = 0;
         }
     }
-    fprintf(file,"\",\n");
+    fprintf(file,"],\n");
     fprintf(file,"   \"start_time\":%d,\n", start_time);
     fprintf(file,"   \"end_time\":%d,\n", end_time);
     fprintf(file,"   \"compressed_timestamps\":\"");
@@ -120,4 +120,3 @@ void write_text_to_file(FILE* file, int* first, int column_id, int count, char* 
     fprintf(file,"\"\n");
     fprintf(file,"  }\n");
 }
-*/

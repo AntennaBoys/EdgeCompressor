@@ -78,14 +78,14 @@ int main(int argc, char *argv[])
         long time;
         char* endptr;
         // 01/09/2022 00:00:0
-        //if (sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec) == 6)
-        time = strtol(timestampTemp, &endptr, 10);
-        if(time != 0)
+        if (sscanf(timestampTemp, "%d/%d/%d %d:%d:%d", &tmVar.tm_mday, &tmVar.tm_mon, &tmVar.tm_year, &tmVar.tm_hour, &tmVar.tm_min, &tmVar.tm_sec) == 6)
+        // time = strtol(timestampTemp, &endptr, 10);
+        // if(time != 0)
         {
-            //tmVar.tm_year -= 1900;
-            //tmVar.tm_mon -= 1;
-            //tmVar.tm_isdst = 1;
-            //long time = mktime(&tmVar) + 3600;
+            tmVar.tm_year -= 1900;
+            tmVar.tm_mon -= 1;
+            tmVar.tm_isdst = 1;
+            long time = mktime(&tmVar) + 3600;
             timestamp = time == timestamp ? time + 1 : time;
             // insert_data(&latData, timestamp, strtof(getfield(latStr, 5), &errorPointer), &latFirst);
             // insert_data(&longData, timestamp, strtof(getfield(longStr, 6), &errorPointer), &longFirst);
