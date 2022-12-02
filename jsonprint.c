@@ -47,7 +47,7 @@ void write_text_to_file(FILE* file, int* first, int column_id, int count, char* 
     fprintf(file,"%d,", start_time);
     fprintf(file,"%d,", end_time);
     for (int i = 0; i < timestamps.compressed_timestamp_count; i++){
-            fprintf(file, "%x02", timestamps.compressed_time[i]);
+            fprintf(file, "%02x", timestamps.compressed_time[i]);
     }
     fprintf(file,"\n");
 }

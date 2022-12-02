@@ -44,6 +44,8 @@ void reset_text_compressor(Text_compressor* data, char* string, long timestamp){
 }
 
 void print_compressed_text(Text_compressor* data, FILE* file, int* first){
+    Timestamps timestamps = compress_residual_timestamps(data->timestamps, data->count);
     write_text_to_file(file, first,data->id, data->count, data->string, data->timestamps[0], data->timestamps[data->count-1],
-                       compress_residual_timestamps(data->timestamps, data->count));
+                       timestamps);
+    free_timestamps(&timestamps);
 }

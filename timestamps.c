@@ -99,7 +99,7 @@ Timestamps compress_irregular_residual_timestamps(long* timestamps, long timesta
     compressed_timestamps.remaining_bits = 8;
     compressed_timestamps.bytes_counter = 0;
     compressed_timestamps.bytes_capacity = 4;
-    compressed_timestamps.bytes = (uint8_t*) malloc (compressed_timestamps.bytes_capacity * sizeof(uint8_t));
+    compressed_timestamps.bytes = calloc(compressed_timestamps.bytes_capacity, sizeof(uint8_t));
     if(compressed_timestamps.bytes == NULL){
         printf("MALLOC ERROR (compress_irregular_residual_timestamps)\n");
     }
