@@ -63,12 +63,19 @@ int fit_values_polyswing(Poly_swing *data, long timestamp, double value, int is_
         double upper_bound_approximate_value = data->upper.pow2 * data->delta_time * data->delta_time + data->upper.pow1 * data->delta_time + data->upper.pow0;
         double lower_bound_approximate_value = data->lower.pow2 * data->delta_time * data->delta_time + data->lower.pow1 * data->delta_time + data->lower.pow0;
 
+        if(upper_bound_approximate_value<=lower_bound_approximate_value){
+            printf("hello there\n");
+            return 0;
+        }
+
+
         if (upper_bound_approximate_value + maximum_deviation < value
             || lower_bound_approximate_value - maximum_deviation > value)
         {
             return 0;
         } else {
             data->last_timestamp = timestamp;
+
 
             // Line 17 of Algorithm 1 in the Swing and Slide paper.
             if (upper_bound_approximate_value - maximum_deviation > value) {
@@ -85,6 +92,8 @@ int fit_values_polyswing(Poly_swing *data, long timestamp, double value, int is_
                 freemat(lower_ATA);
                 freemat(lower_ATY);
             }
+
+
             if (data->terminate_segment){
                 return 0;
             }
