@@ -60,15 +60,16 @@ Huffman_node *get_min_node(Min_heap* heap){
 void insert_to_heap(Min_heap *heap, Huffman_node *min_node){
     heap->size++;
     int i = heap->size - 1;
-    while(i && min_node.count < heap->nodes[(i-1)/2]->count){
+    while(i && min_node->count < heap->nodes[(i-1)/2]->count){
         heap->nodes[i] = heap->nodes[(i-1)/2];
         i = (i-1)/2;
     }
+    heap->nodes[i] = min_node;
 }
 
 void build_heap(Min_heap *heap){
     int last_index = heap->size-1;
-    for(int i = (last_index-1)/2; i > 0; i--){
+    for(int i = (last_index-1)/2; i >= 0; i--){
         heapify_heap(heap, i);
     }
 }
@@ -100,4 +101,174 @@ Huffman_node *build_huffman_tree(char* item_array, int* count_array, int size){
         insert_to_heap(heap, top);
     }
     return get_min_node(heap);
+}
+
+void print_huffman_codes(FILE* output, Huffman_node *root, int *array, int top, int* first){
+    if(root->left){
+        array[top] = 0;
+        print_huffman_codes(output, root->left, array, top + 1, first);
+    }
+    if(root->right){
+        array[top] = 1;
+        print_huffman_codes(output, root->right, array, top + 1, first);
+    }
+    if(node_is_leaf(root)){
+        int code = 0;
+        if(*first){
+            fprintf(output,"%c:", root->item);
+            *first = 0;
+        }else{
+            fprintf(output,",%c:", root->item);
+        }
+        for(int i = 0; i < top; i++){
+            if(array[i]){
+                code++;
+                code = code << 1;
+            }else{
+                code = code << 1;
+            }
+        }
+        fprintf(output,"%d", code);
+    }
+}
+
+int get_binary_for_char(Huffman_node* root, int *array, int top, char c, Binary_storage* result){
+    int done = 0;
+    if(root->left){
+        array[top] = 0;
+        done = get_binary_for_char(root->left, array, top + 1, c, result);
+        if(done){
+            return 1;
+        }
+    }
+    if(root->right){
+        array[top] = 1;
+        done = get_binary_for_char(root->right, array, top + 1, c, result);
+        if(done){
+            return 1;
+        }
+    }
+    if(node_is_leaf(root) && root->item == c){
+        result->bit_count=top;
+        for(int i = 0; i < top; i++){
+            result->bits[i] = array[i];
+        }
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int count_occurences(int** count_list, char ** item_list, char* input_file){
+    char line[1024];
+    int line_index = 0;
+    int counts[41] = {0};
+    FILE* input = fopen(input_file,"r");
+    while(fgets(line, 1024, input)){
+        line_index++;
+        for(int i = 0; line[i]; i++){
+            char c = line[i];
+            if(c >= 'a' && c <= 'z') {
+                counts[c - 'a']++;
+            }else if(c >= '0' && c <= '9'){
+                counts['z'-'a' + 1 + c - '0']++;
+            }else if(c == ' '){
+                counts['z' - 'a' + 1 + '9' - '0' + 1]++;
+            }else if(c == '.'){
+                counts['z' - 'a' + 1 + '9' - '0' + 2]++;
+            }else if(c == ','){
+                counts['z' - 'a' + 1 + '9' - '0' + 3]++;
+            }else if(c == '-'){
+                counts['z' - 'a' + 1 + '9' - '0' + 4]++;
+            }else if(c == '\n'){
+                counts['z' - 'a' + 1 + '9' - '0' + 5]++;
+            }else{
+                printf("you need to implement handling for '%c' on line '%d'\n", c, line_index);
+            }
+        }
+    }
+    fclose(input);
+    int overall_count = 0;
+    *count_list = calloc(1, sizeof(**count_list));
+    *item_list = calloc(1, sizeof(**item_list));
+    for(int i = 0; i < 41; i++){
+        if(counts[i] != 0){
+            overall_count++;
+            *count_list = realloc(*count_list, overall_count * sizeof(**count_list));
+            *item_list = realloc(*item_list, overall_count * sizeof(**item_list));
+            (*count_list)[overall_count-1] = counts[i];
+            if(i >= 'a'-'a' && i <= 'z'-'a') {
+                (*item_list)[overall_count - 1] = (char) (i + 'a');
+            }else if(i >= 'z'-'a' + 1 + '0' - '0' && i <= 'z'-'a' + 1 + '9'-'0' ){
+                (*item_list)[overall_count - 1] = (char) (i - ('z'-'a') - 1 + '0');
+            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 1){
+                (*item_list)[overall_count-1] = ' ';
+            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 2){
+                (*item_list)[overall_count-1] = '.';
+            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 3){
+                (*item_list)[overall_count-1] = ',';
+            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 4){
+                (*item_list)[overall_count-1] = '-';
+            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 5){
+                (*item_list)[overall_count-1] = '\n';
+            }else{
+                printf("SOMETHING WENT HORRIBLY WRONG\n");
+                exit(1);
+            }
+        }
+    }
+    return overall_count;
+}
+void printBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+
+    for (i = size-1; i >= 0; i--) {
+        for (j = 7; j >= 0; j--) {
+            byte = (b[i] >> j) & 1;
+            printf("%u", byte);
+        }
+    }
+    puts("");
+}
+int main() {
+    char *items;
+    int *counts;
+    char* input_file_path = "C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed.txt";
+    FILE *output = fopen("C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed1.txt","w+");
+
+    int size = count_occurences(&counts, &items,input_file_path);
+
+    Huffman_node *nodes = build_huffman_tree(items, counts, size);
+    int array[50];
+    int first = 1;
+    print_huffman_codes(output, nodes, array, 0, &first);
+    fprintf(output, "\n");
+    FILE* input = fopen(input_file_path,"r");
+    char c;
+    int bit_size = 0;
+    unsigned char char_out = 0;
+    int char_out_size = 0;
+    while((c = (char)fgetc(input)) != EOF){
+        Binary_storage binary = {.bits = {0}, .bit_count = 0};
+        if(get_binary_for_char(nodes, array, 0, c, &binary)){
+            for(int i = 0; i < binary.bit_count; i++){
+                char_out += binary.bits[i];
+                if(char_out_size == 7){
+                    fprintf(output, "%c", char_out);
+                    char_out_size = 0;
+                    char_out = 0;
+                }else{
+                    char_out = char_out << 1;
+                    char_out_size++;
+                }
+            }
+        }
+    }
+    char_out = char_out << (7 - char_out_size);
+    fprintf(output, "%c", char_out);
+    fclose(input);
+    fclose(output);
 }

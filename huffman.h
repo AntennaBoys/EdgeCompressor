@@ -18,4 +18,9 @@ typedef struct Min_heap{
     uint32_t size;
     uint32_t capacity;
 } Min_heap;
+
+typedef struct Binary_storage{
+    int bits[8];
+    int bit_count;
+}Binary_storage;
 #endif //COMPRESSEXEC_HUFFMAN_H
