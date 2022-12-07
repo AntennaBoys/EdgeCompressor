@@ -162,59 +162,25 @@ int get_binary_for_char(Huffman_node* root, int *array, int top, char c, Binary_
 int count_occurences(int** count_list, char ** item_list, char* input_file){
     char line[1024];
     int line_index = 0;
-    int counts[41] = {0};
+    int counts[256] = {0};
     FILE* input = fopen(input_file,"r");
     while(fgets(line, 1024, input)){
         line_index++;
         for(int i = 0; line[i]; i++){
-            char c = line[i];
-            if(c >= 'a' && c <= 'z') {
-                counts[c - 'a']++;
-            }else if(c >= '0' && c <= '9'){
-                counts['z'-'a' + 1 + c - '0']++;
-            }else if(c == ' '){
-                counts['z' - 'a' + 1 + '9' - '0' + 1]++;
-            }else if(c == '.'){
-                counts['z' - 'a' + 1 + '9' - '0' + 2]++;
-            }else if(c == ','){
-                counts['z' - 'a' + 1 + '9' - '0' + 3]++;
-            }else if(c == '-'){
-                counts['z' - 'a' + 1 + '9' - '0' + 4]++;
-            }else if(c == '\n'){
-                counts['z' - 'a' + 1 + '9' - '0' + 5]++;
-            }else{
-                printf("you need to implement handling for '%c' on line '%d'\n", c, line_index);
-            }
+            counts[line[i]]++;
         }
     }
     fclose(input);
     int overall_count = 0;
     *count_list = calloc(1, sizeof(**count_list));
     *item_list = calloc(1, sizeof(**item_list));
-    for(int i = 0; i < 41; i++){
+    for(int i = 0; i < 256; i++){
         if(counts[i] != 0){
             overall_count++;
             *count_list = realloc(*count_list, overall_count * sizeof(**count_list));
             *item_list = realloc(*item_list, overall_count * sizeof(**item_list));
             (*count_list)[overall_count-1] = counts[i];
-            if(i >= 'a'-'a' && i <= 'z'-'a') {
-                (*item_list)[overall_count - 1] = (char) (i + 'a');
-            }else if(i >= 'z'-'a' + 1 + '0' - '0' && i <= 'z'-'a' + 1 + '9'-'0' ){
-                (*item_list)[overall_count - 1] = (char) (i - ('z'-'a') - 1 + '0');
-            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 1){
-                (*item_list)[overall_count-1] = ' ';
-            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 2){
-                (*item_list)[overall_count-1] = '.';
-            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 3){
-                (*item_list)[overall_count-1] = ',';
-            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 4){
-                (*item_list)[overall_count-1] = '-';
-            }else if(i == 'z' - 'a' + 1 + '9' - '0' + 5){
-                (*item_list)[overall_count-1] = '\n';
-            }else{
-                printf("SOMETHING WENT HORRIBLY WRONG\n");
-                exit(1);
-            }
+            (*item_list)[overall_count - 1] = (char) (i);
         }
     }
     return overall_count;
@@ -236,8 +202,8 @@ void printBits(size_t const size, void const * const ptr)
 int main() {
     char *items;
     int *counts;
-    char* input_file_path = "C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed.txt";
-    FILE *output = fopen("C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed1.txt","w+");
+    char* input_file_path = "C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output.csv";
+    FILE *output = fopen("C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed.txt","w+");
 
     int size = count_occurences(&counts, &items,input_file_path);
 
