@@ -6,7 +6,7 @@ const int debug = 0;
 
 const uint8_t SIZE_OF_32INT = (uint8_t) sizeof(int32_t) * 8;
 
-uint8_t leading_zeros(int32_t num){
+uint8_t leading_zeros(uint32_t num){
     // Equivalent to
     // 10000000 00000000 00000000 00000000
     int msb = 1 << (SIZE_OF_32INT - 1);
@@ -29,7 +29,7 @@ uint8_t leading_zeros(int32_t num){
     if(debug) printf("Total number of leading zeros in %d is %d", num, count);
     return count;
 }
-uint8_t trailing_zeros(int32_t num){
+uint8_t trailing_zeros(uint32_t num){
     
     uint8_t count = 0;
 
@@ -51,15 +51,15 @@ uint8_t trailing_zeros(int32_t num){
     return count;
 }
 
-int32_t float_to_bit(float val){
-    return *(int32_t *)&val;
+uint32_t float_to_bit(float val){
+    return *(uint32_t *)&val;
 }
 
 
 void fitValueGorilla(Gorilla* data, float value){
-    int32_t value_as_integer = float_to_bit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
-    int32_t last_value_as_integer = float_to_bit(data->last_value);
-    int32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
+    uint32_t value_as_integer = float_to_bit(value); // Læs den binære repræsentation af float value som en integer, som vi herefter kan lave bitwise operationer på
+    uint32_t last_value_as_integer = float_to_bit(data->last_value);
+    uint32_t value_xor_last_value = value_as_integer ^ last_value_as_integer;
     
     if(data->compressed_values.bytes_counter == 0){
         // TODO: &(data->compressed_values) ?????????????????
@@ -252,6 +252,11 @@ float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count){
             if(read_bit(&bitReader)){
                 leadingZeros = read_bits(&bitReader, 5);
                 uint8_t meaningfulBits = read_bits(&bitReader, 6);
+                if(meaningfulBits == 63){
+                    for(int i = 0; i < values_count; i++){
+                        printf("%d,", values[i]);
+                    }
+                }
                 trailingZeros = VALUE_SIZE_IN_BITS - meaningfulBits - leadingZeros;
             }
 

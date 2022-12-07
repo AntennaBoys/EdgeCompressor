@@ -103,35 +103,6 @@ Huffman_node *build_huffman_tree(char* item_array, int* count_array, int size){
     return get_min_node(heap);
 }
 
-void print_huffman_codes(FILE* output, Huffman_node *root, int *array, int top, int* first){
-    if(root->left){
-        array[top] = 0;
-        print_huffman_codes(output, root->left, array, top + 1, first);
-    }
-    if(root->right){
-        array[top] = 1;
-        print_huffman_codes(output, root->right, array, top + 1, first);
-    }
-    if(node_is_leaf(root)){
-        int code = 0;
-        if(*first){
-            fprintf(output,"%c:", root->item);
-            *first = 0;
-        }else{
-            fprintf(output,",%c:", root->item);
-        }
-        for(int i = 0; i < top; i++){
-            if(array[i]){
-                code++;
-                code = code << 1;
-            }else{
-                code = code << 1;
-            }
-        }
-        fprintf(output,"%d", code);
-    }
-}
-
 int get_binary_for_char(Huffman_node* root, int *array, int top, char c, Binary_storage* result){
     int done = 0;
     if(root->left){
@@ -185,33 +156,23 @@ int count_occurences(int** count_list, char ** item_list, char* input_file){
     }
     return overall_count;
 }
-void printBits(size_t const size, void const * const ptr)
-{
-    unsigned char *b = (unsigned char*) ptr;
-    unsigned char byte;
-    int i, j;
 
-    for (i = size-1; i >= 0; i--) {
-        for (j = 7; j >= 0; j--) {
-            byte = (b[i] >> j) & 1;
-            printf("%u", byte);
-        }
-    }
-    puts("");
-}
-int main() {
+void begin_huffman_encoding(char* input_file_path, char* output_file_path) {
     char *items;
     int *counts;
-    char* input_file_path = "C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output.csv";
-    FILE *output = fopen("C:\\Users\\danie\\Documents\\GitHub\\ShipMapPoints\\output_compressed.txt","w+");
+    FILE *output = fopen(output_file_path, "w+");
 
     int size = count_occurences(&counts, &items,input_file_path);
 
     Huffman_node *nodes = build_huffman_tree(items, counts, size);
     int array[50];
-    int first = 1;
-    print_huffman_codes(output, nodes, array, 0, &first);
-    fprintf(output, "\n");
+    fprintf(output,"%c:", items[0]);
+    fprintf(output,"%d", counts[0]);
+    for(int i = 1; i < size; i++){
+        fprintf(output,",%c:", items[i]);
+        fprintf(output,"%d", counts[i]);
+    }
+    fprintf(output, "@\n");
     FILE* input = fopen(input_file_path,"r");
     char c;
     int bit_size = 0;
