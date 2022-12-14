@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 struct Pmc_mean {
-    double error;
+    float error;
     float min_value;
     float max_value;
     float sum_of_values;

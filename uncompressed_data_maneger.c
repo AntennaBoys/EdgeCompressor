@@ -106,7 +106,7 @@ void insert_data(Uncompressed_data* data, long timestamp, float value, int* firs
 }
 
 void force_compress_data(Uncompressed_data* data, int *first, float error){
-    if(!data->reset_internal_model){
+    if(data->reset_internal_model){
         data->segment_builder.uncompressed_timestamps = data->timestamps;
         data->segment_builder.uncompressed_values = data->values;
         data->segment_builder = new_compressed_segment_builder(0, data->timestamps, data->values, data->current_size, error, data->is_absolute_error);

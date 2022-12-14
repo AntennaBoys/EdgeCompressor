@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 struct Swing {
-    /// Maximum relative error for the value of each data point.
-    double error_bound;
     /// Time at which the first value represented by the current model was
     /// collected.
     long first_timestamp;
@@ -30,6 +28,8 @@ struct Swing {
     /// Intercept for the linear function specifying the lower bound for the
     /// current model.
     double lower_bound_intercept;
+    /// Maximum relative error for the value of each data point.
+    float error_bound;
     /// The number of data points the current model has been fitted to.
     int length;
 } typedef Swing;

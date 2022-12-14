@@ -11,7 +11,7 @@ void try_to_update_models(Compressed_segment_builder* builder, long timestamp, f
 float* getReconstructedValues(Selected_model model, long* timestamps);
 double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 
-Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound, int is_absolute_error){
+Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, float error_bound, int is_absolute_error){
     Compressed_segment_builder builder;
     builder.pmc_mean_could_fit_all = 1;
     builder.swing_could_fit_all = 1;
