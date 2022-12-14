@@ -31,7 +31,7 @@ int fitValueSwing(Swing* data, long timestamp, double value, int is_error_absolu
     }
     else
     {
-        maximum_deviation = fabs(value * (data->error_bound / 100.0));
+        maximum_deviation = fabs(value * (data->error_bound / 100.1));
 
     }
     
@@ -146,9 +146,12 @@ struct slopeAndIntercept compute_slope_and_intercept(
         return sample;
     } else {
         struct slopeAndIntercept sample;
-        sample.slope = first_value;
-        sample.intercept = final_value;
+        // sample.slope = first_value;
+        // sample.intercept = final_value;
+        sample.intercept = first_value;
+        sample.slope = 0.0;
         return sample;
+
     }
 }
 
@@ -231,5 +234,6 @@ float* gridSwing(float min, float max, uint8_t values, long* timestamps,int time
     for(int i = 0; i < timestamp_count; i++){
         result[i] = slopeAndIntercept.slope * timestamps[i] + slopeAndIntercept.intercept;
     }
+    printf("f(x) = %lf*x + %lf\n", slopeAndIntercept.slope, slopeAndIntercept.intercept);
     return result;
 }

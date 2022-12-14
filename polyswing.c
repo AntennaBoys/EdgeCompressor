@@ -241,6 +241,8 @@ float* grid_polyswing(float c, float b, uint8_t* values, long* timestamps, int t
         printf("CALLOC ERROR (grid_polyswing: result)\n");
     }
     long deltatime;
+    printf("COEFFICIENTS: P2: %lf, P1: %lf, P0: %lf, delta: %ld\n", a, b, c, timestamps[0]);
+
     for(int i = 0; i < timestamp_count; i++){
         deltatime = timestamps[i] - timestamps[0];
         result[i] = b * deltatime + a * (deltatime * deltatime) + c;

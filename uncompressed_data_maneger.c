@@ -84,6 +84,7 @@ void resize_uncompressed_data(Uncompressed_data* data){
 void insert_data(Uncompressed_data* data, long timestamp, float value, int* first, float error, int is_error_absolute){
 
     data->current_size++;
+    data->is_absolute_error = is_error_absolute;
     resize_uncompressed_data(data);
     if(!data->reset_internal_model){
         data->segment_builder.uncompressed_timestamps = data->timestamps;

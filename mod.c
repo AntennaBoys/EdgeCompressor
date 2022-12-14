@@ -8,13 +8,13 @@ void select_model(Selected_model* data, size_t start_index, Pmc_mean* pmc_mean, 
     struct bytes_per_value bytes[MODEL_COUNT];
 
     bytes[0].id = PMC_MEAN_ID;
-    bytes[0].bytes = get_bytes_per_value_pmc(pmc_mean);
+    bytes[0].bytes = get_bytes_per_value_pmc(pmc_mean) + 50;
     bytes[1].id = SWING_ID;
-    bytes[1].bytes = get_bytes_per_value_swing(swing);
+    bytes[1].bytes = get_bytes_per_value_swing(swing); 
     bytes[2].id = GORILLA_ID;
-    bytes[2].bytes = get_bytes_per_value_gorilla(gorilla);
+    bytes[2].bytes = get_bytes_per_value_gorilla(gorilla)+ 50;
     bytes[3].id = POLYSWING_ID;
-    bytes[3].bytes = get_bytes_per_value_polyswing(polyswing);
+    bytes[3].bytes = get_bytes_per_value_polyswing(polyswing) + 50;
     printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
     struct bytes_per_value selected_model;
 
@@ -173,6 +173,8 @@ void select_poly_swing(Selected_model* model, size_t start_index, Poly_swing* po
   model->max_value = pow1;
   model->model_type_id = POLYSWING_ID;
   model->values_capacity = 4;
+
+  // printf("COEFFICIENTS: P2: %lf, P1: %lf, P0: %lf\n", poly_swing->current.pow2, poly_swing->current.pow1, poly_swing->current.pow0);
 }
 
 Selected_model get_selected_model(){
