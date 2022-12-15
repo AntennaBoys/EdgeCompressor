@@ -70,7 +70,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
     } 
     else {
         data->current_delta = time_stamp - data->end_time;
-        data->end_time = time_stamp;
+
 
         // Make prediction
         // Scale up vector to reflect the change for the current delta
@@ -102,6 +102,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         //printf("Vector --- x: %f, y: %f\n", data->vec.x, data->vec.y);
         // printf("%lf, %lf\n", prediction.latitude, prediction.longitude);
         data->model_length++;
+        data->end_time = time_stamp;
         data->timestamps[data->current_timestamp_index] = time_stamp;
         data->lats[data->current_timestamp_index] = latitude;
         data->longs[data->current_timestamp_index++] = longitude;

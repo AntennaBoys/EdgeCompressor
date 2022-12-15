@@ -6,10 +6,8 @@
 #define GORILLAMAX 50
 
 void deleteCompressedSegementBuilder(Compressed_segment_builder* builder);
-int can_fit_more(Compressed_segment_builder builder);
-void try_to_update_models(Compressed_segment_builder* builder, long timestamp, float value, int is_error_absolute);
 float* getReconstructedValues(Selected_model model, long* timestamps);
-double getRMSE(float* baseValues, float* reconstructedValues, int values_count);
+float getRMSE(float* baseValues, float* reconstructedValues, int values_count);
 
 Compressed_segment_builder new_compressed_segment_builder(size_t startIndex, long* uncompressedTimestamps, float* uncompressedValues, size_t endIndex, double error_bound, int is_absolute_error){
     Compressed_segment_builder builder;
@@ -44,7 +42,7 @@ int finishBatch(Compressed_segment_builder builder, FILE* file, int id ,int* fir
     int end_time = builder.uncompressed_timestamps[model.end_index];
 
     float* reconstructedValues = getReconstructedValues(model, builder.uncompressed_timestamps);
-    double error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
+    float error = getRMSE(builder.uncompressed_values, reconstructedValues, model.end_index+1);
     
     long* temp_times;
     temp_times = calloc((model.end_index+1), sizeof(*temp_times));
@@ -133,8 +131,8 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     
 }
 
-double getRMSE(float* baseValues, float* reconstructedValues, int values_count){
-    double error = 0;
+float getRMSE(float* baseValues, float* reconstructedValues, int values_count){
+    float error = 0;
     float baseValue = 0;
     float reconstructedValue = 0;
     for(int i = 0; i < values_count; i++){
@@ -142,5 +140,5 @@ double getRMSE(float* baseValues, float* reconstructedValues, int values_count){
         reconstructedValue = reconstructedValues[i];
         error += (baseValue - reconstructedValue) * (baseValue - reconstructedValue);
     }
-    return sqrt(error/values_count);
+    return sqrtf(error/values_count);
 }
