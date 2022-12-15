@@ -11,6 +11,7 @@
 #include "text_compressor.h"
 #include "argument_handler.h"
 #include "huffman.h"
+#include "zipping.h"
 
 #include <unistd.h>
 
