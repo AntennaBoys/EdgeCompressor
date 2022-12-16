@@ -6,7 +6,7 @@
 #define ERROR_BOUND 0.001
 
 void resize(Uncompressed_data* data);
-double get_vector_based_error(Vector_based *model);
+float get_vector_based_error(Vector_based *model);
 
 Uncompressed_data create_uncompressed_data_maneger(FILE *output, int id, int* first){
     Uncompressed_data data;
@@ -35,8 +35,8 @@ void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp,
     }
 }
 
-double get_vector_based_error(Vector_based *model){
-    double sum_of_errors = 0;
+float get_vector_based_error(Vector_based *model){
+    float sum_of_errors = 0;
     for(int i = 0; i < model->model_length; i++){
         long delta = model->timestamps[i] - model->timestamps[0];
         double lat = model->start.latitude + (model->vec.y * (double)delta);

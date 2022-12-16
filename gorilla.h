@@ -34,14 +34,13 @@ size_t get_length_gorilla(Gorilla* data);
 size_t len(Bit_vec_builder* data);
 uint8_t* get_compressed_values(Gorilla* data);
 
-uint8_t leading_zeros(int32_t num);
-uint8_t trailing_zeros(int32_t num);
-int32_t float_to_bit(float val);
+uint8_t leading_zeros(uint32_t num);
+uint8_t trailing_zeros(uint32_t num);
+uint32_t float_to_bit(float val);
 
 Gorilla get_gorilla(void);
 void reset_gorilla(Gorilla* gorilla);
 void delete_gorilla(Gorilla* gorilla);
 float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count);
-uint8_t leading_zeros(int32_t num);
 uint8_t* finish_with_one_bits(Bit_vec_builder* data);
 #endif

@@ -51,7 +51,7 @@ void select_pmc_mean(Selected_model* model, size_t start_index, Pmc_mean* pmc_me
   model->values[0] = 0;
   model->end_index = end_index;
   model->min_value = value;
-  model->max_value = value;
+  model->max_value = 0;
 }
 
 void select_swing(Selected_model* model, size_t start_index, Swing* swing){
