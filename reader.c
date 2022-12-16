@@ -162,4 +162,8 @@ int main(int argc, char *argv[])
     free(dataList);
     free_vectorbased(&vb);
     fclose(stream);
+
+    // char* buf[100];
+    // sprintf(buf, "gzip %s/output.csv", outPutCsvFile);
+    // system(buf);
 }
