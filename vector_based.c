@@ -40,7 +40,6 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->start = (Position){.latitude = latitude, .longitude = longitude};
         data->prev = (Position){ .latitude = latitude, .longitude = longitude};
         data->start_time = time_stamp;
-        data->end_time = time_stamp;
         data->length++;
         data->model_length++;
         data->timestamps[data->current_timestamp_index] = time_stamp;
@@ -55,7 +54,6 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->current = (Position){ .latitude = latitude, .longitude = longitude};
         data->end_time = time_stamp;
         data->length++;        
-        data->model_length++;
         
         // Build vector
         data->vec.x = data->current.longitude - data->prev.longitude;
@@ -72,6 +70,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
     } 
     else {
         data->current_delta = time_stamp - data->end_time;
+
 
         // Make prediction
         // Scale up vector to reflect the change for the current delta
@@ -113,10 +112,6 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
             data->longs = realloc(data->longs, data->max_timestamps * sizeof(*data->longs));
             data->lats = realloc(data->lats, data->max_timestamps * sizeof(*data->lats));
         }
-
-        data->model_length++;
-        data->end_time = time_stamp;
-
         return 1;
         
     }
