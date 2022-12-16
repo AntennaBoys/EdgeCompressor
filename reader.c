@@ -10,7 +10,6 @@
 #include "vector_based.h"
 #include "text_compressor.h"
 #include "argument_handler.h"
-#include "huffman.h"
 
 #include <unistd.h>
 
@@ -163,11 +162,4 @@ int main(int argc, char *argv[])
     free(dataList);
     free_vectorbased(&vb);
     fclose(stream);
-    char* uncompressed_file = calloc((strlen(outPutCsvFile) + strlen("output.csv")+1), sizeof(char));
-    strcpy(uncompressed_file, outPutCsvFile);
-    strcat(uncompressed_file, "output.csv");
-    char* compressed_file = calloc((strlen(outPutCsvFile) + strlen("output_compressed.bin")+1), sizeof(char));
-    strcpy(compressed_file, outPutCsvFile);
-    strcat(compressed_file, "output_compressed.bin");
-    begin_huffman_encoding(uncompressed_file, compressed_file);
 }
