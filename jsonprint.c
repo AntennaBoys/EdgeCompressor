@@ -34,7 +34,12 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
     fprintf(file,"%d,", column_id);                             //Column id
     fprintf(file,"%d,", (int)model.end_index);                  //End index
     dump(file, &model.min_value, sizeof(float));                //Min value
-    dump(file, &model.max_value, sizeof(float));                //Max value
+    if(model.model_type_id == 0){//pmc mean
+        fprintf(file,",");
+    }else{
+        dump(file, &model.max_value, sizeof(float));            //Max value
+    }
+
     dump(file, &error, sizeof(float));                         //Model error
     for (int i = 0; i < model.values_capacity; i++){
         fprintf(file, "%02x", model.values[i]);                 //Values (use of this array differs from model to model)
