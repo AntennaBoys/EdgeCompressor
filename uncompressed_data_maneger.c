@@ -35,23 +35,14 @@ void insert_vector_based_data(FILE* output, Vector_based *model, long timestamp,
     }
 }
 
-float get_vector_based_error(Vector_based *model){
-    float sum_of_errors = 0;
-    for(int i = 0; i < model->model_length; i++){
-        long delta = model->timestamps[i] - model->timestamps[0];
-        double lat = model->start.latitude + (model->vec.y * (double)delta);
-        double lon = model->start.longitude + (model->vec.x * (double)delta);
-        sum_of_errors += haversine_distance(model->lats[i], model->longs[i], lat, lon);
-    }
-    return sum_of_errors / model->model_length;
-}
+
 
 void print_vector_based(FILE* output, Vector_based *model, int *first){
     Selected_model selected_model = get_selected_model();
     select_vector_based(&selected_model, model);
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
     writeModelToFile(output, timestamps, selected_model, first, model->start_time, model->end_time,
-                     get_vector_based_error(model), 0);
+                     model->error_sum/model->model_length, 0);
     delete_selected_model(&selected_model);
     free_timestamps(&timestamps);
 }

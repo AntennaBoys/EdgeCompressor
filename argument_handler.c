@@ -90,7 +90,7 @@ Arguments handleArguments(int argc, char *argv[])
         case 'c':
             //From documentation. Not sure what it does
             if (digit_optind != 0 && digit_optind != this_option_optind)
-                printf("digits occur in two different argv-elements.\n");
+                //printf("digits occur in two different argv-elements.\n");
                 digit_optind = this_option_optind;
 
                 // Debug mode seems to add single quotation marks around the arguments.
@@ -142,15 +142,15 @@ Arguments handleArguments(int argc, char *argv[])
                     // argStruct.cols->currentSize = 1;
                     argStruct.number_of_text_cols = 1;
                     argStruct.text_cols[0] = atoi(token);
-                    printf("First size: %d\n", sizeof(*argStruct.text_cols));
+                    //printf("First size: %d\n", sizeof(*argStruct.text_cols));
                 } else {
                     // argStruct.cols->currentSize++;
                     argStruct.number_of_text_cols++;
-                    printf("SIZE: %d\n", sizeof(*argStruct.text_cols) * argStruct.number_of_text_cols);
+                    //printf("SIZE: %d\n", sizeof(*argStruct.text_cols) * argStruct.number_of_text_cols);
                     argStruct.text_cols = realloc(argStruct.text_cols, sizeof(*argStruct.text_cols) * argStruct.number_of_text_cols);
                     argStruct.text_cols[argStruct.number_of_text_cols-1] = atoi(token);
                 }
-                printf("Column: %s\n", token);
+                //printf("Column: %s\n", token);
 
                 token = strtok(NULL, s); // NULL is not a mistake!
                 count++;
@@ -169,7 +169,7 @@ Arguments handleArguments(int argc, char *argv[])
             argStruct.output = optarg;
             outPutCsvFile = optarg;
             strcat(outPutCsvFile, "/");
-            printf("OUTPUT! : %s\n", optarg);
+            //printf("OUTPUT! : %s\n", optarg);
             
             break;
         default:
@@ -187,10 +187,10 @@ Arguments handleArguments(int argc, char *argv[])
     // From documentation ...
     if (optind < argc)
     {
-        printf("non-option ARGV-elements: ");
-        while (optind < argc)
-            printf("%s ", argv[optind++]);
-        printf("\n");
+        //printf("non-option ARGV-elements: ");
+        while (optind < argc);
+            //printf("%s ", argv[optind++]);
+        //printf("\n");
     }
 
     // Make folder for output
@@ -212,20 +212,20 @@ void column_or_text(Cols** cols, int* column_count, int* count, char* token){
             // argStruct.cols->currentSize = 1;
             *column_count = 1;
             (*cols)[0].col = atoi(token);
-            printf("First size: %d\n", sizeof(*(*cols)));
+            //printf("First size: %d\n", sizeof(*(*cols)));
         } else {
             // argStruct.cols->currentSize++;
             (*column_count)++;
-            printf("SIZE: %d\n", sizeof(**cols) * (*column_count));
+            //printf("SIZE: %d\n", sizeof(**cols) * (*column_count));
             *cols = realloc(*cols, sizeof(**cols) * (*column_count));
             (*cols)[column].col = atoi(token);
         }
-        printf("Column: %s\n", token);
+        //printf("Column: %s\n", token);
     }
     if (*count % 3 == 1) {
-        printf("%s\n", token);
+        //printf("%s\n", token);
         (*cols)[column].error = atof(token);
-        printf("Error: %s\n", token);
+        //printf("Error: %s\n", token);
     }
     if (*count % 3 == 2) {
         if (*token == 'A') { // Absolute
@@ -234,6 +234,6 @@ void column_or_text(Cols** cols, int* column_count, int* count, char* token){
         if (*token == 'R') { // Relative
             (*cols)[column].isAbsolute = 0;
         }
-        printf("A/R: %s\n", token);
+        //printf("A/R: %s\n", token);
     }
 }

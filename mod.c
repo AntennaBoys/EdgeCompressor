@@ -15,7 +15,7 @@ void select_model(Selected_model* data, size_t start_index, Pmc_mean* pmc_mean, 
     bytes[2].bytes = get_bytes_per_value_gorilla(gorilla);
     bytes[3].id = POLYSWING_ID;
     bytes[3].bytes = get_bytes_per_value_polyswing(polyswing);
-    printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
+    //printf("PMCMean bpv: %f\nSwing bpv: %f\nGorilla bpv: %f\nPolySwing bpv: %f\n\n", bytes[0].bytes, bytes[1].bytes, bytes[2].bytes, bytes[3].bytes);
     struct bytes_per_value selected_model;
 
     for(int i=0; i < MODEL_COUNT; i++){

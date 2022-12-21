@@ -254,7 +254,7 @@ float* grid_gorilla(uint8_t* values, int values_count, int timestamp_count){
                 uint8_t meaningfulBits = read_bits(&bitReader, 6);
                 if(meaningfulBits == 63){
                     for(int i = 0; i < values_count; i++){
-                        printf("%d,", values[i]);
+                        printf("ERROR %d,", values[i]);
                     }
                 }
                 trailingZeros = VALUE_SIZE_IN_BITS - meaningfulBits - leadingZeros;

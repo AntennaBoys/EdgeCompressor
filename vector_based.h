@@ -21,11 +21,10 @@ typedef struct Vector_based {
     unsigned int length;
     unsigned int model_length;
     Vector vec;
+    float error_sum;
     
     int current_delta;
     long* timestamps;
-    float* longs;
-    float* lats;
     int max_timestamps;
     int current_timestamp_index;
     
