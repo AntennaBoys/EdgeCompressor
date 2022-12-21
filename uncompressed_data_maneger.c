@@ -2,7 +2,7 @@
 #include "compression.h"
 #include "jsonprint.h"
 #include "timestamps.h"
-#include "distance_calculator.h"
+#include "global_error.h"
 #define ERROR_BOUND 0.001
 
 void resize(Uncompressed_data* data);
@@ -41,6 +41,8 @@ void print_vector_based(FILE* output, Vector_based *model, int *first){
     Selected_model selected_model = get_selected_model();
     select_vector_based(&selected_model, model);
     Timestamps timestamps = compress_residual_timestamps(model->timestamps, model->current_timestamp_index);
+    total_vector_error += model->error_sum/model->model_length;
+    total_vector_count++;
     writeModelToFile(output, timestamps, selected_model, first, model->start_time, model->end_time,
                      model->error_sum/model->model_length, 0);
     delete_selected_model(&selected_model);

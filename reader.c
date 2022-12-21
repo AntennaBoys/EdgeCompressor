@@ -10,7 +10,7 @@
 #include "vector_based.h"
 #include "text_compressor.h"
 #include "argument_handler.h"
-
+#include "global_error.h"
 #include <unistd.h>
 
 #define ERROR_BOUND 0.1
@@ -38,7 +38,11 @@ int main(int argc, char *argv[])
 {
     paths_init();
     Arguments args = handleArguments(argc, argv);
-
+    total_value_count = 0;
+    total_value_error = 0;
+    total_vector_count = 0;
+    total_vector_count = 0;
+    total_value_count_with_lossless = 0;
 
 
     FILE* output_file = openFile("output.csv");
@@ -163,6 +167,9 @@ int main(int argc, char *argv[])
     free_vectorbased(&vb);
     fclose(stream);
     char* buf[100];
-    sprintf(buf, "gzip %s/output.csv", outPutCsvFile);
+    sprintf(buf, "gzip -9 -k -f %s/output.csv", outPutCsvFile);
     system(buf);
+    printf("Average error over models (ECLUDING LOSSLESS MODEL): %f\n", (total_value_error/total_value_count)*100);
+    printf("Average error over models (WITH LOSSLESS MODELS): %f\n", (total_value_error/total_value_count_with_lossless)*100);
+    printf("Average error over vector based: %fm\n", total_vector_error/total_vector_count);
 }

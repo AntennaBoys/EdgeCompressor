@@ -2,6 +2,7 @@
 #include "jsonprint.h"
 #include <math.h>
 #include <stdio.h>
+#include "global_error.h"
 
 #define GORILLAMAX 50
 
@@ -121,6 +122,7 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
     case SWING_ID:
         return gridSwing(model.min_value, model.max_value, model.values[0], timestamps, model.end_index+1);
     case GORILLA_ID:
+        total_value_count--;
         return grid_gorilla(model.values, model.values_capacity, model.end_index+1);
     case POLYSWING_ID:
         return grid_polyswing(model.min_value, model.max_value, model.values, timestamps, model.end_index+1);
@@ -132,13 +134,19 @@ float* getReconstructedValues(Selected_model model, long* timestamps){
 }
 
 float getRMSE(float* baseValues, float* reconstructedValues, int values_count){
+    float sq_error = 0;
     float error = 0;
     float baseValue = 0;
     float reconstructedValue = 0;
     for(int i = 0; i < values_count; i++){
         baseValue = baseValues[i];
         reconstructedValue = reconstructedValues[i];
-        error += (baseValue - reconstructedValue) * (baseValue - reconstructedValue);
+        sq_error += (baseValue - reconstructedValue) * (baseValue - reconstructedValue);
+        if(baseValue != 0){
+            error += fabsf(fabsf(baseValue - reconstructedValue) / baseValue);
+        }
     }
-    return sqrtf(error/values_count);
+    total_value_error += error/values_count;
+    total_value_count++;
+    return sqrtf(sq_error/values_count);
 }
