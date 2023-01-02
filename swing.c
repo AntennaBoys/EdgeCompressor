@@ -223,7 +223,7 @@ struct slopeAndIntercept decode_and_compute_slope_and_intercept(long firstTimest
 
 float* gridSwing(float min, float max, uint8_t values, long* timestamps,int timestamp_count){
     float* result;
-    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestamp_count], min, max, values);
+    struct slopeAndIntercept slopeAndIntercept = decode_and_compute_slope_and_intercept(timestamps[0], timestamps[timestamp_count-1], min, max, values);
     result = calloc(timestamp_count, sizeof(*result));
     if(!result){
         printf("CALLOC ERROR (gridSwing: result)\n");

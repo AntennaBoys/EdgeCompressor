@@ -58,6 +58,7 @@ int fit_values_vector_based(Vector_based *data, long time_stamp, double latitude
         data->vec.x = data->vec.x / (double)(data->current_delta);
 
         data->timestamps[data->current_timestamp_index] = time_stamp;
+        data->model_length++;
         return 1;
     } 
     else {
