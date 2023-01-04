@@ -4,14 +4,11 @@
 #include <string.h>
 #include <time.h>
 #include "paths.h"
-#include <math.h>
 #include "jsonprint.h"
-#include <limits.h>
 #include "vector_based.h"
 #include "text_compressor.h"
 #include "argument_handler.h"
 #include "global_error.h"
-#include <unistd.h>
 
 #define ERROR_BOUND 0.1
 #define INITIAL_BUFFER 200
