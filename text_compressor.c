@@ -18,7 +18,7 @@ Text_compressor get_text_compressor(int id){
 
 int fit_string(Text_compressor* data, char* string, long timestamp){
     if(data->count == 0){
-        data->string = string;
+        data->string = strdup(string);
         data->timestamps[data->count] = timestamp;
         data->count++;
         return 1;
@@ -40,7 +40,8 @@ void reset_text_compressor(Text_compressor* data, char* string, long timestamp){
     free(data->timestamps);
     data->timestamps = calloc(data->max_timestamps, sizeof(*data->timestamps));
     data->timestamps[0] = timestamp;
-    data->string = string;
+    free(data->string);
+    data->string = strdup(string);
 }
 
 void print_compressed_text(Text_compressor* data, FILE* file, int* first){

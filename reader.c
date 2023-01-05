@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
                     print_compressed_text(&text_compressors[i], output_file, &first_print);
                     reset_text_compressor(&text_compressors[i], field, timestamp);
                 }
+                free(str);
             }
             // fit_values_vector_based(&vb, timestamp, strtof(getfield(latStr, 5), &errorPointer), strtof(getfield(longStr, 6), &errorPointer));
 
@@ -160,6 +161,7 @@ int main(int argc, char *argv[])
     closeFile(output_file);
 
     free(args.cols);
+    free(args.text_cols);
     free(dataList);
     free_vectorbased(&vb);
     fclose(stream);
