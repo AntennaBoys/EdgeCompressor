@@ -33,6 +33,10 @@ const char *getfield(char *line, int num)
 
 int main(int argc, char *argv[])
 {
+    clock_t start, end;
+    double cpu_time_used;
+
+    start = clock();
     paths_init();
     Arguments args = handleArguments(argc, argv);
     total_value_count = 0;
@@ -152,7 +156,9 @@ int main(int argc, char *argv[])
         if(text_compressors[i].count > 0)
             print_compressed_text(&text_compressors[i], output_file, &first_print);
         free(text_compressors[i].timestamps);
+        free(text_compressors[i].string);
     }
+    free(text_compressors);
 
 
     if(args.containsPosition){
@@ -171,4 +177,7 @@ int main(int argc, char *argv[])
     printf("Average error over models (ECLUDING LOSSLESS MODEL): %f\n", (total_value_error/total_value_count)*100);
     printf("Average error over models (WITH LOSSLESS MODELS): %f\n", (total_value_error/total_value_count_with_lossless)*100);
     printf("Average error over vector based: %fm\n", total_vector_error/total_vector_count);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("%lf seconds\n", cpu_time_used);
 }
