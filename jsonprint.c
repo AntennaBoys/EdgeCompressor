@@ -31,7 +31,7 @@ void dump(FILE* file, const void *data, size_t len) {
 
 void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, int* first, int start_time, int end_time, float error, int column_id){
     if(model.model_type_id != 4){
-        total_value_count_with_lossless++;
+        total_value_count_with_lossless+=model.end_index+1;
     }
     fprintf(file,"%d,", model.model_type_id);                   //Model id
     fprintf(file,"%d,", column_id);                             //Column id
@@ -57,7 +57,7 @@ void writeModelToFile(FILE* file, Timestamps timestamps, Selected_model model, i
 }
 
 void write_text_to_file(FILE* file, int* first, int column_id, int count, char* string, long start_time, long end_time, Timestamps timestamps){
-    total_value_count_with_lossless++;
+    total_value_count_with_lossless+=count;
     fprintf(file,"5,");                                         //Model id
     fprintf(file,"%x,", column_id);                             //Column id
     fprintf(file,"%x,", count-1);                               //End index
